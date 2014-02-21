@@ -5,27 +5,25 @@ namespace ContextawareFramework
 {
     public class ContextFilter
     {
-        private List<IEntity> entities;
+        public List<Person> entities = new List<Person>();
+        public List<Context> Contexts = new List<Context>();
 
 
-        public void AddEntity(IEntity entity)
+        public void AddContext(Context context)
         {
-            entities.Add(entity);
+            Contexts.Add(context);
         }
 
-        public bool AddSensor(ISensor sensor)
+        public void EntitiesUpdated()
         {
-
-
-            return true;
+            for(int i = 0; i < entities.Count; i++)
+            {
+                var result = String.Format("{0} : {1} - {2}", entities[i].GetType(), i, entities[i].i);
+                Console.WriteLine(result);
+            }
         }
 
-        public bool Subscribe(Type t)
-        {
 
-
-
-            return true;
-        }
+        
     }
 }
