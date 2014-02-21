@@ -8,7 +8,8 @@ namespace ContextawareFramework
 {
     public interface IEntity
     {
-        List<IEntity> Entities { get; set; }
-        int i { get; set; }
+
+        string Name { get; set; }
+
     }
 }

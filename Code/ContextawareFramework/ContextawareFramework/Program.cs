@@ -11,10 +11,9 @@ namespace ContextawareFramework
     {
         static void Main(string[] args)
         {
-            var p = new Person();
-            var p2 = new Person();
-            p.i = 0;
-            p.i = 10;
+            var p = new Person(){i = 0, Name = "Person1"};
+            var p2 = new Person(){i = 1, Name = "Person2"};
+            
             var predicate = new Predicate<Person>(Test);
             var context = new Context();
             context.EntityPredicate = predicate;
@@ -30,7 +29,7 @@ namespace ContextawareFramework
 
         public static bool Test(Person person)
         {
-            return person.i > 0;
+            return person.i == 5;
         }
     }
 }
