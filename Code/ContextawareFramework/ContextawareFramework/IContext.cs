@@ -6,13 +6,11 @@ using System.Threading.Tasks;
 
 namespace ContextawareFramework
 {
-    public interface IEntity
+    public interface IContext
     {
 
-        string Id { get; set; }
-        string Name { get; set; }
-        string Description { get; set; }
-
+        Predicate<List<IEntity>> ContextPredicate { get; set; }
 
     }
+
 }

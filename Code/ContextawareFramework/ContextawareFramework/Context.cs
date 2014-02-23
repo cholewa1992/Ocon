@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace ContextawareFramework
 {
-    public class Context
+    
+    public class Context: IContext
     {
         
-        public Action ContextAction;
-        public Predicate<Person> EntityPredicate;
+        
+        public Predicate<List<IEntity>> ContextPredicate { get; set; }
 
-        public void FireContext()
-        {
-            ContextAction.Invoke();
-        }
     }
 }

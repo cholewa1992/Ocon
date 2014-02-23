@@ -6,7 +6,5 @@ namespace ContextawareFramework
     {
         public event SensorEventHandler sensorevent;
         public delegate void SensorEventHandler(IEntity entity);
-
-        
     }
 }

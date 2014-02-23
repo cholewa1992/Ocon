@@ -1,44 +1,58 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Remoting.Contexts;
 
 namespace ContextawareFramework
 {
     public class ContextFilter
     {
-        public List<Person> entities = new List<Person>();
-        public List<Context> Contexts = new List<Context>();
+
+        public List<IEntity> _entities = new List<IEntity>();
+        private readonly List<IContext> _contexts = new List<IContext>();
 
 
-        public void AddContext(Context context)
+
+        public ContextFilter(IContext context)
         {
-            Contexts.Add(context);
+            _contexts.Add(context);
+        }
+       
+
+        public bool RemoveContext(IContext context)
+        {
+            return _contexts.Remove(context);
+        }
+
+        public void AddContext(IContext context)
+        {
+            _contexts.Add(context);
         }
 
         public void EntitiesUpdated()
         {
-            for(int i = 0; i < entities.Count; i++)
+            for(int i = 0; i < _entities.Count; i++)
             {
-                var result = String.Format("{0} : {1} - {2}", entities[i].GetType(), i, entities[i].i);
+                var result = String.Format("{0} : {1} - {2}", _entities[i].GetType(), i, _entities[i].Name);
                 Console.WriteLine(result);
             }
 
 
-            Console.WriteLine(TestContext(Contexts[0]));
+            Console.WriteLine(TestContext(_contexts[0]));
             
         }
 
-        public bool TestContext(Context context)
+        public bool TestContext(IContext context)
         {
 
             
-                for (int i = 0; i < entities.Count; i++)
+                for (int i = 0; i < _entities.Count; i++)
                 {
-                    bool predicate = context.EntityPredicate.Invoke(entities[i]);
+                    bool predicate = context.ContextPredicate.Invoke(_entities);
 
                     if (!predicate)
                         return false;
 
-                    if (i == entities.Count-1)
+                    if (i == _entities.Count-1)
                     {
                         return true;
                     }

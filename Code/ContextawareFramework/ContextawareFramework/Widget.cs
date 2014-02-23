@@ -37,10 +37,7 @@ namespace ContextawareFramework
 
         public void Update(int i)
         {
-            if (!_contextFilter.entities.Contains(testPerson))
-            {
-                _contextFilter.entities.Add(testPerson);
-            }
+            
 
             testPerson.i = i;
             _contextFilter.EntitiesUpdated();
