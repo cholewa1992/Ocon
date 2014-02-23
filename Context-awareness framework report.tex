@@ -1,6 +1,9 @@
 \documentclass[]{report}
 
 
+\usepackage[autostyle]{csquotes} 
+
+
 % Title Page
 \title{Context-aware framework}
 \author{Jacob B. Cholewa \& Mathias Kindsholm Pedersen}
@@ -12,16 +15,46 @@
 \begin{abstract}
 \end{abstract}
 
+
 \chapter{Project description}
-A Context-aware system is able to adapt its behaviour to the surroundings it is in. In order to act upon its environment, the system will need sensor-input. Various sources of input can be used to determine the actions of the system.\\
+A Context-aware system is able to adapt its behavior to the surroundings it is in. In order to act upon its environment, the system will need sensor-input. Various sources of input can be used to determine the actions of the system.\\
 
 In this project we want to mainly focus on implementing a context-awareness framework, making it easy for systems to actuate on sensor events. As a proof of concept we will explore replacing the physical SCRUM board, which is often a whiteboard and post-its, with an IT-solution which is not confined to a personal computer, but has the same presence. The digital SCRUM board will be context-aware to the extent that it can recognize different SCRUM activities, like sprint meeting or one-on-one, and automatically change its graphical interface.
 \chapter{Scope}
 \chapter{Background research}
+
+
+To be able to make a context-aware framework, we first had to investigate what context and context-awareness is in a computer science perspective.\\
+
+Context-awareness is a term associated with Ubiquitous computer also known as Pervasive computing.\\
+
+Ubiquitous computing, ubicomp, was coined in the early nineties by Mark Weiser whos vision was to make technology that could seamlessly assist us in everyday tasks. Weisers research unit at Xerox PARC developed some of the first mobile devices, and the development of ubi computing clearly reflects in todays technology boom of smart phones and tablets.\\
+
+Context-awareness is one of the core pillars of ubi computing as knowledge about context assists in seamless interacting with technology. \\
+ 
+
+Many of the publications on the subject describes it different, but the one description fitting best our understanding was coined by Dey and Abowd whom describes context as following:
+
+\blockquote{
+	Any information that can be used to characterize the situation of an entity. An entity is a person, place or object that is considered relevant to the interaction between a user and an application, including the suer and application themselves. \cite{Dey and Abowd (2000)} 
+} 
+
+
+
+  
+
 \chapter{Requirement analysis}
 \chapter{Design}
 \chapter{Conclusion}
-\chapter{References}
+
+\begin{thebibliography}{9}
+
+\bibitem{Dey and Abowd (2000)}
+  Dey, A. K., and Abowd, G.D.
+  \emph{Towards a better understanding of context and context-awareness. Workshop on the What, Who, Where, When and How Context-awareness, afflicted with the 2000 ACM Conference on Human Factors in Computer Systems},
+  2000.
+
+\end{thebibliography}
 \chapter{Appendixes}
 
 \end{document}
