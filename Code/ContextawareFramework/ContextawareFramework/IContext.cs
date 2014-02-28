@@ -9,7 +9,7 @@ namespace ContextawareFramework
     public interface IContext
     {
 
-        Predicate<List<IEntity>> ContextPredicate { get; set; }
+        Predicate<ICollection<IEntity>> ContextPredicate { get; set; }
 
     }
 

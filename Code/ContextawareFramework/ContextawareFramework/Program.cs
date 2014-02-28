@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace ContextawareFramework
 {
@@ -15,21 +10,14 @@ namespace ContextawareFramework
         {
 
             //string json = JsonConvert.SerializeObject(new Context() { EntityPredicate = new Predicate<List<Person>>(Test) });
-
             //Console.WriteLine(json);
-
             //var o = JsonConvert.DeserializeObject<Context>(json);
-
-
             //Console.WriteLine(o.EntityPredicate.ToString());
-
-
 
             var p = new Person() { i = 3, Name = "Person1" };
             var p2 = new Room() { Name = "Room1" };
 
-            var predicate = new Predicate<List<IEntity>>(Test);
-            var context = new Context { ContextPredicate = predicate };
+            var context = new Context { ContextPredicate = TestPredicate };
             Console.WriteLine();
             var contextFilter = new ContextFilter(context);
 
@@ -43,34 +31,14 @@ namespace ContextawareFramework
 
         }
 
-        public static bool Test(IList<IEntity> persons)
+        public static bool TestPredicate(ICollection<IEntity> entities)
         {
-            // We might have to count multiple of same condition
-            int personcount = 0;
-
-            // Loop through all IEntities to check, not optimal
-            foreach (var person in persons)
+            foreach (var room in entities.OfType<Room>())
             {
-                // If a person, cast and check properties
-                if (person.GetType() == typeof(Person))
-                {
-                    var p = (Person)person;
-
-                    if (p.i > 2 && personcount == 1)
-                    {
-                        return true;
-                    }
-
-                    personcount++;
-
-                }
-
-
-                if (person.GetType() == typeof(Room))
-                    Console.WriteLine(person.GetType());
-
+                Console.WriteLine(room);
             }
-            return false;
+
+            return entities.OfType<Person>().Any(t => t.i > 2);
         }
     }
 }
