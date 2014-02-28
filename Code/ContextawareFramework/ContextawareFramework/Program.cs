@@ -20,21 +20,22 @@ namespace ContextawareFramework
 
             //var o = JsonConvert.DeserializeObject<Context>(json);
 
-            
+
             //Console.WriteLine(o.EntityPredicate.ToString());
 
 
 
-            var p = new Person(){i = 0, Name = "Person1"};
-            var p2 = new Person(){i = 1, Name = "Person2"};
-            
+            var p = new Person() { i = 3, Name = "Person1" };
+            var p2 = new Room() { Name = "Room1" };
+
             var predicate = new Predicate<List<IEntity>>(Test);
-            var context = new Context {ContextPredicate = predicate};
+            var context = new Context { ContextPredicate = predicate };
             Console.WriteLine();
             var contextFilter = new ContextFilter(context);
-            
+
             contextFilter._entities.Add(p);
             contextFilter._entities.Add(p2);
+            contextFilter._entities.Add(new Person(){i = 3});
 
             var widget = new Widget(contextFilter);
             widget.Start();
@@ -42,13 +43,30 @@ namespace ContextawareFramework
 
         }
 
-        public static bool Test(List<IEntity> persons)
+        public static bool Test(IList<IEntity> persons)
         {
+            // We might have to count multiple of same condition
+            int personcount = 0;
 
-
+            // Loop through all IEntities to check, not optimal
             foreach (var person in persons)
             {
-                if (person.GetType() == typeof (Person))
+                // If a person, cast and check properties
+                if (person.GetType() == typeof(Person))
+                {
+                    var p = (Person)person;
+
+                    if (p.i > 2 && personcount == 1)
+                    {
+                        return true;
+                    }
+
+                    personcount++;
+
+                }
+
+
+                if (person.GetType() == typeof(Room))
                     Console.WriteLine(person.GetType());
 
             }
