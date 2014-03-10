@@ -43,7 +43,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ByteExtentions.cs" />
-    <Compile Include="NetworkHelper.cs" />
+    <Compile Include="CustomEquallityCompare.cs" />
+    <Compile Include="Group.cs" />
+    <Compile Include="Peer.cs" />
+    <Compile Include="TcpCom.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

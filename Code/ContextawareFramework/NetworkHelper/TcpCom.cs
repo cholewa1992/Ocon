@@ -4,11 +4,12 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using ContextawareFramework;
 using Newtonsoft.Json;
 
-namespace ContextawareFramework
+namespace NetworkHelper
 {
-    public static class NetworkHelper
+    public static class TcpHelper
     {
 
         //Cancellation tokens to stop network action
@@ -19,10 +20,9 @@ namespace ContextawareFramework
         public static bool IsListening { get; private set; }
         public static bool IsBroadcasting { get; private set; }
 
-
         /// <summary>
         /// For broadcasting discovery pacakge so the widget can be auto-discovered
-        /// </summary
+        /// </summary>
         public static void Broadcast()
         {
             //If the service is already running return
@@ -137,12 +137,12 @@ namespace ContextawareFramework
         /// <summary>
         /// This event will be fired everytime a new widget is discovered. NB: StartDiscoveryService must be called to start the discovery service
         /// </summary>
-        public static event EventHandler<ContextFilterEventArgs> DiscoveryService;
+        public static event EventHandler<ContextFilterEventArgs> DiscoveryServiceEvent;
 
         /// <summary>
         /// Starts the Widget Discovery Service
         /// </summary>
-        public static void DiscoverContextFilter(Guid guid)
+        public static void DiscoveryService(Guid guid)
         {
             _stopDiscoveryTokenSource = new CancellationTokenSource();
             Task.Run(() =>
@@ -186,9 +186,9 @@ namespace ContextawareFramework
                         client.Close();
 
                         //Fires an event about newly discovered context filter
-                        if (DiscoveryService != null)
+                        if (DiscoveryServiceEvent != null)
                         {
-                            DiscoveryService(null, new ContextFilterEventArgs(new IPEndPoint(ipAddress, 2002)));
+                            DiscoveryServiceEvent(null, new ContextFilterEventArgs(new IPEndPoint(ipAddress, 2002)));
                         }
                     }
                     socket.Close();
@@ -200,7 +200,7 @@ namespace ContextawareFramework
 
             }, _stopDiscoveryTokenSource.Token);
         }
-        
+
         /// <summary>
         /// Sends a TCP package
         /// </summary>
@@ -208,24 +208,17 @@ namespace ContextawareFramework
         /// <param name="ipep">The distination endpoint</param>
         public static void SendTcpPackage(string msg, IPEndPoint ipep)
         {
-            try
-            {
-                var client = new TcpClient();
-                var serverEndPoint = ipep;
-                client.Connect(serverEndPoint);
+            var client = new TcpClient();
+            var serverEndPoint = ipep;
+            client.Connect(serverEndPoint);
 
-                var clientStream = client.GetStream();
+            var clientStream = client.GetStream();
 
-                var bytes = msg.GetBytes();
+            var bytes = msg.GetBytes();
 
-                clientStream.Write(bytes, 0, bytes.Length);
-                clientStream.Flush();
-                client.Close();
-            }
-            catch (SocketException e)
-            {
-                Console.WriteLine(e.Message);
-            }
+            clientStream.Write(bytes, 0, bytes.Length);
+            clientStream.Flush();
+            client.Close();
         }
 
         #region Helper classes
@@ -235,11 +228,11 @@ namespace ContextawareFramework
         /// </summary>
         public class ContextFilterEventArgs : EventArgs
         {
-            public IPEndPoint IpEndPoint { get; set; }
+            public Peer Peer { get; set; }
 
             internal ContextFilterEventArgs(IPEndPoint ipep)
             {
-                IpEndPoint = ipep;
+                Peer = new Peer {IpEndPoint = ipep};
             }
         }
 

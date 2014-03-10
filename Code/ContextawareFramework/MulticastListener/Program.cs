@@ -13,9 +13,9 @@ namespace MulticastListener
         static void Main(string[] args)
         {
             
-            Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram,
+            var s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram,
             ProtocolType.Udp);
-            IPEndPoint ipep = new IPEndPoint(IPAddress.Any, 2001);
+            var ipep = new IPEndPoint(IPAddress.Any, 2001);
             s.Bind(ipep);
 
             IPAddress ip = IPAddress.Parse("224.5.6.7");

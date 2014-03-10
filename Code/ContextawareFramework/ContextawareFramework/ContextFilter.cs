@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Runtime.Remoting.Services;
 using Newtonsoft.Json;
 
 namespace ContextawareFramework
@@ -12,36 +9,23 @@ namespace ContextawareFramework
         private readonly ICollection<IEntity> _entities = new HashSet<IEntity>(new CustomEquallityCompare());
         private readonly ICollection<IContext> _contexts = new List<IContext>();
 
-        public class CustomEquallityCompare : IEqualityComparer<IEntity>
-        {
-            public bool Equals(IEntity x, IEntity y)
-            {
-                return x.WidgetId == y.WidgetId || x.Id == y.Id;
-            }
-
-            public int GetHashCode(IEntity obj)
-            {
-                return obj.WidgetId.GetHashCode() + obj.Id;
-            }
-        }
-
         public ContextFilter(IContext context)
         {
             _contexts.Add(context);
-            NetworkHelper.IncommingTcpEvent += (sender, args) =>
+            NetworkHelper.TcpHelper.IncommingTcpEvent += (sender, args) =>
             {
                 try
                 {
                     var person = JsonConvert.DeserializeObject<Person>(args.Message);
                     TrackEntity(person);
                 }
-                catch (Exception e)
+                catch
                 {
-
                 }
             };
-            NetworkHelper.StartTcpListen();
-            NetworkHelper.Broadcast();
+
+            NetworkHelper.TcpHelper.StartTcpListen();
+            NetworkHelper.TcpHelper.Broadcast();
         }
 
         private void TrackEntity(IEntity entity)

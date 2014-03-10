@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ContextawareFramework
+﻿namespace ContextawareFramework
 {
     public class Sensor: ISensor
     {

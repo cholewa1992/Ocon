@@ -15,7 +15,7 @@ namespace TestWidget
                 Description = "I'm a cool person!"
             };
 
-            var w = new Widget();
+            var w = new Widget.Widget();
             w.TrackEntity(testPerson);
 
             Task.Run(() =>
@@ -23,7 +23,6 @@ namespace TestWidget
                 while (true)
                 {
                     testPerson.i = new Random().Next(10);
-                    Console.WriteLine(testPerson.i);
                     w.Notify(testPerson);
                     Thread.Sleep(500);
                 }

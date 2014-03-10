@@ -1,45 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
+using ContextawareFramework;
+using NetworkHelper;
 using Newtonsoft.Json;
 
-namespace ContextawareFramework
+namespace Widget
 {
     public class Widget
     {
         public Guid WidgetId { private set; get; }
 
-        private int _idCounter = 0;
+        private int _idCounter;
         private readonly HashSet<IEntity> _trackedEntities = new HashSet<IEntity>();
-        private readonly HashSet<IPEndPoint> _observers = new HashSet<IPEndPoint>();
+        private readonly Group _group = new Group();
 
 
         public Widget()
         {
             WidgetId = Guid.NewGuid();
-            NetworkHelper.DiscoveryService += (sender, args) =>
-            {
-                lock (_observers)
-                {
-                    _observers.Add(args.IpEndPoint);
-                }
-            };
-            NetworkHelper.DiscoverContextFilter(WidgetId);
+            Initialize();
         }
 
 
         public Widget(Guid guid)
         {
             WidgetId = guid;
-            NetworkHelper.DiscoveryService += (sender, args) =>
-            {
-                lock (_observers)
-                {
-                    Console.WriteLine("Got CF");
-                    _observers.Add(args.IpEndPoint);
-                }
-            };
-            NetworkHelper.DiscoverContextFilter(WidgetId);
+            Initialize();
+        }
+
+        private void Initialize()
+        {
+            Console.WriteLine("Starting widget (" + WidgetId + ")");
+            TcpHelper.DiscoveryServiceEvent += (sender, args) => _group.AddObserver(args.Peer);
+            TcpHelper.DiscoveryService(WidgetId);
         }
 
         private int GetNextEntityId()
@@ -50,12 +43,7 @@ namespace ContextawareFramework
         public void Notify(IEntity entity)
         {
             var msg = JsonConvert.SerializeObject(entity);
-
-            foreach (var peer in _observers)
-            {
-                Console.WriteLine("Notifying: " + peer);
-                NetworkHelper.SendTcpPackage(msg, peer);
-            }
+            _group.Send(msg);
         }
 
         public void TrackEntity(IEntity entity)
