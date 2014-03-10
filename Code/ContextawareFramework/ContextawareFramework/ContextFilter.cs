@@ -1,19 +1,58 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting.Contexts;
+using System.Net;
+using System.Runtime.Remoting.Services;
+using Newtonsoft.Json;
 
 namespace ContextawareFramework
 {
     public class ContextFilter
     {
-        public ICollection<IEntity> _entities = new List<IEntity>();
+        private readonly ICollection<IEntity> _entities = new HashSet<IEntity>(new CustomEquallityCompare());
         private readonly ICollection<IContext> _contexts = new List<IContext>();
+
+        public class CustomEquallityCompare : IEqualityComparer<IEntity>
+        {
+            public bool Equals(IEntity x, IEntity y)
+            {
+                return x.WidgetId == y.WidgetId || x.Id == y.Id;
+            }
+
+            public int GetHashCode(IEntity obj)
+            {
+                return obj.WidgetId.GetHashCode() + obj.Id;
+            }
+        }
 
         public ContextFilter(IContext context)
         {
             _contexts.Add(context);
+            NetworkHelper.IncommingTcpEvent += (sender, args) =>
+            {
+                try
+                {
+                    var person = JsonConvert.DeserializeObject<Person>(args.Message);
+                    TrackEntity(person);
+                }
+                catch (Exception e)
+                {
+
+                }
+            };
+            NetworkHelper.StartTcpListen();
+            NetworkHelper.Broadcast();
+        }
+
+        private void TrackEntity(IEntity entity)
+        {
+            if (_entities.Contains(entity))
+            {
+                _entities.Remove(entity);
+            }
+            _entities.Add(entity);
+            EntitiesUpdated();
+
         }
 
         public bool RemoveContext(IContext context)
@@ -28,39 +67,15 @@ namespace ContextawareFramework
 
         public void EntitiesUpdated()
         {
-            var i = 0;
-            foreach (var entity in _entities)
+            foreach (var context in _contexts)
             {
-                var result = String.Format("{0} : {1} - {2}", entity.GetType(), i, entity.Name);
-                Console.WriteLine(result);
-                i++;
+                Console.WriteLine(TestContext(context));
             }
-            Console.WriteLine(TestContext(_contexts.First()));
         }
 
         public bool TestContext(IContext context)
         {
-            for (int i = 0; i < _entities.Count; i++)
-            {
-                bool predicate = context.ContextPredicate.Invoke(_entities);
-
-                if (!predicate)
-                    return false;
-
-                if (i == _entities.Count - 1)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
-
-    public static class ListExtensions
-    {
-        public static IEnumerable<T> GetAllWithType<T>(this ICollection collection) where T : class
-        {
-            return collection.OfType<T>();
+            return context.ContextPredicate.Invoke(_entities);
         }
     }
 }
