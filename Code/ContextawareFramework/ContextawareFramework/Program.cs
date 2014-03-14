@@ -8,7 +8,14 @@ namespace ContextawareFramework
     {
         static void Main(string[] args)
         {
-            var context = new Context { ContextPredicate = TestPredicate };
+
+            var guid = new Guid();
+
+            Console.WriteLine(guid);
+
+            Console.ReadKey();
+
+            var context = new Situation { SituationPredicate = TestPredicate };
             var contextFilter = new ContextFilter(context);
             Console.ReadLine();
         }

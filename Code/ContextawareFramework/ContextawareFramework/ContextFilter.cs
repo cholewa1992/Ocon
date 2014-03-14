@@ -7,11 +7,11 @@ namespace ContextawareFramework
     public class ContextFilter
     {
         private readonly ICollection<IEntity> _entities = new HashSet<IEntity>(new CustomEquallityCompare());
-        private readonly ICollection<IContext> _contexts = new List<IContext>();
+        private readonly ICollection<ISituation> _situations = new List<ISituation>();
 
-        public ContextFilter(IContext context)
+        public ContextFilter(ISituation situation)
         {
-            _contexts.Add(context);
+            _situations.Add(situation);
             NetworkHelper.TcpHelper.IncommingTcpEvent += (sender, args) =>
             {
                 try
@@ -39,27 +39,40 @@ namespace ContextawareFramework
 
         }
 
-        public bool RemoveContext(IContext context)
+        /// <summary>
+        /// 
+        /// Removes an ISituation instance from the collection of recognized situations
+        /// 
+        /// </summary>
+        /// <param name="situation">An ISituation instance</param>
+        /// <returns></returns>
+        public bool RemoveSituation(ISituation situation)
         {
-            return _contexts.Remove(context);
+            return _situations.Remove(situation);
         }
 
-        public void AddContext(IContext context)
+        /// <summary>
+        /// 
+        /// Adds an ISituation instance to the collection of recognized situations
+        /// 
+        /// </summary>
+        /// <param name="situation"></param>
+        public void AddSituation(ISituation situation)
         {
-            _contexts.Add(context);
+            _situations.Add(situation);
         }
 
         public void EntitiesUpdated()
         {
-            foreach (var context in _contexts)
+            foreach (var context in _situations)
             {
                 Console.WriteLine(TestContext(context));
             }
         }
 
-        public bool TestContext(IContext context)
+        public bool TestContext(ISituation situation)
         {
-            return context.ContextPredicate.Invoke(_entities);
+            return situation.SituationPredicate.Invoke(_entities);
         }
     }
 }
