@@ -14,13 +14,11 @@ namespace Widget
         private readonly HashSet<IEntity> _trackedEntities = new HashSet<IEntity>();
         private readonly Group _group = new Group();
 
-
         public Widget()
         {
             WidgetId = Guid.NewGuid();
             Initialize();
         }
-
 
         public Widget(Guid guid)
         {
@@ -56,6 +54,7 @@ namespace Widget
             }
             else
             {
+                _trackedEntities.Remove(entity);
                 _trackedEntities.Add(entity);
             }
         }

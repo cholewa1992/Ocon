@@ -9,6 +9,8 @@ namespace ContextawareFramework
         public string Name { get; set; }
         public string Description { get; set; }
 
+        public bool Present { get; set; }
+
         public override int GetHashCode()
         {
             return WidgetId.GetHashCode() + Id;
