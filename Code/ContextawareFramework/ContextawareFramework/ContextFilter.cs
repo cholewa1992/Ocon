@@ -9,9 +9,12 @@ namespace ContextawareFramework
         private readonly ICollection<IEntity> _entities = new HashSet<IEntity>(new CustomEquallityCompare());
         private readonly ICollection<ISituation> _situations = new List<ISituation>();
 
-        public ContextFilter(ISituation situation)
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public ContextFilter()
         {
-            _situations.Add(situation);
             NetworkHelper.TcpHelper.IncommingTcpEvent += (sender, args) =>
             {
                 try
@@ -28,7 +31,11 @@ namespace ContextawareFramework
             NetworkHelper.TcpHelper.Broadcast();
         }
 
-        private void TrackEntity(IEntity entity)
+        /// <summary>
+        /// Add an IEntity instance to the collection beeing checked for situations
+        /// </summary>
+        /// <param name="entity"></param>
+        public void TrackEntity(IEntity entity)
         {
             if (_entities.Contains(entity))
             {
@@ -36,13 +43,10 @@ namespace ContextawareFramework
             }
             _entities.Add(entity);
             EntitiesUpdated();
-
         }
 
         /// <summary>
-        /// 
         /// Removes an ISituation instance from the collection of recognized situations
-        /// 
         /// </summary>
         /// <param name="situation">An ISituation instance</param>
         /// <returns></returns>
@@ -52,15 +56,14 @@ namespace ContextawareFramework
         }
 
         /// <summary>
-        /// 
         /// Adds an ISituation instance to the collection of recognized situations
-        /// 
         /// </summary>
         /// <param name="situation"></param>
         public void AddSituation(ISituation situation)
         {
             _situations.Add(situation);
         }
+
 
         public void EntitiesUpdated()
         {
@@ -70,6 +73,11 @@ namespace ContextawareFramework
             }
         }
 
+        /// <summary>
+        /// Test
+        /// </summary>
+        /// <param name="situation"></param>
+        /// <returns></returns>
         public bool TestContext(ISituation situation)
         {
             return situation.SituationPredicate.Invoke(_entities);
