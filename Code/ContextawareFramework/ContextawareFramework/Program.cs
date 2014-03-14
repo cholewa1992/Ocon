@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ContextawareFramework.Communication;
 
 namespace ContextawareFramework
 {
@@ -9,16 +10,12 @@ namespace ContextawareFramework
         static void Main(string[] args)
         {
 
-            var guid = new Guid();
-
-            Console.WriteLine(guid);
-
-            Console.ReadKey();
 
             var context = new Situation { SituationPredicate = TestPredicate };
-            var contextFilter = new ContextFilter();
-            contextFilter.AddSituation(context);
+            new TcpJson().Start(null);
             Console.ReadLine();
+
+
         }
 
         public static bool TestPredicate(ICollection<IEntity> entities)

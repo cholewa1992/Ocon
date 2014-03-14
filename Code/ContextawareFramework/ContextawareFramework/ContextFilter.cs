@@ -15,20 +15,7 @@ namespace ContextawareFramework
         /// </summary>
         public ContextFilter()
         {
-            NetworkHelper.TcpHelper.IncommingTcpEvent += (sender, args) =>
-            {
-                try
-                {
-                    var person = JsonConvert.DeserializeObject<Person>(args.Message);
-                    TrackEntity(person);
-                }
-                catch
-                {
-                }
-            };
-
-            NetworkHelper.TcpHelper.StartTcpListen();
-            NetworkHelper.TcpHelper.Broadcast();
+            
         }
 
         /// <summary>
