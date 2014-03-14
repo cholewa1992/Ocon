@@ -1,15 +1,10 @@
 ﻿using System;
 namespace ContextawareFramework
 {
-    public class Person: IEntity
+    public class Person: AbstractEntity
     {
-        public Guid WidgetId { get; set; }
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-
-        public bool Present { get; set; }
-
-        
+        public override string WidgetName { get; set; }
+        public override string Name { get; set; }
+        public override string Description { get; set; }
     }
 }
