@@ -52,6 +52,13 @@ namespace TestWidget
             }
         }
 
+        public void FireTestEvent()
+        {
+            var i = new Random().Next(6);
+            Console.WriteLine("TestEvent: " + i);
+            KinectEvent(this, new KinectEventArgs(true,i));
+        }
+
         private void SensorSkeletonFrameReady(object sender, SkeletonFrameReadyEventArgs e)
         {
             var skeletons = new Skeleton[0];

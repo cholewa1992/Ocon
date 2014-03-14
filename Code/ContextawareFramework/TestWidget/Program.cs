@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Policy;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,18 +12,15 @@ namespace TestWidget
     public class Program
     {
         private static int _lastNumberOfPeople;
-        private static List<Person> _people = new List<Person>();  
+        private static readonly List<Person> _people = new List<Person>();  
 
         public static void Main(string[] args)
         {
             var w = new Widget.Widget();
-
             var k = new Kinect();
             k.KinectEvent += (sender, eventArgs) =>
             {
                 if (eventArgs == null) return;
-                Console.WriteLine(eventArgs.NumberOfPeople);
-
                 if (_lastNumberOfPeople == eventArgs.NumberOfPeople) return;
 
                 _lastNumberOfPeople = eventArgs.NumberOfPeople;
@@ -31,19 +29,43 @@ namespace TestWidget
                 {
                     if (i < _lastNumberOfPeople)
                     {
-                        _people.Add(new Person
+
+                        if (_people.All(t => t.Id != i))
                         {
-                            Id = i,
-                            Present = true,
-                            WidgetId = w.WidgetId
-                        });
+                            var person = new Person
+                            {
+                                Id = i,
+                                WidgetId = w.WidgetId
+                            };
+                            _people.Add(person);
+                        }
+
+                        _people[i].Present = true;
+                        w.TrackEntity(_people[i]);
+                        w.Notify(_people[i]);
                     }
                     else
                     {
-                        _people[i].Present = false;
+                        if (_people[i].Present)
+                        {
+                            _people[i].Present = false;
+                            w.TrackEntity(_people[i]);
+                            w.Notify(_people[i]);
+                        }
                     }
                 }
             };
+
+
+            //Task.Run(() =>
+            //{
+            //    while (true)
+            //    {
+            //        Console.Clear();
+            //        k.FireTestEvent();
+            //        Thread.Sleep(new Random().Next(5000,10000));
+            //    }
+            //});
 
             k.StartKinect();
             Console.ReadLine();

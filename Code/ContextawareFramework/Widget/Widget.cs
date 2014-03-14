@@ -41,6 +41,9 @@ namespace Widget
         public void Notify(IEntity entity)
         {
             var msg = JsonConvert.SerializeObject(entity);
+#if DEBUG
+            Console.WriteLine(msg);
+#endif
             _group.Send(msg);
         }
 
