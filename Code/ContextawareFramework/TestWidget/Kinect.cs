@@ -54,7 +54,6 @@ namespace TestWidget
 
         private void SensorSkeletonFrameReady(object sender, SkeletonFrameReadyEventArgs e)
         {
-            Console.WriteLine("ok");
             var skeletons = new Skeleton[0];
             using (var skeletonFrame = e.OpenSkeletonFrame())
             {
@@ -69,12 +68,11 @@ namespace TestWidget
                 //foreach (var skel in skeletons.Where(skel => skel.TrackingState == SkeletonTrackingState.Tracked))
                 //{
                 //
-                //}
-                Console.WriteLine("ok");
+                //
 
-                if (skeletons.Any(skel => skel.TrackingState == SkeletonTrackingState.Tracked))
+                if (skeletons.Any())
                 {
-                    KinectEvent(this, new KinectEventArgs(true, skeletons.Count(skel => skel.TrackingState == SkeletonTrackingState.Tracked)));
+                    KinectEvent(this, new KinectEventArgs(true, skeletons.Count()));
                 }
                 else
                 {
