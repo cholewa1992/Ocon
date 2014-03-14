@@ -10,27 +10,7 @@ namespace ContextawareFramework
         private readonly ICollection<ISituation> _situations = new List<ISituation>();
 
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public ContextFilter()
-        {
-            NetworkHelper.TcpHelper.IncommingTcpEvent += (sender, args) =>
-            {
-                try
-                {
-                    var person = JsonConvert.DeserializeObject<Person>(args.Message);
-                    TrackEntity(person);
-                }
-                catch
-                {
-                }
-            };
-
-            NetworkHelper.TcpHelper.StartTcpListen();
-            NetworkHelper.TcpHelper.Broadcast();
-        }
-
+       
         /// <summary>
         /// Add an IEntity instance to the collection beeing checked for situations
         /// </summary>
@@ -58,10 +38,14 @@ namespace ContextawareFramework
         /// <summary>
         /// Adds an ISituation instance to the collection of recognized situations
         /// </summary>
-        /// <param name="situation"></param>
-        public void AddSituation(ISituation situation)
+        /// <param name="situation">one or more ISituation instances</param>
+        public void AddSituation(params ISituation[] situations)
         {
-            _situations.Add(situation);
+            foreach (var s in situations)
+            {
+                _situations.Add(s);
+                Console.WriteLine(s.Id);
+            }
         }
 
 

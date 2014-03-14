@@ -3,15 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Build.Framework;
 
 namespace ContextawareFramework
 {
     public interface ISituation
     {
 
-        string Id { get; set; }
+        
+        Guid Id { get; }
+        
         string Description { get; set; }
+        
         Predicate<ICollection<IEntity>> SituationPredicate { get; set; }
+
+
+
 
     }
 

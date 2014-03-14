@@ -1,16 +1,18 @@
-﻿using Microsoft.Build.Framework;
+﻿using System;
+using Microsoft.Build.Framework;
 
 
 namespace ContextawareFramework
 {
     public interface IEntity
     {
-        [Required()]
-        System.Guid WidgetId { get; set; }
-        [Required()]
-        int Id { get; set; }
 
+        Guid WidgetId { get; }
+        string WidgetName { get; set; }
+        Guid Id { get; }
         string Name { get; set; }
         string Description { get; set; }
+
+
     }
 }
