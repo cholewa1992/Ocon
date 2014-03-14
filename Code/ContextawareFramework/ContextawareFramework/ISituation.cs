@@ -9,6 +9,8 @@ namespace ContextawareFramework
     public interface ISituation
     {
 
+        string Id { get; set; }
+        string Description { get; set; }
         Predicate<ICollection<IEntity>> SituationPredicate { get; set; }
 
     }
