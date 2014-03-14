@@ -72,7 +72,7 @@ namespace TestWidget
 
                 if (skeletons.Any())
                 {
-                    KinectEvent(this, new KinectEventArgs(true, skeletons.Count()));
+                    KinectEvent(this, new KinectEventArgs(true, skeletons.Count(skel => skel.TrackingState == SkeletonTrackingState.Tracked || skel.TrackingState == SkeletonTrackingState.PositionOnly)));
                 }
                 else
                 {
