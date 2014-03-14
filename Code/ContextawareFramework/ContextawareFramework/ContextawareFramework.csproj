@@ -45,10 +45,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Context.cs" />
+    <Compile Include="Situation.cs" />
     <Compile Include="ContextFilter.cs" />
     <Compile Include="CustomEquallityCompare.cs" />
-    <Compile Include="IContext.cs" />
+    <Compile Include="ISituation.cs" />
     <Compile Include="IEntity.cs" />
     <Compile Include="IPerson.cs" />
     <Compile Include="IRoom.cs" />
@@ -70,6 +70,9 @@
       <Project>{780caf41-d737-43ac-b431-91f6cb78d388}</Project>
       <Name>NetworkHelper</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Entity\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

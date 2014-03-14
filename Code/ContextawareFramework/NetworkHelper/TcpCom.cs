@@ -208,6 +208,8 @@ namespace NetworkHelper
         /// <param name="ipep">The distination endpoint</param>
         public static void SendTcpPackage(string msg, IPEndPoint ipep)
         {
+            // TODO check at den max er 1024 byte
+
             var client = new TcpClient();
             var serverEndPoint = ipep;
             client.Connect(serverEndPoint);
