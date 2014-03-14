@@ -16,7 +16,8 @@ namespace ContextawareFramework
             Console.ReadKey();
 
             var context = new Situation { SituationPredicate = TestPredicate };
-            var contextFilter = new ContextFilter(context);
+            var contextFilter = new ContextFilter();
+            contextFilter.AddSituation(context);
             Console.ReadLine();
         }
 
