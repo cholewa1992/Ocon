@@ -46,7 +46,7 @@
     <Compile Include="CustomEquallityCompare.cs" />
     <Compile Include="Group.cs" />
     <Compile Include="Peer.cs" />
-    <Compile Include="TcpCom.cs" />
+    <Compile Include="TcpHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

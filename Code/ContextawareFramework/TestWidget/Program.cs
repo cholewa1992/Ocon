@@ -57,17 +57,17 @@ namespace TestWidget
             };
 
 
-            //Task.Run(() =>
-            //{
-            //    while (true)
-            //    {
-            //        Console.Clear();
-            //        k.FireTestEvent();
-            //        Thread.Sleep(new Random().Next(5000,10000));
-            //    }
-            //});
+            Task.Run(() =>
+            {
+                while (true)
+                {
+                    Console.Clear();
+                    k.FireTestEvent();
+                    Thread.Sleep(new Random().Next(5000,10000));
+                }
+            });
 
-            k.StartKinect();
+            //k.StartKinect();
             Console.ReadLine();
             k.Close();
         }

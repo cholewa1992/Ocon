@@ -9,34 +9,45 @@ using Newtonsoft.Json;
 
 namespace NetworkHelper
 {
-    public static class TcpHelper
+    public class TcpHelper
     {
 
         //Cancellation tokens to stop network action
-        private static CancellationTokenSource _stopBroadcastTokenSource;
-        private static CancellationTokenSource _stopListenTokenSource;
-        private static CancellationTokenSource _stopDiscoveryTokenSource;
+        private CancellationTokenSource _stopBroadcastTokenSource;
+        private CancellationTokenSource _stopListenTokenSource;
+        private CancellationTokenSource _stopDiscoveryTokenSource;
 
         public static bool IsListening { get; private set; }
         public static bool IsBroadcasting { get; private set; }
 
+        //Settings
+        public static readonly IPAddress StandardMulticastAddress = IPAddress.Parse("224.5.6.7");
+
+
+        private static TcpHelper _instance;
+
+        public static TcpHelper GetInstance()
+        {
+            return _instance ?? (_instance = new TcpHelper());
+        }
+
+        private TcpHelper()
+        {
+            
+        }
+
         /// <summary>
-        /// For broadcasting discovery pacakge so the widget can be auto-discovered
+        /// For broadcasting discovery pacakge so the widget can be auto-discovered. This metode runs on a separate thread and can be stopped by calling StopBroadcast
         /// </summary>
-        public static void Broadcast()
+        public void Broadcast(IPAddress multicastAddress, int port = 2001)
         {
             //If the service is already running return
             if (IsBroadcasting) return;
             IsBroadcasting = true;
 
             _stopBroadcastTokenSource = new CancellationTokenSource();
-            #region Endpoint setup
 
-            IPAddress multicastIp;
-            IPAddress.TryParse("224.5.6.7", out multicastIp);
-            const int port = 2001;
 
-            #endregion
             #region Broadcaster
             //Start listener for incomming replies
             Task.Run(() =>
@@ -50,7 +61,7 @@ namespace NetworkHelper
                         using (var mSendSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp))
                         {
                             //Setting up socket to multicast
-                            mSendSocket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, new MulticastOption(multicastIp, localIp));
+                            mSendSocket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, new MulticastOption(multicastAddress, localIp));
                             mSendSocket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.MulticastTimeToLive, 255);
                             mSendSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
                             mSendSocket.MulticastLoopback = true;
@@ -60,7 +71,7 @@ namespace NetworkHelper
                             var json = JsonConvert.SerializeObject(localIp.ToString());
 
                             //Sending out the package
-                            mSendSocket.SendTo(json.GetBytes(), new IPEndPoint(multicastIp, port));
+                            mSendSocket.SendTo(json.GetBytes(), new IPEndPoint(multicastAddress, port));
                         }
                         Thread.Sleep(5000);
                     }
@@ -78,7 +89,7 @@ namespace NetworkHelper
         /// <summary>
         /// Stops the broadcasting
         /// </summary>
-        public static void StopBroadcast()
+        public void StopBroadcast()
         {
            _stopBroadcastTokenSource.Cancel();
         }
@@ -86,12 +97,12 @@ namespace NetworkHelper
         /// <summary>
         /// This event will be fired when ever a new TCP package is avalible
         /// </summary>
-        public static event EventHandler<IncommingTcpPackageEventArgs> IncommingTcpEvent;
+        public event EventHandler<IncommingTcpPackageEventArgs> IncommingTcpEvent;
 
         /// <summary>
         /// Starts the TCP listener
         /// </summary>
-        public static void StartTcpListen()
+        public void StartListen(int bufferSize = 1024, int port = 2002)
         {
             if (IsListening) return;
             IsListening = true;
@@ -99,7 +110,7 @@ namespace NetworkHelper
             _stopListenTokenSource = new CancellationTokenSource();
             Task.Run(() =>
             {
-                var localEndPoint = new IPEndPoint(IPAddress.Any, 2002);
+                var localEndPoint = new IPEndPoint(IPAddress.Any, port);
                 var tcpListener = new TcpListener(localEndPoint);
                 tcpListener.Start();
 
@@ -108,8 +119,10 @@ namespace NetworkHelper
                     var client = tcpListener.AcceptTcpClient();
                     var stream = client.GetStream();
 
-                    var buffer = new byte[1024];
-                    stream.Read(buffer, 0, 1024);
+                    //TODO MAKE CHECK FOR BUFFER SIZE!
+
+                    var buffer = new byte[bufferSize];
+                    stream.Read(buffer, 0, bufferSize);
 
                     if (IncommingTcpEvent != null)
                     {
@@ -129,7 +142,7 @@ namespace NetworkHelper
         /// <summary>
         /// Stops the TCP listener
         /// </summary>
-        public static void StopTcpListen()
+        public void StopListen()
         {
             _stopListenTokenSource.Cancel();
         }
@@ -137,12 +150,12 @@ namespace NetworkHelper
         /// <summary>
         /// This event will be fired everytime a new widget is discovered. NB: StartDiscoveryService must be called to start the discovery service
         /// </summary>
-        public static event EventHandler<ContextFilterEventArgs> DiscoveryServiceEvent;
+        public event EventHandler<ContextFilterEventArgs> DiscoveryServiceEvent;
 
         /// <summary>
         /// Starts the Widget Discovery Service
         /// </summary>
-        public static void DiscoveryService(Guid guid)
+        public void DiscoveryService(Guid guid, IPAddress multiCastAddress, int multiCastPort = 2001, int handShakePort = 2002)
         {
             _stopDiscoveryTokenSource = new CancellationTokenSource();
             Task.Run(() =>
@@ -155,11 +168,11 @@ namespace NetworkHelper
                     var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
                     //Binds the socket to listen on all network interfaces on port 2001
-                    var ipep = new IPEndPoint(IPAddress.Any, 2001);
+                    var ipep = new IPEndPoint(IPAddress.Any, multiCastPort);
                     socket.Bind(ipep);
 
                     //Set up the socket to listen for multicast messages on IP 224.5.6.7
-                    var ip = IPAddress.Parse("224.5.6.7");
+                    var ip = multiCastAddress;
                     socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, new MulticastOption(ip, IPAddress.Any));
 
                     #endregion
@@ -175,7 +188,7 @@ namespace NetworkHelper
                         IPAddress.TryParse(JsonConvert.DeserializeObject<string>(buffer.GetString()), out ipAddress);
 
                         var client = new TcpClient();
-                        var serverEndPoint = new IPEndPoint(ipAddress, 2002);
+                        var serverEndPoint = new IPEndPoint(ipAddress, handShakePort);
                         client.Connect(serverEndPoint);
 
                         var clientStream = client.GetStream();
@@ -188,7 +201,7 @@ namespace NetworkHelper
                         //Fires an event about newly discovered context filter
                         if (DiscoveryServiceEvent != null)
                         {
-                            DiscoveryServiceEvent(null, new ContextFilterEventArgs(new IPEndPoint(ipAddress, 2002)));
+                            DiscoveryServiceEvent(null, new ContextFilterEventArgs(new IPEndPoint(ipAddress, handShakePort)));
                         }
                     }
                     socket.Close();
@@ -206,7 +219,7 @@ namespace NetworkHelper
         /// </summary>
         /// <param name="msg">The message to transmit</param>
         /// <param name="ipep">The distination endpoint</param>
-        public static void SendTcpPackage(string msg, IPEndPoint ipep)
+        public void SendPackage(string msg, IPEndPoint ipep)
         {
             // TODO check at den max er 1024 byte
 
@@ -237,7 +250,6 @@ namespace NetworkHelper
                 Peer = new Peer {IpEndPoint = ipep};
             }
         }
-
         public class IncommingTcpPackageEventArgs : EventArgs
         {
             public string Message { set; get; }

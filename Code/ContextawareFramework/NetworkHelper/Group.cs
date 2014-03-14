@@ -7,6 +7,7 @@ namespace NetworkHelper
     public class Group
     {
         private readonly HashSet<Peer> _observers = new HashSet<Peer>(new PeerEquallityCompare());
+        private readonly Dictionary<Peer, int> _tries = new Dictionary<Peer, int>();
 
         public void Send(string msg)
         {
@@ -17,12 +18,14 @@ namespace NetworkHelper
                 {
                     PrintObservers();
                     TcpHelper.SendTcpPackage(msg, observer.IpEndPoint);
+                    _tries[observer] = 0;
 
                 }
                 catch (SocketException e)
                 {
                     Console.WriteLine(e.Message);
-                    toRemove.Add(observer);
+                    _tries[observer]++;
+                    if (_tries[observer] >= 3) toRemove.Add(observer);
                 }
             }
             foreach (var peer in toRemove)
@@ -39,6 +42,8 @@ namespace NetworkHelper
                 {
                     Console.WriteLine("Adding peer to group: " + peer.IpEndPoint);
                     _observers.Add(peer);
+                    _tries.Add(peer, 0);
+
                 }
             }
         }
