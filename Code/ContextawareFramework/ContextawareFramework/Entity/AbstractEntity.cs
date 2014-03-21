@@ -5,19 +5,21 @@ namespace ContextawareFramework
     public abstract class AbstractEntity: IEntity
     {
 
-        private readonly Guid _widgetId = Guid.NewGuid();
+        private Guid _widgetId = Guid.NewGuid();
         public Guid WidgetId
         {
             get { return _widgetId; }
+            set { _widgetId = value; }
         }
 
         public abstract string WidgetName { get; set; }
 
 
-        private readonly Guid _id = Guid.NewGuid();
+        private Guid _id = Guid.NewGuid();
         public Guid Id
         {
             get { return _id; }
+            set { _id = value; }
         }
 
         public abstract string Name { get; set; }
