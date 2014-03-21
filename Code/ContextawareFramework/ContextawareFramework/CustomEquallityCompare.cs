@@ -11,7 +11,7 @@ namespace ContextawareFramework
 
         public int GetHashCode(IEntity obj)
         {
-            return obj.WidgetId.GetHashCode() + obj.Id;
+            return obj.WidgetId.GetHashCode() + int.Parse(obj.Id.ToString());
         }
     }
 }

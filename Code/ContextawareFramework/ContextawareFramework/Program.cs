@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ContextawareFramework.Communication;
+using NetworkHelper;
 
 namespace ContextawareFramework
 {
@@ -10,12 +10,13 @@ namespace ContextawareFramework
         static void Main(string[] args)
         {
 
-            new ContextFilter().AddSituation(new Situation(), new Situation(), new Situation());
+            var cf = new ContextFilter();
+            cf.AddSituation(new Situation(), new Situation(), new Situation());
 
-            
+            var comHelper = TcpHelper.GetInstance();
 
-            new TcpJson().Start(null);
-            Console.ReadLine();
+            //var cc = new ContextCentral(cf, comHelper);
+
 
 
         }
