@@ -8,9 +8,7 @@ namespace ContextawareFramework
     {
         private readonly ICollection<IEntity> _entities = new HashSet<IEntity>(new CustomEquallityCompare());
         private readonly ICollection<ISituation> _situations = new List<ISituation>();
-
-
-       
+      
         /// <summary>
         /// Add an IEntity instance to the collection beeing checked for situations
         /// </summary>
@@ -38,9 +36,13 @@ namespace ContextawareFramework
         /// <summary>
         /// Adds an ISituation instance to the collection of recognized situations
         /// </summary>
-        /// <param name="situation">one or more ISituation instances</param>
-        public void AddSituation(params ISituation[] situations)
+        /// <param name="situation">An ISituation instance</param>
+        /// <param name="situations">zero or more ISituation instances</param>
+        public void AddSituation(ISituation situation, params ISituation[] situations)
         {
+            _situations.Add(situation);
+            Console.WriteLine(situation.Id);
+
             foreach (var s in situations)
             {
                 _situations.Add(s);
