@@ -8,63 +8,72 @@ namespace Widget
 {
     public class Widget
     {
-
+        #region Properties
         private readonly HashSet<IEntity> _trackedEntities = new HashSet<IEntity>();
         private readonly ICommunicationHelper _comHelper;
         private readonly Group _group;
-        public Guid WidgetId { private set; get; }
-        
-        
 
+        /// <summary>
+        /// An unique identifier. Works like a MAC address
+        /// </summary>
+        public Guid WidgetId { private set; get; }
+        #endregion
+        #region Constructors
+        /// <summary>
+        /// Constructs a new Widget
+        /// </summary>
+        /// <param name="comHelper">The communication helper to use. A communication helper is needed for the widget to talk with the context filter</param>
         public Widget(ICommunicationHelper comHelper)
         {
             _comHelper = comHelper;
             _group = new Group(_comHelper);
             WidgetId = Guid.NewGuid();
-            Initialize();
         }
 
+        /// <summary>
+        /// Constructs a new Widget
+        /// </summary>
+        /// <param name="comHelper">The communication helper to use. A communication helper is needed for the widget to talk with the context filter</param>
+        /// <param name="guid">The guid to use. The guid works like a MAC address</param>
         public Widget(ICommunicationHelper comHelper, Guid guid)
         {
             _comHelper = comHelper;
             _group = new Group(_comHelper);
             WidgetId = guid;
-            Initialize();
         }
+        #endregion
 
-        private void Initialize()
+        /// <summary>
+        /// This will start a discovery service that will find any avalible context filters on the local network
+        /// </summary>
+        public void StartDiscovery()
         {
-
             Console.WriteLine("Starting widget (" + WidgetId + ")");
             _comHelper.DiscoveryServiceEvent += (sender, args) => _group.AddObserver(args.Peer);
             _comHelper.DiscoveryService(WidgetId, TcpHelper.StandardMulticastAddress);
         }
 
-        private Guid GetNextEntityId()
-        {
-            return Guid.NewGuid();
-        }
-
+        /// <summary>
+        /// This methode should be invoked when ever a tracked entity is updated. This will send the update to the context filter
+        /// </summary>
+        /// <param name="entity">The entity that was updated</param>
         public void Notify(IEntity entity)
         {
+            RegisterEntity(entity);
             var msg = JsonConvert.SerializeObject(entity);
-#if DEBUG
-            Console.WriteLine(msg);
-#endif
             _group.Send(msg);
         }
 
-        public void TrackEntity(IEntity entity)
+        /// <summary>
+        /// Registers the enetity and givs it an unique Id.
+        /// </summary>
+        /// <param name="entity"></param>
+        private void RegisterEntity(IEntity entity)
         {
             if (!_trackedEntities.Contains(entity))
             {
-                entity.Id = GetNextEntityId();
+                entity.Id = Guid.NewGuid();
                 entity.WidgetId = WidgetId;
-                _trackedEntities.Add(entity);
-            }
-            else
-            {
-                _trackedEntities.Remove(entity);
                 _trackedEntities.Add(entity);
             }
         }

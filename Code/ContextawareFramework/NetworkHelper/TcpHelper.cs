@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace NetworkHelper
 {
-    public class TcpHelper
+    public class TcpHelper : ICommunicationHelper
     {
 
         //Cancellation tokens to stop network action
@@ -248,27 +248,4 @@ namespace NetworkHelper
             client.Close();
         }
     }
-    #region Helper classes
-    /// <summary>
-    /// Custom EventArgs to use for notification about new Widgets
-    /// </summary>
-    public class ContextFilterEventArgs : EventArgs
-    {
-        public Peer Peer { get; set; }
-
-        internal ContextFilterEventArgs(IPEndPoint ipep)
-        {
-            Peer = new Peer { IpEndPoint = ipep };
-        }
-    }
-    public class IncommingPackageEventArgs : EventArgs
-    {
-        public string Message { set; get; }
-
-        internal IncommingPackageEventArgs(string msg)
-        {
-            Message = msg;
-        }
-    }
-    #endregion
 }
