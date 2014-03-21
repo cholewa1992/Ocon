@@ -1,14 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using ContextawareFramework;
+using NetworkHelper;
 
 namespace Client
 {
     public class Client
     {
-        public Client()
+        private readonly ICommunicationHelper _comHelper;
+
+        public Client(ICommunicationHelper comHelper)
+        {
+            _comHelper = comHelper;
+        }
+
+        public event EventHandler ContextEvent;
+
+
+
+        public void RegisterSituation(ISituation predicates)
         {
             
         }

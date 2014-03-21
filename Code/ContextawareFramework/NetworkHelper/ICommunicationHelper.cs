@@ -8,7 +8,8 @@ namespace NetworkHelper
 
         int MulticastPort { get; set; }
         int HandshakePort { get; set; }
-        int CommunicationPort { get; set; }
+        int WidgetPort { get; set; }
+        int ClientPort { get; set; }
         IPAddress MulticastAddress { get; set; }
 
         /// <summary>
@@ -25,11 +26,6 @@ namespace NetworkHelper
         /// This event will be fired when ever a new TCP package is avalible
         /// </summary>
         event EventHandler<IncommingPackageEventArgs> IncommingTcpEvent;
-
-        /// <summary>
-        /// Starts the TCP listener
-        /// </summary>
-        void StartListen(int bufferSize = 32);
 
         /// <summary>
         /// Starts the TCP listener

@@ -21,9 +21,12 @@ namespace NetworkHelper
         #region Fields
         private static TcpHelper _instance;
         private int _multicastPort = 2001;
-        private int _handshakePort = 2003;
-        private int _communicationPort = 2002;
+        private int _handshakePort = 2002;
+        private int _widgetPort = 2003;
+        private int _clientPort = 2004;
         private IPAddress _multicastAddress = IPAddress.Parse("224.5.6.7");
+        
+
         #endregion
         #region Properties
         public static bool IsBroadcasting { get; private set; }
@@ -37,11 +40,18 @@ namespace NetworkHelper
             set { _handshakePort = value; }
             get { return _handshakePort; }
         }
-        public int CommunicationPort
+        public int WidgetPort
         {
-            set { _communicationPort = value; }
-            get { return _communicationPort; }
+            set { _widgetPort = value; }
+            get { return _widgetPort; }
         }
+
+        public int ClientPort
+        {
+            get { return _clientPort; }
+            set { _clientPort = value; }
+        }
+
         public IPAddress MulticastAddress
         {
             get { return _multicastAddress; }
@@ -127,13 +137,6 @@ namespace NetworkHelper
         /// </summary>
         public event EventHandler<IncommingPackageEventArgs> IncommingTcpEvent;
 
-        /// <summary>
-        /// Starts the TCP listener
-        /// </summary>
-        public void StartListen(int bufferSize = 32)
-        {
-            StartListen(CommunicationPort, bufferSize);
-        }
 
         /// <summary>
         /// Starts the TCP listener
@@ -234,7 +237,7 @@ namespace NetworkHelper
                         //Fires an event about newly discovered context filter
                         if (DiscoveryServiceEvent != null)
                         {
-                            DiscoveryServiceEvent(null, new ContextFilterEventArgs(new IPEndPoint(ipAddress, CommunicationPort)));
+                            DiscoveryServiceEvent(null, new ContextFilterEventArgs(new IPEndPoint(ipAddress, clientType == ClientType.Widget ? WidgetPort : ClientPort)));
                         }
                     }
                     socket.Close();
