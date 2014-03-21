@@ -21,6 +21,10 @@ namespace ContextawareFramework
             cf.AddSituation(new Situation(), new Situation(), new Situation());
 
             var comHelper = TcpHelper.GetInstance();
+            comHelper.Broadcast();
+            comHelper.StartListen(comHelper.CommunicationPort); //Listening for sensor input
+            comHelper.StartListen(comHelper.HandshakePort); //Listening for new clients
+            Console.ReadLine();
 
 
 

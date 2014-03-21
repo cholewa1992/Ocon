@@ -17,6 +17,7 @@ namespace TestWidget
         public static void Main(string[] args)
         {
             var w = new Widget.Widget(TcpHelper.GetInstance());
+            w.StartDiscovery();
             var k = new Kinect();
             k.KinectEvent += (sender, eventArgs) =>
             {
