@@ -48,9 +48,9 @@ namespace Widget
         /// </summary>
         public void StartDiscovery()
         {
-            Console.WriteLine("Starting widget (" + WidgetId + ")");
+            Console.WriteLine("Starting discovery (" + WidgetId + ")");
             _comHelper.DiscoveryServiceEvent += (sender, args) => _group.AddPeer(args.Peer);
-            _comHelper.DiscoveryService(WidgetId, ClientType.Widget, TcpHelper.StandardMulticastAddress);
+            _comHelper.DiscoveryService(WidgetId, ClientType.Widget);
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace Widget
         public void Notify(IEntity entity)
         {
             RegisterEntity(entity);
-            var msg = JsonConvert.SerializeObject(entity);
+            var msg = JsonConvert.SerializeObject(entity, entity.GetType(),new JsonSerializerSettings{TypeNameHandling = TypeNameHandling.Objects});
             _group.Send(msg);
         }
 

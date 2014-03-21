@@ -21,14 +21,9 @@ namespace ContextawareFramework
             cf.AddSituation(new Situation(), new Situation(), new Situation());
 
             var comHelper = TcpHelper.GetInstance();
-            comHelper.Broadcast();
-            comHelper.StartListen(comHelper.CommunicationPort); //Listening for sensor input
-            comHelper.StartListen(comHelper.HandshakePort); //Listening for new clients
-            Console.ReadLine();
 
 
-
-            comHelper.IncommingTcpEvent += (sender, eventArgs) =>
+            comHelper.IncommingPackageEvent += (sender, eventArgs) =>
             {
                 var entityType = GetEntityTypeEnum(eventArgs.Message);
 
@@ -52,8 +47,8 @@ namespace ContextawareFramework
             };
 
             var cc = new ContextCentral(cf, comHelper);
-
-
+            cc.Initialize();
+            Console.ReadLine();
 
         }
 

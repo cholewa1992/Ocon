@@ -4,15 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{AC211354-8C2F-48BD-9659-4B53EE7BAE57}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{0CC8A234-B6D6-46C9-AD8E-F6DD19A7DE21}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Client</RootNamespace>
-    <AssemblyName>Client</AssemblyName>
+    <RootNamespace>TestClient</RootNamespace>
+    <AssemblyName>TestClient</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,6 +23,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -39,16 +41,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Client.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ContextawareFramework\ContextawareFramework.csproj">
-      <Project>{4CED25D0-FAAC-486F-8B94-63FE8F1DA9FC}</Project>
-      <Name>ContextawareFramework</Name>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Client\Client.csproj">
+      <Project>{AC211354-8C2F-48BD-9659-4B53EE7BAE57}</Project>
+      <Name>Client</Name>
     </ProjectReference>
     <ProjectReference Include="..\NetworkHelper\NetworkHelper.csproj">
-      <Project>{780caf41-d737-43ac-b431-91f6cb78d388}</Project>
+      <Project>{780CAF41-D737-43AC-B431-91F6CB78D388}</Project>
       <Name>NetworkHelper</Name>
     </ProjectReference>
   </ItemGroup>

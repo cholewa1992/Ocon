@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Sockets;
 
 namespace NetworkHelper
@@ -33,6 +34,34 @@ namespace NetworkHelper
                 try
                 {
                     _comHelper.SendPackage(msg, observer.IpEndPoint);
+                    _tries[observer] = 0;
+
+                }
+                catch (SocketException e)
+                {
+                    Console.WriteLine(e.Message);
+                    _tries[observer]++;
+                    if (_tries[observer] >= 3) toRemove.Add(observer);
+                }
+            }
+            foreach (var peer in toRemove)
+            {
+                RemovePeer(peer);
+            }
+        }
+
+        /// <summary>
+        /// Sends a message to all peers in the group
+        /// </summary>
+        /// <param name="stream">The stream to sent</param>
+        public void Send(Stream stream)
+        {
+            var toRemove = new List<Peer>();
+            foreach (var observer in _observers)
+            {
+                try
+                {
+                    _comHelper.Send(stream, observer.IpEndPoint);
                     _tries[observer] = 0;
 
                 }

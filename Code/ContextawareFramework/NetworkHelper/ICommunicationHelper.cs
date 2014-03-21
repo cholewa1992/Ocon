@@ -1,4 +1,5 @@
-using System; 
+using System;
+using System.IO;
 using System.Net;
 
 namespace NetworkHelper
@@ -25,12 +26,12 @@ namespace NetworkHelper
         /// <summary>
         /// This event will be fired when ever a new TCP package is avalible
         /// </summary>
-        event EventHandler<IncommingPackageEventArgs> IncommingTcpEvent;
+        event EventHandler<IncommingPackageEventArgs> IncommingPackageEvent;
 
         /// <summary>
         /// Starts the TCP listener
         /// </summary>
-        void StartListen(int port, int bufferSize = 32);
+        void StartListen(int port, int bufferSize = 1024);
 
         /// <summary>
         /// Stops the TCP listener
@@ -48,10 +49,22 @@ namespace NetworkHelper
         void DiscoveryService(Guid guid, ClientType clientType);
 
         /// <summary>
+        /// Send from a source stream
+        /// </summary>
+        /// <param name="stream">The source stream</param>
+        /// <param name="ipep">The IPEndpoint</param>
+        void Send(Stream stream, IPEndPoint ipep);
+
+        /// <summary>
         /// Sends a TCP package
         /// </summary>
         /// <param name="msg">The message to transmit</param>
         /// <param name="ipep">The distination endpoint</param>
         void SendPackage(string msg, IPEndPoint ipep);
+
+        event EventHandler<IncommingStreamEventArgs> IncommingStreamEvent;
+        void StartListenForStream(int port);
+        event EventHandler<IncommingClientEventArgs> IncommingClientEvent;
+        void StartListenForClient(int port, int bufferSize = 1024);
     }
 }

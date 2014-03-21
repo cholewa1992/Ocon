@@ -1,0 +1,50 @@
+﻿using System;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using ContextawareFramework;
+using NetworkHelper;
+
+namespace Client
+{
+    public class ClientImp
+    {
+        private readonly Guid _clientId = Guid.NewGuid();
+        private readonly ICommunicationHelper _comHelper;
+        private readonly Group _group;
+
+        public ClientImp(ICommunicationHelper comHelper)
+        {
+            _comHelper = comHelper;
+            _group = new Group(comHelper);
+            _comHelper.IncommingPackageEvent += (sender, args) =>
+            {
+                Console.WriteLine("--- Recieve something ---");
+                Console.WriteLine(args.Message);
+                Console.WriteLine("------------------------ ");
+            };
+            _comHelper.StartListen(_comHelper.ClientPort);
+
+        }
+
+        /// <summary>
+        /// This will start a discovery service that will find any avalible context filters on the local network
+        /// </summary>
+        public void StartDiscovery()
+        {
+            Console.WriteLine("Starting discovery (" + _clientId + ")");
+            _comHelper.DiscoveryServiceEvent += (sender, args) => _group.AddPeer(args.Peer);
+            _comHelper.DiscoveryService(_clientId, ClientType.Client);
+        }
+
+        public event EventHandler ContextEvent;
+
+        public void RegisterSituation(ISituation situation)
+        {
+            var formatter = new BinaryFormatter();
+            var stream = new MemoryStream();
+            formatter.Serialize(stream, situation);
+            _group.Send(stream);
+            
+        }
+    }
+}

@@ -10,17 +10,9 @@ namespace ContextawareFramework
 {
     public interface ISituation
     {
-
-        
         Guid Id { get; }
-        
         string Description { get; set; }
-        
         Predicate<ICollection<IEntity>> SituationPredicate { get; set; }
-
         ICollection<IPAddress> SubscribersAddresses { get; set; }
-
-
     }
-
 }
