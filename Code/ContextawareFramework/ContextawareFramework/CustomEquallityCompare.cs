@@ -6,7 +6,7 @@ namespace ContextawareFramework
     {
         public bool Equals(IEntity x, IEntity y)
         {
-            return x.WidgetId == y.WidgetId && x.Id == y.Id;
+            return x.Id == y.Id;
         }
 
         public int GetHashCode(IEntity obj)
