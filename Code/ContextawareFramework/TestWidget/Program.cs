@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Policy;
 using System.Threading;
 using System.Threading.Tasks;
 using ContextawareFramework;
 using Microsoft.Kinect;
+using NetworkHelper;
 
 namespace TestWidget
 {
@@ -16,7 +16,7 @@ namespace TestWidget
 
         public static void Main(string[] args)
         {
-            var w = new Widget.Widget();
+            var w = new Widget.Widget(TcpHelper.GetInstance());
             var k = new Kinect();
             k.KinectEvent += (sender, eventArgs) =>
             {
@@ -30,18 +30,13 @@ namespace TestWidget
                     if (i < _lastNumberOfPeople)
                     {
 
-                        if (_people.All(t => t.Id != i))
+                        if (_people.Count() < _lastNumberOfPeople)
                         {
-                            var person = new Person
-                            {
-                                Id = i,
-                                WidgetId = w.WidgetId
-                            };
+                            var person = new Person();
                             _people.Add(person);
                         }
 
                         _people[i].Present = true;
-                        w.TrackEntity(_people[i]);
                         w.Notify(_people[i]);
                     }
                     else
@@ -49,7 +44,6 @@ namespace TestWidget
                         if (_people[i].Present)
                         {
                             _people[i].Present = false;
-                            w.TrackEntity(_people[i]);
                             w.Notify(_people[i]);
                         }
                     }
