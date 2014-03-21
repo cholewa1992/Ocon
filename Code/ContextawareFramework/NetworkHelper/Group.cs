@@ -45,7 +45,7 @@ namespace NetworkHelper
             }
             foreach (var peer in toRemove)
             {
-                RemoveObserver(peer);
+                RemovePeer(peer);
             }
         }
 
@@ -71,7 +71,7 @@ namespace NetworkHelper
         /// Removes a peer from the group
         /// </summary>
         /// <param name="peer"></param>
-        public void RemoveObserver(Peer peer)
+        public void RemovePeer(Peer peer)
         {
             lock (_observers)
             {

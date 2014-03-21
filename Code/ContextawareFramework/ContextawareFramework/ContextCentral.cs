@@ -27,7 +27,7 @@ namespace ContextawareFramework
         public void Initialize()
         {
             _comHelper.StartListen();
-            _comHelper.Broadcast(TcpHelper.StandardMulticastAddress);
+            _comHelper.Broadcast();
             
 
 

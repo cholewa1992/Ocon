@@ -1,14 +1,20 @@
-using System;
+using System; 
 using System.Net;
 
 namespace NetworkHelper
 {
     public interface ICommunicationHelper
     {
+
+        int MulticastPort { get; set; }
+        int HandshakePort { get; set; }
+        int CommunicationPort { get; set; }
+        IPAddress MulticastAddress { get; set; }
+
         /// <summary>
         /// For broadcasting discovery pacakge so that peers can be auto-discovered. This metode runs on a separate thread and can be stopped by calling StopBroadcast
         /// </summary>
-        void Broadcast(IPAddress multicastAddress, int port = 2001);
+        void Broadcast();
 
         /// <summary>
         /// Stops the broadcasting
@@ -23,7 +29,12 @@ namespace NetworkHelper
         /// <summary>
         /// Starts the TCP listener
         /// </summary>
-        void StartListen(int bufferSize = 1024, int port = 2002);
+        void StartListen(int bufferSize = 32);
+
+        /// <summary>
+        /// Starts the TCP listener
+        /// </summary>
+        void StartListen(int port, int bufferSize = 32);
 
         /// <summary>
         /// Stops the TCP listener
@@ -38,7 +49,7 @@ namespace NetworkHelper
         /// <summary>
         /// Starts the Widget Discovery Service
         /// </summary>
-        void DiscoveryService(Guid guid, IPAddress multiCastAddress, int multiCastPort = 2001, int handShakePort = 2002);
+        void DiscoveryService(Guid guid, ClientType clientType);
 
         /// <summary>
         /// Sends a TCP package

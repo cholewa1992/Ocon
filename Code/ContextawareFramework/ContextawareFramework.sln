@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestWidget", "TestWidget\Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Widget", "Widget\Widget.csproj", "{5E0D9B43-7B62-466F-BFE8-0E1F654F513F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csproj", "{AC211354-8C2F-48BD-9659-4B53EE7BAE57}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +39,10 @@ Global
 		{5E0D9B43-7B62-466F-BFE8-0E1F654F513F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5E0D9B43-7B62-466F-BFE8-0E1F654F513F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5E0D9B43-7B62-466F-BFE8-0E1F654F513F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC211354-8C2F-48BD-9659-4B53EE7BAE57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC211354-8C2F-48BD-9659-4B53EE7BAE57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC211354-8C2F-48BD-9659-4B53EE7BAE57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC211354-8C2F-48BD-9659-4B53EE7BAE57}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -49,8 +49,8 @@ namespace Widget
         public void StartDiscovery()
         {
             Console.WriteLine("Starting widget (" + WidgetId + ")");
-            _comHelper.DiscoveryServiceEvent += (sender, args) => _group.AddObserver(args.Peer);
-            _comHelper.DiscoveryService(WidgetId, TcpHelper.StandardMulticastAddress);
+            _comHelper.DiscoveryServiceEvent += (sender, args) => _group.AddPeer(args.Peer);
+            _comHelper.DiscoveryService(WidgetId, ClientType.Widget, TcpHelper.StandardMulticastAddress);
         }
 
         /// <summary>
