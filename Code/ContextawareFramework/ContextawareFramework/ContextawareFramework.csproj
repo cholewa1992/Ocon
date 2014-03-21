@@ -82,6 +82,7 @@
   <ItemGroup>
     <Compile Include="ContextCentral.cs" />
     <Compile Include="Entity\AbstractEntity.cs" />
+    <Compile Include="Entity\EntityType.cs" />
     <Compile Include="Situation\Situation.cs" />
     <Compile Include="ContextFilter.cs" />
     <Compile Include="CustomEquallityCompare.cs" />
@@ -96,18 +97,12 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Scripts\jquery-2.1.0.min.map" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NetworkHelper\NetworkHelper.csproj">
       <Project>{780caf41-d737-43ac-b431-91f6cb78d388}</Project>
       <Name>NetworkHelper</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Scripts\jquery-2.1.0.intellisense.js" />
-    <Content Include="Scripts\jquery-2.1.0.js" />
-    <Content Include="Scripts\jquery-2.1.0.min.js" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
