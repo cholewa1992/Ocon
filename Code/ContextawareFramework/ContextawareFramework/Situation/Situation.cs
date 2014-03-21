@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Net;
 
 namespace ContextawareFramework
 {
@@ -35,10 +36,6 @@ namespace ContextawareFramework
             }
         }
 
-
-
-
-        
-
+        public ICollection<IPAddress> SubscribersAddresses { get; set; }
     }
 }
