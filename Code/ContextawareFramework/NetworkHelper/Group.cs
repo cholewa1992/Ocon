@@ -6,15 +6,25 @@ namespace NetworkHelper
 {
     public class Group
     {
+        #region Fields
         private readonly ICommunicationHelper _comHelper;
         private readonly HashSet<Peer> _observers = new HashSet<Peer>(new PeerEquallityCompare());
         private readonly Dictionary<Peer, int> _tries = new Dictionary<Peer, int>();
+        #endregion
 
+        /// <summary>
+        /// Constructs a new Communicationn Group
+        /// </summary>
+        /// <param name="comHelper">The ComHelper to use</param>
         public Group(ICommunicationHelper comHelper)
         {
             _comHelper = comHelper;
         }
 
+        /// <summary>
+        /// Sends a message to all peers in the group
+        /// </summary>
+        /// <param name="msg">The message to sent</param>
         public void Send(string msg)
         {
             var toRemove = new List<Peer>();
@@ -22,7 +32,6 @@ namespace NetworkHelper
             {
                 try
                 {
-                    PrintObservers();
                     _comHelper.SendPackage(msg, observer.IpEndPoint);
                     _tries[observer] = 0;
 
@@ -40,7 +49,11 @@ namespace NetworkHelper
             }
         }
 
-        public void AddObserver(Peer peer)
+        /// <summary>
+        /// Adds a peer to the group
+        /// </summary>
+        /// <param name="peer">The peer to add</param>
+        public void AddPeer(Peer peer)
         {
             lock (_observers)
             {
@@ -54,6 +67,10 @@ namespace NetworkHelper
             }
         }
 
+        /// <summary>
+        /// Removes a peer from the group
+        /// </summary>
+        /// <param name="peer"></param>
         public void RemoveObserver(Peer peer)
         {
             lock (_observers)
@@ -63,6 +80,9 @@ namespace NetworkHelper
             }
         }
 
+        /// <summary>
+        /// Helper class to print who's observing
+        /// </summary>
         public void PrintObservers()
         {
             Console.Clear();
