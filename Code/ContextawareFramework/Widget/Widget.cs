@@ -8,34 +8,41 @@ namespace Widget
 {
     public class Widget
     {
-        public Guid WidgetId { private set; get; }
 
-        private int _idCounter;
         private readonly HashSet<IEntity> _trackedEntities = new HashSet<IEntity>();
-        private readonly Group _group = new Group();
+        private readonly ICommunicationHelper _comHelper;
+        private readonly Group _group;
+        public Guid WidgetId { private set; get; }
+        
+        
 
-        public Widget()
+        public Widget(ICommunicationHelper comHelper)
         {
+            _comHelper = comHelper;
+            _group = new Group(_comHelper);
             WidgetId = Guid.NewGuid();
             Initialize();
         }
 
-        public Widget(Guid guid)
+        public Widget(ICommunicationHelper comHelper, Guid guid)
         {
+            _comHelper = comHelper;
+            _group = new Group(_comHelper);
             WidgetId = guid;
             Initialize();
         }
 
         private void Initialize()
         {
+
             Console.WriteLine("Starting widget (" + WidgetId + ")");
-            TcpHelper.DiscoveryServiceEvent += (sender, args) => _group.AddObserver(args.Peer);
-            TcpHelper.DiscoveryService(WidgetId);
+            _comHelper.DiscoveryServiceEvent += (sender, args) => _group.AddObserver(args.Peer);
+            _comHelper.DiscoveryService(WidgetId, TcpHelper.StandardMulticastAddress);
         }
 
-        private int GetNextEntityId()
+        private Guid GetNextEntityId()
         {
-            return _idCounter++;
+            return Guid.NewGuid();
         }
 
         public void Notify(IEntity entity)

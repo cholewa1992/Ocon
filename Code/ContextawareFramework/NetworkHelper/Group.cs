@@ -6,8 +6,14 @@ namespace NetworkHelper
 {
     public class Group
     {
+        private readonly ICommunicationHelper _comHelper;
         private readonly HashSet<Peer> _observers = new HashSet<Peer>(new PeerEquallityCompare());
         private readonly Dictionary<Peer, int> _tries = new Dictionary<Peer, int>();
+
+        public Group(ICommunicationHelper comHelper)
+        {
+            _comHelper = comHelper;
+        }
 
         public void Send(string msg)
         {
@@ -17,7 +23,7 @@ namespace NetworkHelper
                 try
                 {
                     PrintObservers();
-                    TcpHelper.SendTcpPackage(msg, observer.IpEndPoint);
+                    _comHelper.SendPackage(msg, observer.IpEndPoint);
                     _tries[observer] = 0;
 
                 }

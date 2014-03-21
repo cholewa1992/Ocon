@@ -6,7 +6,7 @@ namespace NetworkHelper
     public interface ICommunicationHelper
     {
         /// <summary>
-        /// For broadcasting discovery pacakge so the widget can be auto-discovered. This metode runs on a separate thread and can be stopped by calling StopBroadcast
+        /// For broadcasting discovery pacakge so that peers can be auto-discovered. This metode runs on a separate thread and can be stopped by calling StopBroadcast
         /// </summary>
         void Broadcast(IPAddress multicastAddress, int port = 2001);
 
@@ -18,7 +18,7 @@ namespace NetworkHelper
         /// <summary>
         /// This event will be fired when ever a new TCP package is avalible
         /// </summary>
-        event EventHandler<TcpHelper.IncommingTcpPackageEventArgs> IncommingTcpEvent;
+        event EventHandler<IncommingPackageEventArgs> IncommingTcpEvent;
 
         /// <summary>
         /// Starts the TCP listener
@@ -33,7 +33,7 @@ namespace NetworkHelper
         /// <summary>
         /// This event will be fired everytime a new widget is discovered. NB: StartDiscoveryService must be called to start the discovery service
         /// </summary>
-        event EventHandler<TcpHelper.ContextFilterEventArgs> DiscoveryServiceEvent;
+        event EventHandler<ContextFilterEventArgs> DiscoveryServiceEvent;
 
         /// <summary>
         /// Starts the Widget Discovery Service

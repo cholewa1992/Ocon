@@ -6,13 +6,10 @@ namespace ContextawareFramework
 {
     public interface IEntity
     {
-
-        Guid WidgetId { get; }
+        Guid WidgetId { set; get; }
         string WidgetName { get; set; }
-        Guid Id { get; }
+        Guid Id { set; get; }
         string Name { get; set; }
         string Description { get; set; }
-
-
     }
 }

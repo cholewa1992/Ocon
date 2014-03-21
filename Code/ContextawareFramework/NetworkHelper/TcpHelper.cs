@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -26,6 +27,10 @@ namespace NetworkHelper
 
         private static TcpHelper _instance;
 
+        /// <summary>
+        /// Constructs a new instance, or returns an active instance of the TcpHelper 
+        /// </summary>
+        /// <returns></returns>
         public static TcpHelper GetInstance()
         {
             return _instance ?? (_instance = new TcpHelper());
@@ -37,7 +42,7 @@ namespace NetworkHelper
         }
 
         /// <summary>
-        /// For broadcasting discovery pacakge so the widget can be auto-discovered. This metode runs on a separate thread and can be stopped by calling StopBroadcast
+        /// For broadcasting discovery pacakge so that peers can be auto-discovered. This metode runs on a separate thread and can be stopped by calling StopBroadcast
         /// </summary>
         public void Broadcast(IPAddress multicastAddress, int port = 2001)
         {
@@ -97,12 +102,12 @@ namespace NetworkHelper
         /// <summary>
         /// This event will be fired when ever a new TCP package is avalible
         /// </summary>
-        public event EventHandler<IncommingTcpPackageEventArgs> IncommingTcpEvent;
+        public event EventHandler<IncommingPackageEventArgs> IncommingTcpEvent;
 
         /// <summary>
         /// Starts the TCP listener
         /// </summary>
-        public void StartListen(int bufferSize = 1024, int port = 2002)
+        public void StartListen(int bufferSize = 32, int port = 2002)
         {
             if (IsListening) return;
             IsListening = true;
@@ -119,14 +124,20 @@ namespace NetworkHelper
                     var client = tcpListener.AcceptTcpClient();
                     var stream = client.GetStream();
 
-                    //TODO MAKE CHECK FOR BUFFER SIZE!
+                    var msg = new List<byte>();
 
-                    var buffer = new byte[bufferSize];
-                    stream.Read(buffer, 0, bufferSize);
+                    while (stream.DataAvailable)
+                    {
+                        var buffer = new byte[bufferSize];
+                        stream.Read(buffer, 0, bufferSize);
+                        msg.AddRange(buffer);
+                    }
+
+                    
 
                     if (IncommingTcpEvent != null)
                     {
-                        IncommingTcpEvent(null, new IncommingTcpPackageEventArgs(buffer.GetString()));
+                        IncommingTcpEvent(null, new IncommingPackageEventArgs(msg.GetString()));
                     }
 
                     if (_stopListenTokenSource.Token.IsCancellationRequested)
@@ -230,35 +241,34 @@ namespace NetworkHelper
             var clientStream = client.GetStream();
 
             var bytes = msg.GetBytes();
+            if(bytes.Length > 1024) throw new InvalidOperationException("");
 
             clientStream.Write(bytes, 0, bytes.Length);
             clientStream.Flush();
             client.Close();
         }
-
-        #region Helper classes
-
-        /// <summary>
-        /// Custom EventArgs to use for notification about new Widgets
-        /// </summary>
-        public class ContextFilterEventArgs : EventArgs
-        {
-            public Peer Peer { get; set; }
-
-            internal ContextFilterEventArgs(IPEndPoint ipep)
-            {
-                Peer = new Peer {IpEndPoint = ipep};
-            }
-        }
-        public class IncommingTcpPackageEventArgs : EventArgs
-        {
-            public string Message { set; get; }
-
-            internal IncommingTcpPackageEventArgs(string msg)
-            {
-                Message = msg;
-            }
-        }
-        #endregion
     }
+    #region Helper classes
+    /// <summary>
+    /// Custom EventArgs to use for notification about new Widgets
+    /// </summary>
+    public class ContextFilterEventArgs : EventArgs
+    {
+        public Peer Peer { get; set; }
+
+        internal ContextFilterEventArgs(IPEndPoint ipep)
+        {
+            Peer = new Peer { IpEndPoint = ipep };
+        }
+    }
+    public class IncommingPackageEventArgs : EventArgs
+    {
+        public string Message { set; get; }
+
+        internal IncommingPackageEventArgs(string msg)
+        {
+            Message = msg;
+        }
+    }
+    #endregion
 }

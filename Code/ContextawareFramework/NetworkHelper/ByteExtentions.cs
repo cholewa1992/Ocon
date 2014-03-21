@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -15,6 +17,12 @@ namespace ContextawareFramework
         {
             return Encoding.UTF8.GetString(bytes.CropBytes());
         }
+
+        public static string GetString(this ICollection<byte> bytes)
+        {
+            return Encoding.UTF8.GetString(bytes.ToArray());
+        }
+
 
         private static byte[] CropBytes(this byte[] bytes)
         {
