@@ -13,8 +13,6 @@ namespace ContextawareFramework
         private readonly ContextFilter _contextFilter;
 
 
-        public delegate void Deserialization(string str);
-        private Deserialization _deserialization { get; set; }
 
         public ContextCentral(ContextFilter contextFilter, ICommunicationHelper communicationHelper)
         {

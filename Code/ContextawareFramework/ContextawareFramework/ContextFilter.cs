@@ -51,7 +51,7 @@ namespace ContextawareFramework
         }
 
 
-        public void EntitiesUpdated()
+        private void EntitiesUpdated()
         {
             foreach (var context in _situations)
             {
@@ -59,11 +59,7 @@ namespace ContextawareFramework
             }
         }
 
-        /// <summary>
-        /// Test
-        /// </summary>
-        /// <param name="situation"></param>
-        /// <returns></returns>
+        
         public bool TestContext(ISituation situation)
         {
             return situation.SituationPredicate.Invoke(_entities);
