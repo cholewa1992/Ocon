@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Xml;
 using ContextawareFramework;
@@ -21,7 +22,7 @@ namespace ContextawareFramework
             cf.AddSituation(new Situation(), new Situation(), new Situation());
 
             var comHelper = TcpHelper.GetInstance();
-            
+            comHelper.HandshakeEvent += (sender, eventAgrs) => Console.WriteLine(eventAgrs.Guid);
 
             comHelper.IncommingStringEvent += (sender, eventArgs) =>
             {

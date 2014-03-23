@@ -46,7 +46,7 @@ namespace NetworkHelper
         /// <summary>
         /// Starts the Widget Discovery Service
         /// </summary>
-        void DiscoveryService(Guid guid);
+        void DiscoveryService(Guid guid, bool sendHandshake = false);
 
         /// <summary>
         /// Send from a source stream
@@ -67,6 +67,6 @@ namespace NetworkHelper
 
     public enum PackageType
     {
-        Handshake, Stream, String
+        Handshake = 1, Stream = 2, String = 3
     }
 }

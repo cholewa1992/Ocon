@@ -6,7 +6,6 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
-using ContextawareFramework;
 using Newtonsoft.Json;
 
 namespace NetworkHelper
@@ -153,6 +152,9 @@ namespace NetworkHelper
                     else
                     {
                         var msg = new List<byte>();
+
+                        while (!stream.DataAvailable) ;
+                        
                         while (stream.DataAvailable)
                         {
                             var buffer = new byte[1024];
@@ -166,7 +168,13 @@ namespace NetworkHelper
                         }
                         else if (type == PackageType.Handshake && HandshakeEvent != null)
                         {
-                            HandshakeEvent(client.Client.LocalEndPoint, new HandshakeEventArgs(JsonConvert.DeserializeObject<Guid>(msg.GetString())));
+                            HandshakeEvent(client.Client.LocalEndPoint,
+                                new HandshakeEventArgs(JsonConvert.DeserializeObject<Guid>(msg.GetString())));
+                        }
+                        else
+                        {
+                            Console.WriteLine("Got an wired message from " + client.Client.LocalEndPoint);
+                            Console.WriteLine(msg.GetString());
                         }
 
                     }
@@ -179,7 +187,6 @@ namespace NetworkHelper
                 }
             }, _stopListenTokenSource.Token);
         }
-
         
         /// <summary>
         /// Stops the TCP listener
@@ -197,7 +204,7 @@ namespace NetworkHelper
         /// <summary>
         /// Starts the Widget Discovery Service
         /// </summary>
-        public void DiscoveryService(Guid guid)
+        public void DiscoveryService(Guid guid, bool sendHandshake = false)
         {
             _stopDiscoveryTokenSource = new CancellationTokenSource();
             Task.Run(() =>
@@ -231,7 +238,11 @@ namespace NetworkHelper
                         var serverEndPoint = new IPEndPoint(ipAddress, CommunicationPort);
                         var msg = JsonConvert.SerializeObject(guid);
 
-                        SendString(msg, PackageType.Handshake, serverEndPoint);
+                        if (sendHandshake)
+
+                        {
+                            SendString(msg, PackageType.Handshake, serverEndPoint);
+                        }
 
                         //Fires an event about newly discovered context filter
                         if (DiscoveryServiceEvent != null)
@@ -290,7 +301,6 @@ namespace NetworkHelper
 
             //Sending header
             var header = JsonConvert.SerializeObject(type).GetBytes();
-            Console.WriteLine(header.Count());
             clientStream.Write(header, 0, header.Length);
 
             //Sending message

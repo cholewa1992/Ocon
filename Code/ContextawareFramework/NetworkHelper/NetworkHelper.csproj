@@ -45,13 +45,8 @@
     <Compile Include="ByteExtentions.cs" />
     <Compile Include="ICommunicationHelper.cs" />
     <Compile Include="TcpHelper.cs" />
-    <Compile Include="ClientType.cs" />
-    <Compile Include="ContextFilterEventArgs.cs" />
-    <Compile Include="CustomEquallityCompare.cs" />
     <Compile Include="Group.cs" />
-    <Compile Include="IncommingPackageEventArgs.cs" />
-    <Compile Include="PackageType.cs" />
-    <Compile Include="Peer.cs" />
+    <Compile Include="EventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

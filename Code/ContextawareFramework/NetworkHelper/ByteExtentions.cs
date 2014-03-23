@@ -1,10 +1,8 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ContextawareFramework
+namespace NetworkHelper
 {
     public static class ByteExtentions
     {

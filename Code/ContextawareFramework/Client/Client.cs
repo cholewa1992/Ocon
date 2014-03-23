@@ -26,7 +26,7 @@ namespace Client
         {
             Console.WriteLine("Starting discovery (" + _clientId + ")");
             _comHelper.DiscoveryServiceEvent += (sender, args) => _group.AddPeer(args.Peer);
-            _comHelper.DiscoveryService(_clientId);
+            _comHelper.DiscoveryService(_clientId, true);
         }
 
         public event EventHandler ContextEvent;
