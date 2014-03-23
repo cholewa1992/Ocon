@@ -64,4 +64,9 @@ namespace NetworkHelper
         /// <param name="ipep">The distination endpoint</param>
         void SendString(string msg, PackageType type,  IPEndPoint ipep);
     }
+
+    public enum PackageType
+    {
+        Handshake, Stream, String
+    }
 }

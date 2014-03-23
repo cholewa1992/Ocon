@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Net;
 
 namespace NetworkHelper
 {
@@ -28,6 +29,19 @@ namespace NetworkHelper
         internal HandshakeEventArgs(Guid guid)
         {
             Guid = guid;
+        }
+    }
+
+    /// <summary>
+    /// Custom EventArgs to use for notification about new Widgets
+    /// </summary>
+    public class ContextFilterEventArgs : EventArgs
+    {
+        public Peer Peer { get; set; }
+
+        internal ContextFilterEventArgs(IPEndPoint ipep)
+        {
+            Peer = new Peer { IpEndPoint = ipep };
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Net.Sockets;
 
 namespace NetworkHelper
@@ -123,4 +124,24 @@ namespace NetworkHelper
             Console.WriteLine("-------------------------------------");
         }
     }
+
+    #region Helperclasses
+    public class Peer
+    {
+        public IPEndPoint IpEndPoint { get; set; }
+    }
+
+    public class PeerEquallityCompare : IEqualityComparer<Peer>
+    {
+        public bool Equals(Peer x, Peer y)
+        {
+            return x.IpEndPoint.Equals(y.IpEndPoint);
+        }
+
+        public int GetHashCode(Peer obj)
+        {
+            return obj.IpEndPoint.GetHashCode();
+        }
+    }
+    #endregion
 }
