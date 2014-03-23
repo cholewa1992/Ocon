@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,7 +8,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using ContextawareFramework;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace NetworkHelper
 {
@@ -23,9 +22,8 @@ namespace NetworkHelper
         #region Fields
         private static TcpHelper _instance;
         private int _multicastPort = 2001;
-        private int _handshakePort = 2002;
-        private int _widgetPort = 2003;
-        private int _clientPort = 2004;
+        private int _communicationPort = 2002;
+
         private IPAddress _multicastAddress = IPAddress.Parse("224.5.6.7");
         #endregion
         #region Properties
@@ -35,22 +33,11 @@ namespace NetworkHelper
             get { return _multicastPort; }
             set { _multicastPort = value; }
         }
-        public int HandshakePort
+        public int CommunicationPort
         {
-            set { _handshakePort = value; }
-            get { return _handshakePort; }
+            set { _communicationPort = value; }
+            get { return _communicationPort; }
         }
-        public int WidgetPort
-        {
-            set { _widgetPort = value; }
-            get { return _widgetPort; }
-        }
-        public int ClientPort
-        {
-            get { return _clientPort; }
-            set { _clientPort = value; }
-        }
-
         public IPAddress MulticastAddress
         {
             get { return _multicastAddress; }
@@ -69,7 +56,7 @@ namespace NetworkHelper
 
         private TcpHelper()
         {
-            
+
         }
 
         /// <summary>
@@ -105,7 +92,6 @@ namespace NetworkHelper
 
                             //Sending out the package
                             mSendSocket.SendTo(json.GetBytes(), new IPEndPoint(MulticastAddress, MulticastPort));
-                            Console.WriteLine("Broadcasting to " + localIp);
                         }
                         Thread.Sleep(5000);
                     }
@@ -114,7 +100,7 @@ namespace NetworkHelper
                         IsBroadcasting = false;
                         _stopBroadcastTokenSource.Token.ThrowIfCancellationRequested();
                     }
-                    
+
                 }
             }, _stopBroadcastTokenSource.Token);
             #endregion
@@ -125,60 +111,25 @@ namespace NetworkHelper
         /// </summary>
         public void StopBroadcast()
         {
-           _stopBroadcastTokenSource.Cancel();
+            _stopBroadcastTokenSource.Cancel();
         }
 
         /// <summary>
         /// This event will be fired when ever a new TCP package is avalible
         /// </summary>
-        public event EventHandler<IncommingPackageEventArgs> IncommingPackageEvent;
-        
+        public event EventHandler<HandshakeEventArgs> HandshakeEvent;
+        public event EventHandler<StreamEventArgs> IncommingStreamEvent;
+        public event EventHandler<StringEventArgs> IncommingStringEvent;
+
         /// <summary>
         /// Starts the TCP listener
         /// </summary>
-        public void StartListen(int port, int bufferSize = 1024)
-        {
-            if(_stopListenTokenSource == null || _stopListenTokenSource.IsCancellationRequested) _stopListenTokenSource = new CancellationTokenSource();
-            Task.Run(() =>
-            {
-                var localEndPoint = new IPEndPoint(IPAddress.Any, port);
-                var tcpListener = new TcpListener(localEndPoint);
-                tcpListener.Start();
-
-                while (true)
-                {
-                    var client = tcpListener.AcceptTcpClient();
-                    var stream = client.GetStream();
-
-                    var msg = new List<byte>();
-
-                    while (stream.DataAvailable)
-                    {
-                        var buffer = new byte[bufferSize];
-                        stream.Read(buffer, 0, bufferSize);
-                        msg.AddRange(buffer);
-                    }
-
-                    if (IncommingPackageEvent != null)
-                    {
-                        IncommingPackageEvent(client.Client.LocalEndPoint, new IncommingPackageEventArgs(msg.GetString()));
-                    }
-
-                    if (_stopListenTokenSource.Token.IsCancellationRequested)
-                    {
-                        client.Close();
-                        _stopListenTokenSource.Token.ThrowIfCancellationRequested();
-                    }
-                }
-            }, _stopListenTokenSource.Token);
-        }
-        public event EventHandler<IncommingStreamEventArgs> IncommingStreamEvent;
-        public void StartListenForStream(int port)
+        public void StartListen()
         {
             if (_stopListenTokenSource == null || _stopListenTokenSource.IsCancellationRequested) _stopListenTokenSource = new CancellationTokenSource();
             Task.Run(() =>
             {
-                var localEndPoint = new IPEndPoint(IPAddress.Any, port);
+                var localEndPoint = new IPEndPoint(IPAddress.Any, CommunicationPort);
                 var tcpListener = new TcpListener(localEndPoint);
                 tcpListener.Start();
 
@@ -187,9 +138,37 @@ namespace NetworkHelper
                     var client = tcpListener.AcceptTcpClient();
                     var stream = client.GetStream();
 
-                    if (IncommingPackageEvent != null)
+                    var header = new byte[1];
+                    stream.Read(header, 0, 1);
+                    var type = JsonConvert.DeserializeObject<PackageType>(header.GetString());
+
+
+                    if (type == PackageType.Stream)
                     {
-                        IncommingStreamEvent(client.Client.LocalEndPoint, new IncommingStreamEventArgs(stream));
+                        if (IncommingStreamEvent != null)
+                        {
+                            IncommingStreamEvent(client.Client.LocalEndPoint, new StreamEventArgs(stream));
+                        }
+                    }
+                    else
+                    {
+                        var msg = new List<byte>();
+                        while (stream.DataAvailable)
+                        {
+                            var buffer = new byte[1024];
+                            stream.Read(buffer, 0, buffer.Length);
+                            msg.AddRange(buffer);
+                        }
+
+                        if (type == PackageType.String && IncommingStringEvent != null)
+                        {
+                            IncommingStringEvent(client.Client.LocalEndPoint, new StringEventArgs(msg.GetString()));
+                        }
+                        else if (type == PackageType.Handshake && HandshakeEvent != null)
+                        {
+                            HandshakeEvent(client.Client.LocalEndPoint, new HandshakeEventArgs(JsonConvert.DeserializeObject<Guid>(msg.GetString())));
+                        }
+
                     }
 
                     if (_stopListenTokenSource.Token.IsCancellationRequested)
@@ -201,48 +180,7 @@ namespace NetworkHelper
             }, _stopListenTokenSource.Token);
         }
 
-        public event EventHandler<IncommingClientEventArgs> IncommingClientEvent;
-        public void StartListenForClient(int port, int bufferSize = 1024)
-        {
-            if (_stopListenTokenSource == null || _stopListenTokenSource.IsCancellationRequested) _stopListenTokenSource = new CancellationTokenSource();
-            Task.Run(() =>
-            {
-                var localEndPoint = new IPEndPoint(IPAddress.Any, port);
-                var tcpListener = new TcpListener(localEndPoint);
-                tcpListener.Start();
-
-
-                while (true)
-                {
-                    var client = tcpListener.AcceptTcpClient();
-                    var stream = client.GetStream();
-
-                    var msg = new List<byte>();
-
-                    while (stream.DataAvailable)
-                    {
-                        var buffer = new byte[bufferSize];
-                        stream.Read(buffer, 0, bufferSize);
-                        msg.AddRange(buffer);
-                    }
-
-                    dynamic d = JObject.Parse(msg.GetString());
-           
-
-                    if (IncommingPackageEvent != null)
-                    {
-                        IncommingClientEvent(client.Client.LocalEndPoint, new IncommingClientEventArgs(d.Guid, d.ClientType));
-                    }
-
-                    if (_stopListenTokenSource.Token.IsCancellationRequested)
-                    {
-                        client.Close();
-                        _stopListenTokenSource.Token.ThrowIfCancellationRequested();
-                    }
-                }
-            }, _stopListenTokenSource.Token);
-        }
-
+        
         /// <summary>
         /// Stops the TCP listener
         /// </summary>
@@ -259,7 +197,7 @@ namespace NetworkHelper
         /// <summary>
         /// Starts the Widget Discovery Service
         /// </summary>
-        public void DiscoveryService(Guid guid, ClientType clientType)
+        public void DiscoveryService(Guid guid)
         {
             _stopDiscoveryTokenSource = new CancellationTokenSource();
             Task.Run(() =>
@@ -290,19 +228,15 @@ namespace NetworkHelper
                         IPAddress ipAddress;
                         IPAddress.TryParse(JsonConvert.DeserializeObject<string>(buffer.GetString()), out ipAddress);
 
-                        var serverEndPoint = new IPEndPoint(ipAddress, HandshakePort);
-                        var msg = JsonConvert.SerializeObject(new
-                        {
-                            Guid = guid,
-                            ClientType = clientType
-                        });
+                        var serverEndPoint = new IPEndPoint(ipAddress, CommunicationPort);
+                        var msg = JsonConvert.SerializeObject(guid);
 
-                        SendPackage(msg, serverEndPoint);
+                        SendString(msg, PackageType.Handshake, serverEndPoint);
 
                         //Fires an event about newly discovered context filter
                         if (DiscoveryServiceEvent != null)
                         {
-                            DiscoveryServiceEvent(null, new ContextFilterEventArgs(new IPEndPoint(ipAddress, clientType == ClientType.Widget ? WidgetPort : ClientPort)));
+                            DiscoveryServiceEvent(null, new ContextFilterEventArgs(serverEndPoint));
                         }
                     }
                     socket.Close();
@@ -319,32 +253,50 @@ namespace NetworkHelper
         /// Send from a source stream
         /// </summary>
         /// <param name="stream">The source stream</param>
+        /// <param name="type">The package type</param>
         /// <param name="ipep">The IPEndpoint</param>
-        public void Send(Stream stream, IPEndPoint ipep)
-        {
-            var client = new TcpClient();
-            client.Connect(ipep);
-            var cs = client.GetStream();
-            stream.CopyTo(cs);
-            cs.Flush();
-            cs.Close();
-        }
-
-        /// <summary>
-        /// Sends a TCP package
-        /// </summary>
-        /// <param name="msg">The message to transmit</param>
-        /// <param name="ipep">The distination endpoint</param>
-        public void SendPackage(string msg, IPEndPoint ipep)
+        public void Send(Stream stream, PackageType type, IPEndPoint ipep)
         {
             var client = new TcpClient();
             var serverEndPoint = ipep;
             client.Connect(serverEndPoint);
 
             var clientStream = client.GetStream();
-            var bytes = msg.GetBytes();
 
+            //Sending header
+            var header = JsonConvert.SerializeObject(type).GetBytes();
+            clientStream.Write(header, 0, header.Length);
+
+            //Sending message
+            stream.CopyTo(clientStream);
+
+            clientStream.Flush();
+            client.Close();
+        }
+
+        /// <summary>
+        /// Sends a TCP package
+        /// </summary>
+        /// <param name="msg">The message to transmit</param>
+        /// <param name="type">The package type</param>
+        /// <param name="ipep">The distination endpoint</param>
+        public void SendString(string msg, PackageType type,  IPEndPoint ipep)
+        {
+            var client = new TcpClient();
+            var serverEndPoint = ipep;
+            client.Connect(serverEndPoint);
+
+            var clientStream = client.GetStream();
+
+            //Sending header
+            var header = JsonConvert.SerializeObject(type).GetBytes();
+            Console.WriteLine(header.Count());
+            clientStream.Write(header, 0, header.Length);
+
+            //Sending message
+            var bytes = msg.GetBytes();
             clientStream.Write(bytes, 0, bytes.Length);
+
             clientStream.Flush();
             client.Close();
         }

@@ -50,7 +50,7 @@ namespace Widget
         {
             Console.WriteLine("Starting discovery (" + WidgetId + ")");
             _comHelper.DiscoveryServiceEvent += (sender, args) => _group.AddPeer(args.Peer);
-            _comHelper.DiscoveryService(WidgetId, ClientType.Widget);
+            _comHelper.DiscoveryService(WidgetId);
         }
 
         /// <summary>

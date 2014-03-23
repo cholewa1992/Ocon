@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace NetworkHelper
 {
-    enum PackageType
+    public enum PackageType
     {
-        WidgetUpdate, Subscribtion
+        Handshake, Stream, String
     }
 }

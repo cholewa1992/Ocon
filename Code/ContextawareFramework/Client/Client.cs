@@ -16,13 +16,6 @@ namespace Client
         {
             _comHelper = comHelper;
             _group = new Group(comHelper);
-            _comHelper.IncommingPackageEvent += (sender, args) =>
-            {
-                Console.WriteLine("--- Recieve something ---");
-                Console.WriteLine(args.Message);
-                Console.WriteLine("------------------------ ");
-            };
-            _comHelper.StartListen(_comHelper.ClientPort);
 
         }
 
@@ -33,7 +26,7 @@ namespace Client
         {
             Console.WriteLine("Starting discovery (" + _clientId + ")");
             _comHelper.DiscoveryServiceEvent += (sender, args) => _group.AddPeer(args.Peer);
-            _comHelper.DiscoveryService(_clientId, ClientType.Client);
+            _comHelper.DiscoveryService(_clientId);
         }
 
         public event EventHandler ContextEvent;

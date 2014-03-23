@@ -3,32 +3,30 @@ using System.IO;
 
 namespace NetworkHelper
 {
-    public class IncommingPackageEventArgs : EventArgs
+    public class StringEventArgs : EventArgs
     {
         public string Message { set; get; }
-        internal IncommingPackageEventArgs(string msg)
+        internal StringEventArgs(string msg)
         {
             Message = msg;
         }
     }
 
-    public class IncommingStreamEventArgs : EventArgs
+    public class StreamEventArgs : EventArgs
     {
         public Stream Stream { set; get; }
-        internal IncommingStreamEventArgs(Stream stream)
+        internal StreamEventArgs(Stream stream)
         {
             Stream = stream;
         }
     }
 
-    public class IncommingClientEventArgs : EventArgs
+    public class HandshakeEventArgs : EventArgs
     {
         public Guid Guid { set; get; }
-        public ClientType ClientType { get; set; }
 
-        internal IncommingClientEventArgs(Guid guid, ClientType clientType)
+        internal HandshakeEventArgs(Guid guid)
         {
-            ClientType = clientType;
             Guid = guid;
         }
     }

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Net;
 
@@ -6,11 +6,8 @@ namespace NetworkHelper
 {
     public interface ICommunicationHelper
     {
-
         int MulticastPort { get; set; }
-        int HandshakePort { get; set; }
-        int WidgetPort { get; set; }
-        int ClientPort { get; set; }
+        int CommunicationPort { set; get; }
         IPAddress MulticastAddress { get; set; }
 
         /// <summary>
@@ -26,12 +23,15 @@ namespace NetworkHelper
         /// <summary>
         /// This event will be fired when ever a new TCP package is avalible
         /// </summary>
-        event EventHandler<IncommingPackageEventArgs> IncommingPackageEvent;
+        event EventHandler<HandshakeEventArgs> HandshakeEvent;
+
+        event EventHandler<StreamEventArgs> IncommingStreamEvent;
+        event EventHandler<StringEventArgs> IncommingStringEvent;
 
         /// <summary>
         /// Starts the TCP listener
         /// </summary>
-        void StartListen(int port, int bufferSize = 1024);
+        void StartListen();
 
         /// <summary>
         /// Stops the TCP listener
@@ -46,25 +46,22 @@ namespace NetworkHelper
         /// <summary>
         /// Starts the Widget Discovery Service
         /// </summary>
-        void DiscoveryService(Guid guid, ClientType clientType);
+        void DiscoveryService(Guid guid);
 
         /// <summary>
         /// Send from a source stream
         /// </summary>
         /// <param name="stream">The source stream</param>
+        /// <param name="type">The package type</param>
         /// <param name="ipep">The IPEndpoint</param>
-        void Send(Stream stream, IPEndPoint ipep);
+        void Send(Stream stream, PackageType type, IPEndPoint ipep);
 
         /// <summary>
         /// Sends a TCP package
         /// </summary>
         /// <param name="msg">The message to transmit</param>
+        /// <param name="type">The package type</param>
         /// <param name="ipep">The distination endpoint</param>
-        void SendPackage(string msg, IPEndPoint ipep);
-
-        event EventHandler<IncommingStreamEventArgs> IncommingStreamEvent;
-        void StartListenForStream(int port);
-        event EventHandler<IncommingClientEventArgs> IncommingClientEvent;
-        void StartListenForClient(int port, int bufferSize = 1024);
+        void SendString(string msg, PackageType type,  IPEndPoint ipep);
     }
 }

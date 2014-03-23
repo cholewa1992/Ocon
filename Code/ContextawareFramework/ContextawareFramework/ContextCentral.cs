@@ -27,9 +27,7 @@ namespace ContextawareFramework
 
         public void Initialize()
         {
-            _comHelper.StartListen(_comHelper.WidgetPort);
-            _comHelper.StartListenForClient(_comHelper.ClientPort);
-            _comHelper.IncommingClientEvent += (sender, args) => Console.WriteLine("Found: " + args.Guid);
+            _comHelper.StartListen();
             _comHelper.IncommingStreamEvent += (sender, args) => _contextFilter.AddSituation((ISituation) new BinaryFormatter().Deserialize(args.Stream));
             _comHelper.Broadcast();
         }

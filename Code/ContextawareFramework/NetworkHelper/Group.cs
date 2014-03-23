@@ -33,7 +33,7 @@ namespace NetworkHelper
             {
                 try
                 {
-                    _comHelper.SendPackage(msg, observer.IpEndPoint);
+                    _comHelper.SendString(msg, PackageType.String,  observer.IpEndPoint);
                     _tries[observer] = 0;
 
                 }
@@ -61,7 +61,7 @@ namespace NetworkHelper
             {
                 try
                 {
-                    _comHelper.Send(stream, observer.IpEndPoint);
+                    _comHelper.Send(stream, PackageType.Stream,  observer.IpEndPoint);
                     _tries[observer] = 0;
 
                 }

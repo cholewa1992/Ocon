@@ -21,9 +21,9 @@ namespace ContextawareFramework
             cf.AddSituation(new Situation(), new Situation(), new Situation());
 
             var comHelper = TcpHelper.GetInstance();
+            
 
-
-            comHelper.IncommingPackageEvent += (sender, eventArgs) =>
+            comHelper.IncommingStringEvent += (sender, eventArgs) =>
             {
                 var entityType = GetEntityTypeEnum(eventArgs.Message);
 
