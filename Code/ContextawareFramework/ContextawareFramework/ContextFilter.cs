@@ -1,69 +1,68 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.Remoting.Contexts;
+using Newtonsoft.Json;
 
 namespace ContextawareFramework
 {
     public class ContextFilter
     {
-
-        public List<IEntity> _entities = new List<IEntity>();
-        private readonly List<IContext> _contexts = new List<IContext>();
-
-
-
-        public ContextFilter(IContext context)
+        private readonly ICollection<IEntity> _entities = new HashSet<IEntity>(new CustomEquallityCompare());
+        private readonly ICollection<ISituation> _situations = new List<ISituation>();
+      
+        /// <summary>
+        /// Add an IEntity instance to the collection beeing checked for situations
+        /// </summary>
+        /// <param name="entity"></param>
+        public void TrackEntity(IEntity entity)
         {
-            _contexts.Add(context);
-        }
-       
-
-        public bool RemoveContext(IContext context)
-        {
-            return _contexts.Remove(context);
-        }
-
-        public void AddContext(IContext context)
-        {
-            _contexts.Add(context);
-        }
-
-        public void EntitiesUpdated()
-        {
-            for(int i = 0; i < _entities.Count; i++)
+            if (_entities.Contains(entity))
             {
-                var result = String.Format("{0} : {1} - {2}", _entities[i].GetType(), i, _entities[i].Name);
-                Console.WriteLine(result);
+                _entities.Remove(entity);
             }
-
-
-            Console.WriteLine(TestContext(_contexts[0]));
-            
+            _entities.Add(entity);
+            EntitiesUpdated();
         }
 
-        public bool TestContext(IContext context)
+        /// <summary>
+        /// Removes an ISituation instance from the collection of recognized situations
+        /// </summary>
+        /// <param name="situation">An ISituation instance</param>
+        /// <returns></returns>
+        public bool RemoveSituation(ISituation situation)
         {
-
-            
-                for (int i = 0; i < _entities.Count; i++)
-                {
-                    bool predicate = context.ContextPredicate.Invoke(_entities);
-
-                    if (!predicate)
-                        return false;
-
-                    if (i == _entities.Count-1)
-                    {
-                        return true;
-                    }
-
-                }
-
-
-            return false;
+            return _situations.Remove(situation);
         }
 
+        /// <summary>
+        /// Adds an ISituation instance to the collection of recognized situations
+        /// </summary>
+        /// <param name="situation">An ISituation instance</param>
+        /// <param name="situations">zero or more ISituation instances</param>
+        public void AddSituation(ISituation situation, params ISituation[] situations)
+        {
+            _situations.Add(situation);
+            Console.WriteLine(situation.Id);
+
+            foreach (var s in situations)
+            {
+                _situations.Add(s);
+                Console.WriteLine(s.Id);
+            }
+        }
+
+
+        private void EntitiesUpdated()
+        {
+            foreach (var context in _situations)
+            {
+                Console.WriteLine(TestContext(context));
+            }
+        }
 
         
+        public bool TestContext(ISituation situation)
+        {
+            return situation.SituationPredicate.Invoke(_entities);
+        }
     }
 }

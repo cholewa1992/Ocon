@@ -1,58 +1,89 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Xml;
+using ContextawareFramework;
+using NetworkHelper;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace ContextawareFramework
 {
+    
+
     class Program
     {
         static void Main(string[] args)
         {
 
-            //string json = JsonConvert.SerializeObject(new Context() { EntityPredicate = new Predicate<List<Person>>(Test) });
 
-            //Console.WriteLine(json);
+            var cf = new ContextFilter();
+            cf.AddSituation(new Situation(), new Situation(), new Situation());
 
-            //var o = JsonConvert.DeserializeObject<Context>(json);
+            var comHelper = TcpHelper.GetInstance();
+            comHelper.HandshakeEvent += (sender, eventAgrs) => Console.WriteLine(eventAgrs.Guid);
 
-            
-            //Console.WriteLine(o.EntityPredicate.ToString());
+            comHelper.IncommingStringEvent += (sender, eventArgs) =>
+            {
+                var entityType = GetEntityTypeEnum(eventArgs.Message);
+
+                IEntity receivedEntity = null;
+
+                switch (entityType)
+                {
+                    case EntityType.Person:
+                        receivedEntity = JsonConvert.DeserializeObject<Person>(eventArgs.Message);
+                        break;
+
+                    case EntityType.Room:
+                        receivedEntity = null;
+                        break;
+                }
 
 
+                cf.TrackEntity(receivedEntity);
 
-            var p = new Person(){i = 0, Name = "Person1"};
-            var p2 = new Person(){i = 1, Name = "Person2"};
-            
-            var predicate = new Predicate<List<IEntity>>(Test);
-            var context = new Context {ContextPredicate = predicate};
-            Console.WriteLine();
-            var contextFilter = new ContextFilter(context);
-            
-            contextFilter._entities.Add(p);
-            contextFilter._entities.Add(p2);
 
-            var widget = new Widget(contextFilter);
-            widget.Start();
+            };
 
+            var cc = new ContextCentral(cf, comHelper);
+            cc.Initialize();
+            Console.ReadLine();
 
         }
 
-        public static bool Test(List<IEntity> persons)
+        public static bool TestPredicate(ICollection<IEntity> entities)
         {
+           
+
+            Console.WriteLine(entities.OfType<Person>().First().Id);
+            return entities.OfType<Person>().Any(t => t.Id == new Guid());
+        }
+
+        public static EntityType GetEntityTypeEnum(string json)
+        {
+            string typeString = JObject.Parse(json)["$type"].ToString();
+
+            string[] trim = typeString.Split('.', ',');
 
 
-            foreach (var person in persons)
-            {
-                if (person.GetType() == typeof (Person))
-                    Console.WriteLine(person.GetType());
+            return ParseEnum<EntityType>(trim[1]);
+        }
 
-            }
-            return false;
+        public static string GetEntityTypeString(string json)
+        {
+            string typeString = JObject.Parse(json)["$type"].ToString();
+
+            string[] trim = typeString.Split('.', ',');
+
+            return trim[1];
+        }
+
+
+        private static T ParseEnum<T>(string value)
+        {
+            return (T)Enum.Parse(typeof(T), value, true);
         }
     }
 }

@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Build.Framework;
+
 
 namespace ContextawareFramework
 {
     public interface IEntity
     {
-
-        string Id { get; set; }
+        string WidgetName { get; set; }
+        Guid Id { set; get; }
+        Guid WidgetId { set; get; }
         string Name { get; set; }
         string Description { get; set; }
-
-
     }
 }
