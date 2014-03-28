@@ -15,7 +15,7 @@ namespace ContextawareFramework
         public event EventHandler EntitiesChangedEvent;
         public void FireEntitiesChangedEvent()
         {
-            EntitiesChangedEvent.Invoke(this, EventArgs.Empty);
+            if(EntitiesChangedEvent != null) EntitiesChangedEvent.Invoke(this, EventArgs.Empty);
         }
       
         /// <summary>
