@@ -33,9 +33,8 @@ namespace Client
 
         public void RegisterSituation(ISituation situation)
         {
-            var formatter = new BinaryFormatter();
             var stream = new MemoryStream();
-            formatter.Serialize(stream, situation);
+            new BinaryFormatter().Serialize(stream, situation);
             _group.Send(stream);
             
         }

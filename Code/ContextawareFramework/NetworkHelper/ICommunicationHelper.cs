@@ -24,7 +24,6 @@ namespace NetworkHelper
         /// This event will be fired when ever a new TCP package is avalible
         /// </summary>
         event EventHandler<HandshakeEventArgs> HandshakeEvent;
-
         event EventHandler<StreamEventArgs> IncommingStreamEvent;
         event EventHandler<StringEventArgs> IncommingStringEvent;
 

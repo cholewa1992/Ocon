@@ -140,8 +140,6 @@ namespace NetworkHelper
                     var header = new byte[1];
                     stream.Read(header, 0, 1);
                     var type = JsonConvert.DeserializeObject<PackageType>(header.GetString());
-
-
                     if (type == PackageType.Stream)
                     {
                         if (IncommingStreamEvent != null)
