@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Net;
 using System.Runtime.Serialization;
 
 namespace ContextawareFramework
@@ -10,10 +9,30 @@ namespace ContextawareFramework
     public class Situation: ISituation
     {
 
+        public Situation(SerializationInfo info, StreamingContext ctxt)
+        {
+            Id = (Guid) info.GetValue("Id", typeof(Guid));
+            SubscribersAddresse = (Guid)info.GetValue("SubscribersAddresse", typeof(Guid));
+            SituationPredicate =
+                (Predicate<ICollection<IEntity>>)
+                    info.GetValue("SituationPredicate", typeof (Predicate<ICollection<IEntity>>));
+            State = (bool) info.GetValue("State", typeof (bool));
+            Description = (string) info.GetValue("Description", typeof (string));
+
+
+
+            info.AddValue("Id", Id);
+            info.AddValue("SubscribersAddresse", SubscribersAddresse);
+            info.AddValue("SituationPredicate", SituationPredicate);
+            info.AddValue("State", State);
+            info.AddValue("Description", Description);
+        }
+
         private Guid _id = Guid.NewGuid();
         public Guid Id
         {
             get { return _id; }
+            private set { _id = value; }
         }
 
         private string _description;
@@ -36,7 +55,7 @@ namespace ContextawareFramework
             get { return _situationPredicate; }
             set
             {
-                Contract.Requires<ArgumentNullException>(value != null, "SituationPredicate argument can't be null");
+                _situationPredicate = value;
             }
         }
 
@@ -48,5 +67,13 @@ namespace ContextawareFramework
             SituationPredicate = situationPredicate;
         }
 
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("Id", Id);
+            info.AddValue("SubscribersAddresse", SubscribersAddresse);
+            info.AddValue("SituationPredicate", SituationPredicate);
+            info.AddValue("State", State);
+            info.AddValue("Description", Description);
+        }
     }
 }

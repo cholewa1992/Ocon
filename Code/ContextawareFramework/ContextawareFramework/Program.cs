@@ -19,12 +19,6 @@ namespace ContextawareFramework
 
 
             var cf = new ContextFilter();
-            cf.AddSituation(
-                new Situation(TestPredicate), 
-                new Situation(TestPredicate), 
-                new Situation(TestPredicate));
-
-
             var comHelper = TcpHelper.GetInstance();
             var cc = new ContextCentral(cf, comHelper);
             cc.Initialize();

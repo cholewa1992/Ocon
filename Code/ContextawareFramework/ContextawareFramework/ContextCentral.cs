@@ -27,7 +27,10 @@ namespace ContextawareFramework
                     _comHelper.SendSituationStatusUpdate(args.Situation, _clients[args.Situation.SubscribersAddresse]);
 
             // Set up events
-            _comHelper.IncommingClient          += (sender, args) => _clients.Add(args.Guid, args.Ipep);
+            _comHelper.IncommingClient          += (sender, args) =>
+            {
+                if (!_clients.ContainsKey(args.Guid)) _clients.Add(args.Guid, args.Ipep);
+            };
             _comHelper.IncommingEntityEvent     += (sender, args) => _contextFilter.TrackEntity(args.Entity);
             _comHelper.IncommingSituationEvent  += (sender, args) => _contextFilter.AddSituation(args.Situation);
 

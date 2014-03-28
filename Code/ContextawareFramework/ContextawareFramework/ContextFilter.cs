@@ -8,7 +8,7 @@ namespace ContextawareFramework
     {
 
         private readonly ICollection<IEntity> _entities = new HashSet<IEntity>(new CustomEquallityCompare());
-        private readonly ICollection<ISituation> _situations = new List<ISituation>();
+        private readonly ICollection<ISituation> _situations = new HashSet<ISituation>();
         private readonly Dictionary<Guid, IPEndPoint>  _clients = new Dictionary<Guid, IPEndPoint>();
 
         
@@ -73,6 +73,10 @@ namespace ContextawareFramework
         {
             foreach (var situation in _situations)
             {
+                Console.WriteLine(situation.SubscribersAddresse);
+                if (situation.SituationPredicate == null) continue;
+                Console.WriteLine("Ok");
+
 
                 bool currentState = situation.SituationPredicate(_entities);
 

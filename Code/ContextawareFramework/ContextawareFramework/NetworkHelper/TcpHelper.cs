@@ -164,16 +164,10 @@ namespace ContextawareFramework.NetworkHelper
                         //If no one is subsribing, continue
                         if (IncommingSituationEvent == null) continue;
 
-                        Console.WriteLine("Now printing");
-                        Console.WriteLine(ReadStringFromStream(stream));
-                        Console.ReadLine();
-
-                        continue;
-
                         var formatter = new BinaryFormatter();
 
                         //Deserializing the ISituation
-                        var situation = (Situation)formatter.Deserialize(stream);
+                        var situation = (ISituation) formatter.Deserialize(stream);
 
                         //Firering an Situation event 
                         IncommingSituationEvent(client.Client.RemoteEndPoint, new IncommingSituationEventArgs(situation));
@@ -184,8 +178,8 @@ namespace ContextawareFramework.NetworkHelper
                         //If no one is subsribing, continue
                         if (IncommingEntityEvent == null) continue;
 
-                        try
-                        {
+                        //try
+                        //{
                             //Getting json string
                             var json = ReadStringFromStream(stream);
 
@@ -197,11 +191,11 @@ namespace ContextawareFramework.NetworkHelper
 
                             //Fireing Entity event
                             IncommingEntityEvent(client.Client.RemoteEndPoint, new IncommingEntityEventArgs(entity));
-                        }
-                        catch (Exception e)
-                        {
-                            throw e;
-                        }
+                        //}
+                        //catch (Exception e)
+                        //{
+                        //    throw e;
+                        //}
 
                     }
                     else if (type == PackageType.SituationUpdate)
