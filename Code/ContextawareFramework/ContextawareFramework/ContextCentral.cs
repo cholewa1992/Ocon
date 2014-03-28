@@ -32,7 +32,5 @@ namespace ContextawareFramework
             // Multicast presence to widgets
             _comHelper.Broadcast();
         }
-
-        public void 
     }
 }

@@ -130,6 +130,12 @@ namespace ContextawareFramework.NetworkHelper
         /// </summary>
         public event EventHandler<IncommingEntityEventArgs> IncommingEntityEvent;
 
+
+        /// <summary>
+        /// This event will be fired whenever a situations state changes
+        /// </summary>
+        public event EventHandler<IncommingSituationChangedEventArgs> IncommingSituationChangedEvent;
+
         /// <summary>
         /// Starts the TCP listener
         /// </summary>
@@ -153,7 +159,7 @@ namespace ContextawareFramework.NetworkHelper
                     var type = JsonConvert.DeserializeObject<PackageType>(header.GetString());
 
 
-                    if (type == PackageType.Stream)
+                    if (type == PackageType.Situation)
                     {
                         //If no one is subsribing, continue
                         if (IncommingSituationEvent == null) continue;
@@ -165,7 +171,7 @@ namespace ContextawareFramework.NetworkHelper
                         IncommingSituationEvent(client.Client.RemoteEndPoint, new IncommingSituationEventArgs(situation));
                     }
 
-                    else if (type == PackageType.String)
+                    else if (type == PackageType.Entity)
                     {
                         //If no one is subsribing, continue
                         if (IncommingEntityEvent == null) continue;
@@ -189,6 +195,15 @@ namespace ContextawareFramework.NetworkHelper
                             throw e;
                         }
 
+                    }
+                    else if (type == PackageType.SituationUpdate)
+                    {
+                        var json = ReadStringFromStream(stream);
+                        dynamic situationUpdate = JsonConvert.DeserializeObject(json);
+                        IncommingSituationChangedEvent(
+                            client.Client.RemoteEndPoint,
+                            new IncommingSituationChangedEventArgs(situationUpdate.Guid, situationUpdate.State)
+                            );
                     }
 
                     else if (type == PackageType.Handshake)
@@ -325,7 +340,7 @@ namespace ContextawareFramework.NetworkHelper
         public void SendEntity(IEntity entity, IPEndPoint ipep)
         {
             var json = JsonConvert.SerializeObject(entity, entity.GetType(),new JsonSerializerSettings{TypeNameHandling = TypeNameHandling.Objects});
-            SendString(json, PackageType.String, ipep);
+            SendString(json, PackageType.Entity, ipep);
         }
 
         /// <summary>
@@ -337,17 +352,7 @@ namespace ContextawareFramework.NetworkHelper
         {
             var stream = new MemoryStream();
             new BinaryFormatter().Serialize(stream, situation);
-            SendStream(stream, ipep);
-        }
 
-
-        /// <summary>
-        /// Send from a source stream
-        /// </summary>
-        /// <param name="stream">The source stream</param>
-        /// <param name="ipep">The IPEndpoint</param>
-        private void SendStream(Stream stream, IPEndPoint ipep)
-        {
             var client = new TcpClient();
             var serverEndPoint = ipep;
             client.Connect(serverEndPoint);
@@ -355,7 +360,7 @@ namespace ContextawareFramework.NetworkHelper
             var clientStream = client.GetStream();
 
             //Sending header
-            var header = JsonConvert.SerializeObject(PackageType.Stream).GetBytes();
+            var header = JsonConvert.SerializeObject(PackageType.Situation).GetBytes();
             clientStream.Write(header, 0, header.Length);
 
             //Sending message
@@ -363,6 +368,21 @@ namespace ContextawareFramework.NetworkHelper
 
             clientStream.Flush();
             client.Close();
+        }
+
+        /// <summary>
+        /// Method for sending an Situation state to client
+        /// </summary>
+        /// <param name="situation">The situation whoms state to send</param>
+        /// <param name="ipep">The remote endpoint</param>
+        public void SendSituationStatusUpdate(ISituation situation, IPEndPoint ipep)
+        {
+            var json = JsonConvert.SerializeObject(new
+            {
+                SituationId = situation.SubscribersAddresse,
+                State = situation.State
+            });
+            SendString(json, PackageType.SituationUpdate, ipep);
         }
 
         /// <summary>
@@ -394,6 +414,6 @@ namespace ContextawareFramework.NetworkHelper
 
     public enum PackageType
     {
-        Handshake = 1, String = 2, Stream = 3
+        Handshake = 1, Entity = 2, Situation = 3, SituationUpdate = 4
     }
 }

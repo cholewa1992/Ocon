@@ -35,6 +35,11 @@ namespace ContextawareFramework.NetworkHelper
         event EventHandler<IncommingEntityEventArgs> IncommingEntityEvent;
 
         /// <summary>
+        /// This event will be fired whenever a situations state changes
+        /// </summary>
+        event EventHandler<IncommingSituationChangedEventArgs> IncommingSituationChangedEvent;
+
+        /// <summary>
         /// Starts the listener
         /// </summary>
         void StartListen();
@@ -67,5 +72,12 @@ namespace ContextawareFramework.NetworkHelper
         /// <param name="situation">The situation to send</param>
         /// <param name="ipep">The remote endpoint</param>
         void SendSituation(ISituation situation, IPEndPoint ipep);
+
+        /// <summary>
+        /// Method for sending an Situation state to client
+        /// </summary>
+        /// <param name="situation">The situation whoms state to send</param>
+        /// <param name="ipep">The remote endpoint</param>
+        void SendSituationStatusUpdate(ISituation situation, IPEndPoint ipep);
     }
 }

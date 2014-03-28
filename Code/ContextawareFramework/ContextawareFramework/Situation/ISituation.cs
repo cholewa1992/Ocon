@@ -12,6 +12,7 @@ namespace ContextawareFramework
     {
         Guid Id { get; }
         string Description { get; set; }
+        bool State { get; set; }
         Predicate<ICollection<IEntity>> SituationPredicate { get; set; }
         Guid SubscribersAddresse { get; set; }
     }

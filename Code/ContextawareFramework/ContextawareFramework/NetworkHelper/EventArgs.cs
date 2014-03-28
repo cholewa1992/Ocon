@@ -22,6 +22,17 @@ namespace ContextawareFramework.NetworkHelper
         }
     }
 
+    public class IncommingSituationChangedEventArgs : EventArgs
+    {
+        public Guid Guid { set; get; }
+        public bool State { set; get; }
+        internal IncommingSituationChangedEventArgs(Guid guid, bool state)
+        {
+            Guid = guid;
+            State = state;
+        }
+    }
+
     public class IncommingClientEventArgs : EventArgs
     {
         public IPEndPoint Ipep { set; get; }

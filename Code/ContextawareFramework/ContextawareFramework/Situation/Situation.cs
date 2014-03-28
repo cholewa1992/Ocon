@@ -25,6 +25,8 @@ namespace ContextawareFramework
             }
         }
 
+        public bool State { get; set; }
+
 
         private Predicate<ICollection<IEntity>> _situationPredicate;
         public Predicate<ICollection<IEntity>> SituationPredicate

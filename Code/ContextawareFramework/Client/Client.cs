@@ -1,40 +1,74 @@
 ﻿using System;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
+using System.Collections.Generic;
+using System.Linq;
 using ContextawareFramework;
 using ContextawareFramework.NetworkHelper;
 
 namespace Client
 {
-    public class ClientImp
+    public class Client
     {
         private readonly Guid _clientId = Guid.NewGuid();
         private readonly ICommunicationHelper _comHelper;
-        private readonly Group _group;
+        private readonly ICollection<ISituation> _situations = new HashSet<ISituation>();
 
-        public ClientImp(ICommunicationHelper comHelper)
+        /// <summary>
+        /// Constructs a new Client
+        /// </summary>
+        /// <param name="comHelper">The ICommunicationHelper implementation to use</param>
+        /// <param name="situations">The situations to send to the context framework for tracking</param>
+        public Client(ICommunicationHelper comHelper, params ISituation[] situations)
         {
+            //Setting the com helper
             _comHelper = comHelper;
-            _group = new Group(comHelper);
 
+            //Adding situations
+            foreach (var s in situations)
+            {
+                s.SubscribersAddresse = _clientId;
+                _situations.Add(s);
+            }
+
+            //Staring discovery
+            SetupCommunication();
         }
 
         /// <summary>
         /// This will start a discovery service that will find any avalible context filters on the local network
         /// </summary>
-        public void StartDiscovery()
+        private void SetupCommunication()
         {
+            //Forwarding Situation event changes to client
+            _comHelper.IncommingSituationChangedEvent +=
+                (sender, args) =>
+                    SituationStateChangedEvent(this, new SituationStateUpdateEventArgs(_situations.Single(t => t.SubscribersAddresse == args.Guid)));
+
+            //Start listening
+            _comHelper.StartListen();
+
             Console.WriteLine("Starting discovery (" + _clientId + ")");
-            _comHelper.DiscoveryServiceEvent += (sender, args) => _group.AddPeer(args.Peer);
+            _comHelper.DiscoveryServiceEvent += (sender, args) => RegisterSituation(args.Peer);
             _comHelper.DiscoveryService(_clientId, true);
         }
 
-        public event EventHandler ContextEvent;
+        public event EventHandler<SituationStateUpdateEventArgs> SituationStateChangedEvent;
 
-        public void RegisterSituation(ISituation situation)
+        private void RegisterSituation(Peer peer)
         {
-            _group.SendSituation(situation);
-            
+            foreach (var situation in _situations)
+            {
+                _comHelper.SendSituation(situation, peer.IpEndPoint);
+            }
+        }
+    }
+
+    public class SituationStateUpdateEventArgs : EventArgs
+    {
+        public ISituation Situation { get; set; }
+
+        public SituationStateUpdateEventArgs(ISituation situation)
+        {
+            Situation = situation;
         }
     }
 }
