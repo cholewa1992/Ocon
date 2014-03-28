@@ -164,8 +164,16 @@ namespace ContextawareFramework.NetworkHelper
                         //If no one is subsribing, continue
                         if (IncommingSituationEvent == null) continue;
 
+                        Console.WriteLine("Now printing");
+                        Console.WriteLine(ReadStringFromStream(stream));
+                        Console.ReadLine();
+
+                        continue;
+
+                        var formatter = new BinaryFormatter();
+
                         //Deserializing the ISituation
-                        var situation = (ISituation) new BinaryFormatter().Deserialize(stream);
+                        var situation = (Situation)formatter.Deserialize(stream);
 
                         //Firering an Situation event 
                         IncommingSituationEvent(client.Client.RemoteEndPoint, new IncommingSituationEventArgs(situation));
@@ -350,8 +358,7 @@ namespace ContextawareFramework.NetworkHelper
         /// <param name="ipep">The remote endpoint</param>
         public void SendSituation(ISituation situation, IPEndPoint ipep)
         {
-            var stream = new MemoryStream();
-            new BinaryFormatter().Serialize(stream, situation);
+            
 
             var client = new TcpClient();
             var serverEndPoint = ipep;
@@ -364,7 +371,7 @@ namespace ContextawareFramework.NetworkHelper
             clientStream.Write(header, 0, header.Length);
 
             //Sending message
-            stream.CopyTo(clientStream);
+            new BinaryFormatter().Serialize(clientStream, situation);
 
             clientStream.Flush();
             client.Close();
