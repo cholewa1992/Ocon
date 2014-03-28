@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Net;
+using System.Runtime.Serialization;
 
 namespace ContextawareFramework
 {
+    [Serializable()]
     public class Situation: ISituation
     {
 
