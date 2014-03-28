@@ -22,7 +22,7 @@ namespace ContextawareFramework
         public void Initialize()
         {
             // Set up events
-            _comHelper.IncommingClient          += (sender, args) => Console.WriteLine("New Client: " + args.Guid);
+            _comHelper.IncommingClient          += (sender, args) => _contextFilter.AddClient(args.Guid, args.Ipep);
             _comHelper.IncommingEntityEvent     += (sender, args) => _contextFilter.TrackEntity(args.Entity);
             _comHelper.IncommingSituationEvent  += (sender, args) => _contextFilter.AddSituation(args.Situation);
 
