@@ -170,17 +170,24 @@ namespace ContextawareFramework.NetworkHelper
                         //If no one is subsribing, continue
                         if (IncommingEntityEvent == null) continue;
 
-                        //Getting json string
-                        var json = ReadStringFromStream(stream);
+                        try
+                        {
+                            //Getting json string
+                            var json = ReadStringFromStream(stream);
 
-                        //Getting entity type from string
-                        var entityType = Type.GetType(GetEntityTypeString(json));
+                            //Getting entity type from string
+                            var entityType = Type.GetType(GetEntityTypeString(json));
 
-                        //Getting entity from JSON
-                        var entity = (IEntity) JsonConvert.DeserializeObject(json, entityType);
+                            //Getting entity from JSON
+                            var entity = (IEntity) JsonConvert.DeserializeObject(json, entityType);
 
-                        //Fireing Entity event
-                        IncommingEntityEvent(client.Client.RemoteEndPoint, new IncommingEntityEventArgs(entity));
+                            //Fireing Entity event
+                            IncommingEntityEvent(client.Client.RemoteEndPoint, new IncommingEntityEventArgs(entity));
+                        }
+                        catch (Exception e)
+                        {
+                            throw e;
+                        }
 
                     }
 
@@ -233,10 +240,8 @@ namespace ContextawareFramework.NetworkHelper
         private static string GetEntityTypeString(string json)
         {
             string typeString = JObject.Parse(json)["$type"].ToString();
-
-            string[] trim = typeString.Split('.', ',');
-
-            return trim[1];
+            string[] trim = typeString.Split(',');
+            return trim[0];
         }
         #endregion
 
