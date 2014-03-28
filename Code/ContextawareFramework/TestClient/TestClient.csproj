@@ -52,9 +52,9 @@
       <Project>{AC211354-8C2F-48BD-9659-4B53EE7BAE57}</Project>
       <Name>Client</Name>
     </ProjectReference>
-    <ProjectReference Include="..\NetworkHelper\NetworkHelper.csproj">
-      <Project>{780CAF41-D737-43AC-B431-91F6CB78D388}</Project>
-      <Name>NetworkHelper</Name>
+    <ProjectReference Include="..\ContextawareFramework\ContextawareFramework.csproj">
+      <Project>{4ced25d0-faac-486f-8b94-63fe8f1da9fc}</Project>
+      <Name>ContextawareFramework</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

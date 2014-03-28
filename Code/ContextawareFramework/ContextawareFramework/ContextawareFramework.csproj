@@ -83,6 +83,10 @@
     <Compile Include="ContextCentral.cs" />
     <Compile Include="Entity\AbstractEntity.cs" />
     <Compile Include="Entity\EntityType.cs" />
+    <Compile Include="NetworkHelper\ByteExtentions.cs" />
+    <Compile Include="NetworkHelper\EventArgs.cs" />
+    <Compile Include="NetworkHelper\Group.cs" />
+    <Compile Include="NetworkHelper\TcpHelper.cs" />
     <Compile Include="Situation\Situation.cs" />
     <Compile Include="ContextFilter.cs" />
     <Compile Include="CustomEquallityCompare.cs" />
@@ -97,12 +101,6 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\NetworkHelper\NetworkHelper.csproj">
-      <Project>{780caf41-d737-43ac-b431-91f6cb78d388}</Project>
-      <Name>NetworkHelper</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

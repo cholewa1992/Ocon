@@ -58,10 +58,6 @@
       <Project>{4ced25d0-faac-486f-8b94-63fe8f1da9fc}</Project>
       <Name>ContextawareFramework</Name>
     </ProjectReference>
-    <ProjectReference Include="..\NetworkHelper\NetworkHelper.csproj">
-      <Project>{780caf41-d737-43ac-b431-91f6cb78d388}</Project>
-      <Name>NetworkHelper</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Widget\Widget.csproj">
       <Project>{5E0D9B43-7B62-466F-BFE8-0E1F654F513F}</Project>
       <Name>Widget</Name>

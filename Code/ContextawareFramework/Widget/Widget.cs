@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ContextawareFramework;
-using NetworkHelper;
-using Newtonsoft.Json;
+using ContextawareFramework.NetworkHelper;
 
 namespace Widget
 {
@@ -60,8 +59,7 @@ namespace Widget
         public void Notify(IEntity entity)
         {
             RegisterEntity(entity);
-            var msg = JsonConvert.SerializeObject(entity, entity.GetType(),new JsonSerializerSettings{TypeNameHandling = TypeNameHandling.Objects});
-            _group.Send(msg);
+            _group.SendEntity(entity);
         }
 
         /// <summary>

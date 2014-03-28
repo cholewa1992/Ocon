@@ -2,32 +2,32 @@ using System;
 using System.IO;
 using System.Net;
 
-namespace NetworkHelper
+namespace ContextawareFramework.NetworkHelper
 {
-    public class EntityEventArgs : EventArgs
+    public class IncommingEntityEventArgs : EventArgs
     {
-        public string Message { set; get; }
-        internal EntityEventArgs(string msg)
+        public IEntity Entity { set; get; }
+        internal IncommingEntityEventArgs(IEntity entity)
         {
-            Message = msg;
+            Entity = entity;
         }
     }
 
     public class IncommingSituationEventArgs : EventArgs
     {
-        public Stream Stream { set; get; }
-        internal IncommingSituationEventArgs(Stream stream)
+        public ISituation Situation { set; get; }
+        internal IncommingSituationEventArgs(ISituation situation)
         {
-            Stream = stream;
+            Situation = situation;
         }
     }
 
-    public class HandshakeEventArgs : EventArgs
+    public class IncommingClientEventArgs : EventArgs
     {
         public IPEndPoint Ipep { set; get; }
         public Guid Guid { set; get; }
 
-        internal HandshakeEventArgs(IPEndPoint ipep, Guid guid)
+        internal IncommingClientEventArgs(IPEndPoint ipep, Guid guid)
         {
             Ipep = ipep;
             Guid = guid;

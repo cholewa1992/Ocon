@@ -4,8 +4,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ContextawareFramework;
+using ContextawareFramework.NetworkHelper;
 using Microsoft.Kinect;
-using NetworkHelper;
 
 namespace TestWidget
 {

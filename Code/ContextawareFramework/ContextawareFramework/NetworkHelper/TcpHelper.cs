@@ -4,12 +4,80 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
-namespace NetworkHelper
+namespace ContextawareFramework.NetworkHelper
 {
+    public interface ICommunicationHelper
+    {
+        int MulticastPort { get; set; }
+        int CommunicationPort { set; get; }
+        IPAddress MulticastAddress { get; set; }
+
+        /// <summary>
+        /// For broadcasting discovery pacakge so that peers can be auto-discovered. This metode runs on a separate thread and can be stopped by calling StopBroadcast
+        /// </summary>
+        void Broadcast();
+
+        /// <summary>
+        /// Stops the broadcasting
+        /// </summary>
+        void StopBroadcast();
+
+        /// <summary>
+        /// This event will be fired whenever a new client is avalible
+        /// </summary>
+        event EventHandler<IncommingClientEventArgs> IncommingClient;
+
+        /// <summary>
+        /// This event will be fired whenever a new situation is avalible
+        /// </summary>
+        event EventHandler<IncommingSituationEventArgs> IncommingSituationEvent;
+
+        /// <summary>
+        /// This event will be fired whenever a new entity is avalible
+        /// </summary>
+        event EventHandler<IncommingEntityEventArgs> IncommingEntityEvent;
+
+        /// <summary>
+        /// Starts the listener
+        /// </summary>
+        void StartListen();
+
+        /// <summary>
+        /// Stops the listener
+        /// </summary>
+        void StopListen();
+
+        /// <summary>
+        /// This event will be fired everytime a new widget is discovered. NB: StartDiscoveryService must be called to start the discovery service
+        /// </summary>
+        event EventHandler<ContextFilterEventArgs> DiscoveryServiceEvent;
+
+        /// <summary>
+        /// Starts the Widget Discovery Service
+        /// </summary>
+        void DiscoveryService(Guid guid, bool sendHandshake = false);
+
+        /// <summary>
+        /// Method for sending an entity
+        /// </summary>
+        /// <param name="entity">The entity to send</param>
+        /// <param name="ipep">The remote endpoint</param>
+        void SendEntity(IEntity entity, IPEndPoint ipep);
+
+        /// <summary>
+        /// Method for sending an Situation
+        /// </summary>
+        /// <param name="situation">The situation to send</param>
+        /// <param name="ipep">The remote endpoint</param>
+        void SendSituation(ISituation situation, IPEndPoint ipep);
+    }
+
     public class TcpHelper : ICommunicationHelper
     {
 
@@ -114,18 +182,27 @@ namespace NetworkHelper
         }
 
         /// <summary>
-        /// This event will be fired when ever a new TCP package is avalible
+        /// This event will be fired whenever a new client is avalible
         /// </summary>
-        public event EventHandler<HandshakeEventArgs> HandshakeEvent;
-        public event EventHandler<StreamEventArgs> IncommingStreamEvent;
-        public event EventHandler<StringEventArgs> IncommingStringEvent;
+        public event EventHandler<IncommingClientEventArgs> IncommingClient;
+
+        /// <summary>
+        /// This event will be fired whenever a new situation is avalible
+        /// </summary>
+        public event EventHandler<IncommingSituationEventArgs> IncommingSituationEvent;
+
+        /// <summary>
+        /// This event will be fired whenever a new entity is avalible
+        /// </summary>
+        public event EventHandler<IncommingEntityEventArgs> IncommingEntityEvent;
 
         /// <summary>
         /// Starts the TCP listener
         /// </summary>
         public void StartListen()
         {
-            if (_stopListenTokenSource == null || _stopListenTokenSource.IsCancellationRequested) _stopListenTokenSource = new CancellationTokenSource();
+            if (_stopListenTokenSource == null || _stopListenTokenSource.IsCancellationRequested)
+                _stopListenTokenSource = new CancellationTokenSource();
             Task.Run(() =>
             {
                 var localEndPoint = new IPEndPoint(IPAddress.Any, CommunicationPort);
@@ -140,42 +217,66 @@ namespace NetworkHelper
                     var header = new byte[1];
                     stream.Read(header, 0, 1);
                     var type = JsonConvert.DeserializeObject<PackageType>(header.GetString());
+
+
                     if (type == PackageType.Stream)
                     {
-                        if (IncommingStreamEvent != null)
+                        //If no one is subsribing, continue
+                        if (IncommingSituationEvent == null) continue;
+
+                        //Deserializing the ISituation
+                        var situation = (ISituation) new BinaryFormatter().Deserialize(stream);
+
+                        //Firering an Situation event 
+                        IncommingSituationEvent(client.Client.RemoteEndPoint, new IncommingSituationEventArgs(situation));
+                    }
+
+                    else if (type == PackageType.String)
+                    {
+                        //If no one is subsribing, continue
+                        if (IncommingEntityEvent == null) continue;
+
+                        //Getting json string
+                        var json = ReadStringFromStream(stream);
+
+                        try
                         {
-                            IncommingStreamEvent(client.Client.RemoteEndPoint, new StreamEventArgs(stream));
+                            //Getting entity type from string
+                            var entityType = Type.GetType(GetEntityTypeString(json));
+
+                            //Getting entity from JSON
+                            var entity = JsonConvert.DeserializeObject(json, entityType) as IEntity;
+
+                            //Fireing Entity event
+                            IncommingEntityEvent(client.Client.RemoteEndPoint, new IncommingEntityEventArgs(entity));
                         }
+                        catch (Exception e)
+                        {
+                            throw e;
+                        }
+                    }
+
+                    else if (type == PackageType.Handshake)
+                    {
+                        //If no one is subsribing, continue
+                        if (IncommingClient == null) continue;
+
+                        //Getting remote endpoint
+                        var ripep = client.Client.RemoteEndPoint as IPEndPoint;
+
+                        //If the remote endpoint is empty continue
+                        if (ripep == null) continue;
+
+                        //Getting guid from JSON
+                        var guid = JsonConvert.DeserializeObject<Guid>(ReadStringFromStream(stream));
+
+                        //Fireing Client event
+                        IncommingClient(client.Client.RemoteEndPoint, new IncommingClientEventArgs(ripep, guid));
                     }
                     else
                     {
-                        var msg = new List<byte>();
-
-                        while (!stream.DataAvailable) ;
-                        
-                        while (stream.DataAvailable)
-                        {
-                            var buffer = new byte[1024];
-                            stream.Read(buffer, 0, buffer.Length);
-                            msg.AddRange(buffer);
-                        }
-
-                        if (type == PackageType.String && IncommingStringEvent != null)
-                        {
-                            IncommingStringEvent(client.Client.RemoteEndPoint, new StringEventArgs(msg.GetString()));
-                        }
-                        else if (type == PackageType.Handshake && HandshakeEvent != null)
-                        {
-                            if(client.Client.RemoteEndPoint == null) continue;
-                            HandshakeEvent(client.Client.RemoteEndPoint,
-                                new HandshakeEventArgs(client.Client.RemoteEndPoint as IPEndPoint, JsonConvert.DeserializeObject<Guid>(msg.GetString())));
-                        }
-                        else
-                        {
-                            Console.WriteLine("Got an wired message from " + client.Client.LocalEndPoint);
-                            Console.WriteLine(msg.GetString());
-                        }
-
+                        Console.WriteLine("Got an wired message from " + client.Client.LocalEndPoint);
+                        Console.WriteLine(ReadStringFromStream(stream));
                     }
 
                     if (_stopListenTokenSource.Token.IsCancellationRequested)
@@ -184,9 +285,34 @@ namespace NetworkHelper
                         _stopListenTokenSource.Token.ThrowIfCancellationRequested();
                     }
                 }
-            }, _stopListenTokenSource.Token);
+            },
+                _stopListenTokenSource.Token);
         }
-        
+
+        #region Listener helper methodes
+        private string ReadStringFromStream(NetworkStream stream)
+        {
+            var msg = new List<byte>();
+            while (!stream.DataAvailable) ;
+            while (stream.DataAvailable)
+            {
+                var buffer = new byte[1024];
+                stream.Read(buffer, 0, buffer.Length);
+                msg.AddRange(buffer);
+            }
+            return msg.GetString();
+        }
+
+        private static string GetEntityTypeString(string json)
+        {
+            string typeString = JObject.Parse(json)["$type"].ToString();
+
+            string[] trim = typeString.Split('.', ',');
+
+            return trim[1];
+        }
+        #endregion
+
         /// <summary>
         /// Stops the TCP listener
         /// </summary>
@@ -211,7 +337,6 @@ namespace NetworkHelper
                 try
                 {
                     #region Socket Setup
-
                     //Constructs a new socket
                     var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
@@ -259,13 +384,37 @@ namespace NetworkHelper
             }, _stopDiscoveryTokenSource.Token);
         }
 
+
+        /// <summary>
+        /// Method for sending an entity
+        /// </summary>
+        /// <param name="entity">The entity to send</param>
+        /// <param name="ipep">The remote endpoint</param>
+        public void SendEntity(IEntity entity, IPEndPoint ipep)
+        {
+            var json = JsonConvert.SerializeObject(entity, entity.GetType(),new JsonSerializerSettings{TypeNameHandling = TypeNameHandling.Objects});
+            SendString(json, PackageType.String, ipep);
+        }
+
+        /// <summary>
+        /// Method for sending an Situation
+        /// </summary>
+        /// <param name="situation">The situation to send</param>
+        /// <param name="ipep">The remote endpoint</param>
+        public void SendSituation(ISituation situation, IPEndPoint ipep)
+        {
+            var stream = new MemoryStream();
+            new BinaryFormatter().Serialize(stream, situation);
+            SendStream(stream, ipep);
+        }
+
+
         /// <summary>
         /// Send from a source stream
         /// </summary>
         /// <param name="stream">The source stream</param>
-        /// <param name="type">The package type</param>
         /// <param name="ipep">The IPEndpoint</param>
-        public void Send(Stream stream, PackageType type, IPEndPoint ipep)
+        private void SendStream(Stream stream, IPEndPoint ipep)
         {
             var client = new TcpClient();
             var serverEndPoint = ipep;
@@ -274,7 +423,7 @@ namespace NetworkHelper
             var clientStream = client.GetStream();
 
             //Sending header
-            var header = JsonConvert.SerializeObject(type).GetBytes();
+            var header = JsonConvert.SerializeObject(PackageType.Stream).GetBytes();
             clientStream.Write(header, 0, header.Length);
 
             //Sending message
@@ -290,7 +439,7 @@ namespace NetworkHelper
         /// <param name="msg">The message to transmit</param>
         /// <param name="type">The package type</param>
         /// <param name="ipep">The distination endpoint</param>
-        public void SendString(string msg, PackageType type,  IPEndPoint ipep)
+        private void SendString(string msg, PackageType type,  IPEndPoint ipep)
         {
             var client = new TcpClient();
             var serverEndPoint = ipep;
@@ -309,5 +458,10 @@ namespace NetworkHelper
             clientStream.Flush();
             client.Close();
         }
+    }
+
+    public enum PackageType
+    {
+        Handshake = 1, String = 2, Stream = 3
     }
 }

@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Xml;
 using ContextawareFramework;
-using NetworkHelper;
+using ContextawareFramework.NetworkHelper;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

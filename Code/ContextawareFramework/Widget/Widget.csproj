@@ -50,10 +50,6 @@
       <Project>{4CED25D0-FAAC-486F-8B94-63FE8F1DA9FC}</Project>
       <Name>ContextawareFramework</Name>
     </ProjectReference>
-    <ProjectReference Include="..\NetworkHelper\NetworkHelper.csproj">
-      <Project>{780CAF41-D737-43AC-B431-91F6CB78D388}</Project>
-      <Name>NetworkHelper</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

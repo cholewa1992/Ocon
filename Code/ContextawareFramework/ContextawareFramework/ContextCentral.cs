@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization.Formatters.Binary;
-using NetworkHelper;
+using ContextawareFramework.NetworkHelper;
 using Newtonsoft.Json;
 
 namespace ContextawareFramework

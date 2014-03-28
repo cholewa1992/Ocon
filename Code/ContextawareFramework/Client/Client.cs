@@ -2,7 +2,7 @@
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using ContextawareFramework;
-using NetworkHelper;
+using ContextawareFramework.NetworkHelper;
 
 namespace Client
 {
@@ -33,9 +33,7 @@ namespace Client
 
         public void RegisterSituation(ISituation situation)
         {
-            var stream = new MemoryStream();
-            new BinaryFormatter().Serialize(stream, situation);
-            _group.Send(stream);
+            _group.SendSituation(situation);
             
         }
     }
