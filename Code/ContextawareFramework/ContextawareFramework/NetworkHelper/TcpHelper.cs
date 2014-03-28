@@ -288,7 +288,6 @@ namespace ContextawareFramework.NetworkHelper
             },
                 _stopListenTokenSource.Token);
         }
-
         #region Listener helper methodes
         private string ReadStringFromStream(NetworkStream stream)
         {
