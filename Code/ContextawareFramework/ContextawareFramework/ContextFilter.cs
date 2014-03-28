@@ -12,10 +12,11 @@ namespace ContextawareFramework
         private readonly Dictionary<Guid, IPEndPoint>  _clients = new Dictionary<Guid, IPEndPoint>();
 
         
-        public event EventHandler EntitiesChangedEvent;
-        public void FireEntitiesChangedEvent()
+
+        public event EventHandler<SituationChangedEventArgs> SituationStateChanged;
+        public void FireSituationStateChanged(ISituation situation)
         {
-            if(EntitiesChangedEvent != null) EntitiesChangedEvent.Invoke(this, EventArgs.Empty);
+            if(SituationStateChanged != null) SituationStateChanged.Invoke(this, new SituationChangedEventArgs(){Situation = situation});
         }
       
         /// <summary>
@@ -32,7 +33,8 @@ namespace ContextawareFramework
             }
             _entities.Add(entity);
             
-            FireEntitiesChangedEvent();
+
+            TestSituations();
         }
 
         /// <summary>
@@ -64,6 +66,25 @@ namespace ContextawareFramework
                 _situations.Add(s);
             }
         }
+
+
+
+        public void TestSituations()
+        {
+            foreach (var situation in _situations)
+            {
+
+                bool currentState = situation.SituationPredicate(_entities);
+
+                if (situation.State != currentState)
+                {
+                    situation.State = currentState;
+                    FireSituationStateChanged(situation);
+                }
+
+            }
+        }
+
 
         public void AddClient(Guid guid, IPEndPoint ipEndPoint)
         {

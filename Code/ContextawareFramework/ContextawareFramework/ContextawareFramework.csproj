@@ -88,6 +88,7 @@
     <Compile Include="NetworkHelper\Group.cs" />
     <Compile Include="NetworkHelper\ICommunicationHelper.cs" />
     <Compile Include="NetworkHelper\TcpHelper.cs" />
+    <Compile Include="SituationChangedEventArgs.cs" />
     <Compile Include="Situation\Situation.cs" />
     <Compile Include="ContextFilter.cs" />
     <Compile Include="CustomEquallityCompare.cs" />
