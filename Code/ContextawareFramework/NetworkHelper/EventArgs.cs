@@ -24,10 +24,12 @@ namespace NetworkHelper
 
     public class HandshakeEventArgs : EventArgs
     {
+        public IPEndPoint Ipep { set; get; }
         public Guid Guid { set; get; }
 
-        internal HandshakeEventArgs(Guid guid)
+        internal HandshakeEventArgs(IPEndPoint ipep, Guid guid)
         {
+            Ipep = ipep;
             Guid = guid;
         }
     }

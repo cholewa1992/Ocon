@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.Remoting.Messaging;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -166,8 +167,8 @@ namespace NetworkHelper
                         }
                         else if (type == PackageType.Handshake && HandshakeEvent != null)
                         {
-                            HandshakeEvent(client.Client.LocalEndPoint,
-                                new HandshakeEventArgs(JsonConvert.DeserializeObject<Guid>(msg.GetString())));
+                            HandshakeEvent(client.Client.RemoteEndPoint,
+                                new HandshakeEventArgs(client.Client.RemoteEndPoint as IPEndPoint, JsonConvert.DeserializeObject<Guid>(msg.GetString())));
                         }
                         else
                         {
