@@ -36,7 +36,7 @@ namespace ContextawareFramework
             }
         }
 
-        public ICollection<IPAddress> SubscribersAddresses { get; set; }
+        public Guid SubscribersAddresse { get; set; }
 
 
         public Situation(Predicate<ICollection<IEntity>> situationPredicate)

@@ -10,7 +10,6 @@ namespace ContextawareFramework
 
         private readonly ICommunicationHelper _comHelper;
         private readonly ContextFilter _contextFilter;
-        private readonly Group _group;
         private Dictionary<Guid,IPEndPoint> _clients = new Dictionary<Guid, IPEndPoint>(); 
 
 
@@ -18,16 +17,22 @@ namespace ContextawareFramework
         {
             _contextFilter = contextFilter;
             _comHelper = communicationHelper;
-            _group = new Group(communicationHelper);
         }
 
         public void Initialize()
         {
+            // Set up events
+            _comHelper.IncommingClient          += (sender, args) => Console.WriteLine("New Client: " + args.Guid);
+            _comHelper.IncommingEntityEvent     += (sender, args) => _contextFilter.TrackEntity(args.Entity);
+            _comHelper.IncommingSituationEvent  += (sender, args) => _contextFilter.AddSituation(args.Situation);
+
+            // Start listening for widgets and clients
             _comHelper.StartListen();
+
+            // Multicast presence to widgets
             _comHelper.Broadcast();
-            _comHelper.IncommingClient += (sender, args) => Console.WriteLine("New Client: " + args.Guid);
-            _comHelper.IncommingEntityEvent += (sender, args) => _contextFilter.TrackEntity(args.Entity);
-            _comHelper.IncommingSituationEvent += (sender, args) => _contextFilter.AddSituation(args.Situation);
         }
+
+        public void 
     }
 }

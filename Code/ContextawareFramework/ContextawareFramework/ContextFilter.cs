@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 
 namespace ContextawareFramework
 {
     public class ContextFilter
     {
+
         private readonly ICollection<IEntity> _entities = new HashSet<IEntity>(new CustomEquallityCompare());
         private readonly ICollection<ISituation> _situations = new List<ISituation>();
+        private readonly Dictionary<Guid, IPEndPoint>  _clients = new Dictionary<Guid, IPEndPoint>();
 
         
         public event EventHandler EntitiesChangedEvent;
@@ -62,7 +65,10 @@ namespace ContextawareFramework
             }
         }
 
-        
+        public void AddClient(Guid guid, IPEndPoint ipEndPoint)
+        {
+            
+        }
         
     }
 }
