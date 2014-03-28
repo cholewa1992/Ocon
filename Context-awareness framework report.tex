@@ -3,6 +3,7 @@
 
 \usepackage[autostyle]{csquotes} 
 \usepackage{parskip}
+\usepackage{graphicx}
 
 
 % Title Page
@@ -56,20 +57,66 @@ We will in this project be focused on how we can effectively model situation in 
 
   
 
-\chapter{Requirement analysis}
+\chapter{Design Choices}
 
---what possible content, is it relevant?
+This chapter describes the different design choices we have though about in developing the framework.
+
+
+\section{Encapsulation of Context}
+
+Extension with properties vs. composite
+Situations
+
+
+\section{Widget}
+
+\section{Central}
+
+Blackboard vs. Widget
+
+\section{Client}
+
+
+\section{Dynamic Entity types}
+
+
+\section{Communication}
+
+Multicasting
+
 
 
 
 \chapter{Design}
-The idea for this chapter is that it can be cut our and released with out source code
+
+
+
 
 \section{Overview}
-Component diagram and descriptions
+
+\begin{center}
+\includegraphics[scale=0.2]{ComponentDiagram.png}
+\end{center}
+
+
+\paragraph{The Client} is an observer interested in sensor data. It subscribes to a situation on the ContextCentral.
+
+\paragraph{The Widget} wraps a sensor and translates the raw data to entities which are sent to the ContextCentral.
+
+\paragraph{The ContextCentral} is the central for entity information and situations. When an entity is received from a widget, all stored situations are checked and subscribers notified accordingly.
+
+
 
 \section{Encapsulation of Context}
 Design choices in encapsulating context
+
+Entities are generalized by the type IEntity, specifying general information for all entities.
+
+
+\begin{center}
+\includegraphics[scale=0.15]{ContextClassDiagram.png}
+\end{center}
+
 
 \section{Widget}
 
