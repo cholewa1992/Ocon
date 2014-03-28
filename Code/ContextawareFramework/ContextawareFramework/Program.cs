@@ -19,7 +19,11 @@ namespace ContextawareFramework
 
 
             var cf = new ContextFilter();
-            cf.AddSituation(new Situation(), new Situation(), new Situation());
+            cf.AddSituation(
+                new Situation(TestPredicate), 
+                new Situation(TestPredicate), 
+                new Situation(TestPredicate));
+
 
             var comHelper = TcpHelper.GetInstance();
             comHelper.HandshakeEvent += (sender, eventAgrs) => Console.WriteLine(eventAgrs.Guid);
@@ -55,8 +59,6 @@ namespace ContextawareFramework
 
         public static bool TestPredicate(ICollection<IEntity> entities)
         {
-           
-
             Console.WriteLine(entities.OfType<Person>().First().Id);
             return entities.OfType<Person>().Any(t => t.Id == new Guid());
         }

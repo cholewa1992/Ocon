@@ -8,6 +8,13 @@ namespace ContextawareFramework
     {
         private readonly ICollection<IEntity> _entities = new HashSet<IEntity>(new CustomEquallityCompare());
         private readonly ICollection<ISituation> _situations = new List<ISituation>();
+
+        
+        public event EventHandler EntitiesChangedEvent;
+        public void FireEntitiesChangedEvent()
+        {
+            EntitiesChangedEvent.Invoke(this, EventArgs.Empty);
+        }
       
         /// <summary>
         /// Add an IEntity instance to the collection beeing checked for situations
@@ -15,12 +22,15 @@ namespace ContextawareFramework
         /// <param name="entity"></param>
         public void TrackEntity(IEntity entity)
         {
+            if(entity == null) throw new ArgumentNullException("Parsed entity can't be null");
+
             if (_entities.Contains(entity))
             {
                 _entities.Remove(entity);
             }
             _entities.Add(entity);
-            EntitiesUpdated();
+            
+            FireEntitiesChangedEvent();
         }
 
         /// <summary>
@@ -30,8 +40,11 @@ namespace ContextawareFramework
         /// <returns></returns>
         public bool RemoveSituation(ISituation situation)
         {
+            if(situation == null) throw new ArgumentNullException("Parsed situation can't be null");
+
             return _situations.Remove(situation);
         }
+
 
         /// <summary>
         /// Adds an ISituation instance to the collection of recognized situations
@@ -40,29 +53,17 @@ namespace ContextawareFramework
         /// <param name="situations">zero or more ISituation instances</param>
         public void AddSituation(ISituation situation, params ISituation[] situations)
         {
+            if(situation == null) throw new ArgumentNullException("Parsed situation can't be null");
+
             _situations.Add(situation);
-            Console.WriteLine(situation.Id);
 
             foreach (var s in situations)
             {
                 _situations.Add(s);
-                Console.WriteLine(s.Id);
-            }
-        }
-
-
-        private void EntitiesUpdated()
-        {
-            foreach (var context in _situations)
-            {
-                Console.WriteLine(TestContext(context));
             }
         }
 
         
-        public bool TestContext(ISituation situation)
-        {
-            return situation.SituationPredicate.Invoke(_entities);
-        }
+        
     }
 }
