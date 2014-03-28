@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Runtime.InteropServices;
-using System.Runtime.Serialization.Formatters.Binary;
 using ContextawareFramework.NetworkHelper;
-using Newtonsoft.Json;
 
 namespace ContextawareFramework
 {
@@ -24,19 +21,13 @@ namespace ContextawareFramework
             _group = new Group(communicationHelper);
         }
 
-        
-
         public void Initialize()
         {
             _comHelper.StartListen();
-
-            _comHelper.IncommingStreamEvent += (sender, args) => _contextFilter.AddSituation((ISituation) new BinaryFormatter().Deserialize(args.Stream));
-            
-            _comHelper.HandshakeEvent += (sender, args) => _clients.Add(args.Guid, args.Ipep);
-
-            _comHelper.IncommingStringEvent += (sender, args) => _contextFilter.TrackEntity(null);
-
             _comHelper.Broadcast();
+            _comHelper.IncommingClient += (sender, args) => Console.WriteLine("New Client: " + args.Guid);
+            _comHelper.IncommingEntityEvent += (sender, args) => _contextFilter.TrackEntity(args.Entity);
+            _comHelper.IncommingSituationEvent += (sender, args) => _contextFilter.AddSituation(args.Situation);
         }
     }
 }

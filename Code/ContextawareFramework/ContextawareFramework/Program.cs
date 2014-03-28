@@ -26,31 +26,6 @@ namespace ContextawareFramework
 
 
             var comHelper = TcpHelper.GetInstance();
-            comHelper.HandshakeEvent += (sender, eventAgrs) => Console.WriteLine(eventAgrs.Guid);
-
-            comHelper.IncommingStringEvent += (sender, eventArgs) =>
-            {
-                var entityType = GetEntityTypeEnum(eventArgs.Message);
-
-                IEntity receivedEntity = null;
-
-                switch (entityType)
-                {
-                    case EntityType.Person:
-                        receivedEntity = JsonConvert.DeserializeObject<Person>(eventArgs.Message);
-                        break;
-
-                    case EntityType.Room:
-                        receivedEntity = null;
-                        break;
-                }
-
-
-                cf.TrackEntity(receivedEntity);
-
-
-            };
-
             var cc = new ContextCentral(cf, comHelper);
             cc.Initialize();
             Console.ReadLine();
@@ -61,31 +36,6 @@ namespace ContextawareFramework
         {
             Console.WriteLine(entities.OfType<Person>().First().Id);
             return entities.OfType<Person>().Any(t => t.Id == new Guid());
-        }
-
-        public static EntityType GetEntityTypeEnum(string json)
-        {
-            string typeString = JObject.Parse(json)["$type"].ToString();
-
-            string[] trim = typeString.Split('.', ',');
-
-
-            return ParseEnum<EntityType>(trim[1]);
-        }
-
-        public static string GetEntityTypeString(string json)
-        {
-            string typeString = JObject.Parse(json)["$type"].ToString();
-
-            string[] trim = typeString.Split('.', ',');
-
-            return trim[1];
-        }
-
-
-        private static T ParseEnum<T>(string value)
-        {
-            return (T)Enum.Parse(typeof(T), value, true);
         }
     }
 }
