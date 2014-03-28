@@ -67,7 +67,12 @@ namespace ContextawareFramework
 
         public void AddClient(Guid guid, IPEndPoint ipEndPoint)
         {
-            
+            _clients.Add(guid, ipEndPoint);
+        }
+
+        public IPEndPoint GetClientEndPoint(Guid guid)
+        {
+            return _clients[guid];
         }
         
     }
