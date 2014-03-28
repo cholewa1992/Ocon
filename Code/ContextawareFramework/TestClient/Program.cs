@@ -25,7 +25,7 @@ namespace TestClient
             };
 
             var client = new Client.Client(comHelper, situations);
-            client.ContextEvent += (sender, eventArgs) => Console.WriteLine("State changed to " + eventArgs.State);
+            client.SituationStateChangedEvent += (sender, eventArgs) => Console.WriteLine("State changed to " + eventArgs.Situation.State);
             Console.ReadLine();
         }
     }
