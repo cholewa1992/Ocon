@@ -4,10 +4,15 @@
 \usepackage[autostyle]{csquotes} 
 \usepackage{parskip}
 \usepackage{graphicx}
+\usepackage[T1]{fontenc}
+\usepackage{titlesec, blindtext, color}
+\definecolor{gray75}{gray}{0.75}
+\newcommand{\hsp}{\hspace{20pt}}
+\titleformat{\chapter}[hang]{\Huge\bfseries}{\thechapter\hsp\textcolor{gray75}{|}\hsp}{0pt}{\Huge\bfseries}
 
 
 % Title Page
-\title{Context-aware framework}
+\title{Context-aware Framework}
 \author{Jacob B. Cholewa \& Mathias Kindsholm Pedersen}
 
 
@@ -24,8 +29,21 @@ A Context-aware system is able to adapt its behavior to the surroundings it is i
 In this project we want to mainly focus on implementing a context-awareness framework, making it easy for systems to actuate on sensor events. As a proof of concept we will explore replacing the physical SCRUM board, which is often a whiteboard and post-its, with an IT-solution which is not confined to a personal computer, but has the same presence. The digital SCRUM board will be context-aware to the extent that it can recognize different SCRUM activities, like sprint meeting or one-on-one, and automatically change its graphical interface.
 
 
-\chapter{Scope}
+\chapter{Scope of this project}
+
+As per our Project description there are two branches of development; The context awareness framework and the implementation of this framework for a SCRUM board.
+
+\paragraph{The Framework.} Our project description dictates that the main piece of work will be our framework, and so implementation of this framework will have the broadest scope in our work.
+
+...
+
+\paragraph{The SCRUM board.} For us to prove usability of the framework developed we will implement it for a context-aware SCRUM board.
+
+...
+
 Scoping of our project description - especially what we will NOT do
+
+
 
 \chapter{Background research}
 
