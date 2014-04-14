@@ -1,7 +1,7 @@
 ﻿/*
   In App.xaml:
   <Application.Resources>
-      <vm:ViewModelLocatorTemplate xmlns:vm="clr-namespace:ScrumBoardPictures.ViewModel"
+      <vm:ViewModelLocatorTemplate xmlns:vm="clr-namespace:SLTest.ViewModel"
                                    x:Key="Locator" />
   </Application.Resources>
   
@@ -12,9 +12,9 @@
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
 using Microsoft.Practices.ServiceLocation;
-using ScrumBoardPictures.Model;
+using SLTest.Model;
 
-namespace ScrumBoardPictures.ViewModel
+namespace SLTest.ViewModel
 {
     /// <summary>
     /// This class contains static references to all the view models in the
@@ -31,10 +31,11 @@ namespace ScrumBoardPictures.ViewModel
 
             if (ViewModelBase.IsInDesignModeStatic)
             {
+                SimpleIoc.Default.Register<IDataService, Design.DesignDataService>();
             }
             else
             {
-                SimpleIoc.Default.Register<IContextService, ContextServiceStub>();
+                SimpleIoc.Default.Register<IDataService, DataService>();
             }
 
             SimpleIoc.Default.Register<MainViewModel>();

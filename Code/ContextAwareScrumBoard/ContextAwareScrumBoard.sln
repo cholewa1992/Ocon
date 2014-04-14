@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TileTrial", "TileTrial\Tile
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScrumBoardPictures", "ScrumBoardPictures\ScrumBoardPictures.csproj", "{4C852A99-C6BA-4DFA-AB33-66154183CB82}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SLTest", "SLTest\SLTest.csproj", "{CA3C4F05-C531-4B26-8CE1-0739F07BEF0F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +27,10 @@ Global
 		{4C852A99-C6BA-4DFA-AB33-66154183CB82}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4C852A99-C6BA-4DFA-AB33-66154183CB82}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4C852A99-C6BA-4DFA-AB33-66154183CB82}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA3C4F05-C531-4B26-8CE1-0739F07BEF0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA3C4F05-C531-4B26-8CE1-0739F07BEF0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA3C4F05-C531-4B26-8CE1-0739F07BEF0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA3C4F05-C531-4B26-8CE1-0739F07BEF0F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

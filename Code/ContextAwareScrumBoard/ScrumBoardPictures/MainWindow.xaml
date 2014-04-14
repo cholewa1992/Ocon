@@ -9,6 +9,7 @@
         Width="300"
         Title="Context-Aware SCRUM board"
         WindowState="Maximized"
+        WindowStyle="None"
         DataContext="{Binding Main, Source={StaticResource Locator}}">
 
     

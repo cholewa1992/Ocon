@@ -5,7 +5,7 @@ using System.Windows;
 
 namespace ScrumBoardPictures.Model
 {
-    public class ContextService : IContextService
+    public class ContextServiceStub : IContextService
     {
         public async void GetData(Action<BoardState, Exception> callback)
         {
