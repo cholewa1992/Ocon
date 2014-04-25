@@ -6,21 +6,34 @@
 \usepackage{graphicx}
 \usepackage{placeins}
 \usepackage{wrapfig}
+\usepackage{epigraph}
 \usepackage[T1]{fontenc}
 \usepackage{titlesec, blindtext, color}
 \definecolor{gray75}{gray}{0.75}
 \newcommand{\hsp}{\hspace{20pt}}
 \titleformat{\chapter}[hang]{\Huge\bfseries}{\thechapter\hsp\textcolor{gray75}{|}\hsp}{0pt}{\Huge\bfseries}
+\makeatletter
+\newif\if@right
+\def\shadequote{\@righttrue\shadequote@i}
+\def\shadequote@i{\begin{snugshade}\begin{quote}\openquote}
+\def\endshadequote{%
+  \if@right\hfill\fi\closequote\end{quote}\end{snugshade}}
+\@namedef{shadequote*}{\@rightfalse\shadequote@i}
+\@namedef{endshadequote*}{\endshadequote}
+\makeatother
 
 
-% Title Page
-\title{Context-aware Framework}
-\author{Jacob B. Cholewa \& Mathias Kindsholm Pedersen}
+
+
+
+
+
 
 
 \begin{document}
+
 \graphicspath{{img/}{../img/}}
-\maketitle
+\input{./title.tex}
 
 \begin{abstract}
 \end{abstract}
@@ -119,9 +132,13 @@ With this our framework will be an If-this-then-that solution where the client c
 Extension with properties vs. composite
 Situations
 
+<<<<<<< HEAD
 Object-oriented encapsulation of context can be done in a variety of ways.
 
 We have been looking at two different methods. Using a composite pattern and modeling with properties.
+=======
+\section{Widget}
+>>>>>>> b404b38b58c04aea4b2ed4ac8181c14fa48892fd
 
 Using a composite pattern enforced relations between entities, entities being locations, persons, things etc.
 
@@ -194,6 +211,14 @@ Entities are generalized by the type IEntity, specifying general information for
 \section{Communication}
 
 
+\chapter{Proof of concept}
+
+\blockquote{
+We can only evaluate the user experience afforded by the toolkit and its features by building applications that use it, and then evaluating them. While the toolkit itself can be evaluated on its technical criteria, the aspects of it that are designed to support a particular user experience can only be evaluated in the context of use and thus must be evaluated indirectly - through applications built with the toolkit}\cite{Infrastructure (2003)}
+
+A framework is developed to be used and reused.
+
+
 \chapter{Conclusion}
 
 \begin{thebibliography}{9}
@@ -202,6 +227,13 @@ Entities are generalized by the type IEntity, specifying general information for
   Dey, A. K., and Abowd, G.D.
   \emph{Towards a better understanding of context and context-awareness. Workshop on the What, Who, Where, When and How Context-awareness, afflicted with the 2000 ACM Conference on Human Factors in Computer Systems},
   2000.
+  
+\bibitem{Infrastructure (2003)}
+  W. Keith Edwards, Victoria Bellotti, Anind K. Dey,
+  Mark W. Newman.
+  \emph{Stuck in the Middle: The Challenges of
+  User-Centered Design and Evaluation for Infrastructure},
+  2003.
 
 \end{thebibliography}
 \chapter{Appendixes}
