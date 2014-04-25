@@ -79,7 +79,7 @@ Many of the publications on the subject describes it different, but the one desc
 
 
 \blockquote{
-	\textit{Any information that can be used to characterize the situation of an entity. An entity is a person, place or object that is considered relevant to the interaction between a user and an application, including the suer and application themselves.} \cite{Dey and Abowd (2000)} 
+	\textit{Any information that can be used to characterize the situation of an entity. An entity is a person, place or object that is considered relevant to the interaction between a user and an application, including the user and application themselves.} \cite{Dey and Abowd (2000)} 
 }
 
 We will in this project be focused on how we can effectively model situation in computer software.
@@ -112,13 +112,20 @@ For a home automation system using sensors, sensor input is only interesting the
 
 This chapter describes the different design choices we have though about in developing the framework.
 
-As described 
+To establish a vocabulary:
+	Situation - A physical situation eg. A person sitting down
+	
+	Context - Context is knowing the situation and being able to react and be accordingly
+	
+	Context information - Every information that aggregates a context
+	
+	
 
 \section{Central}
 
 When looking at the blackboard and widget based methods, we have decided that we want to include a little of both.
 
-We want to do a centralized system where clients can register a predicate. A predicate could be that the client would like to be notified whenever a person is sitting down.
+We want to do a centralized system where clients can register a predicate. A predicate could be that the client would like to be notified whenever the situation is that a person is sitting down.
 
 The framework should be event-based so when ever the state of a clients predicate changes, an event will be fired to notify the client.  
 
@@ -127,18 +134,15 @@ This combines the blackboards centralization with the widgets time and space cou
 With this our framework will be an If-this-then-that solution where the client can use sensor input for control without the  client developers having to put much though into using and managing sensors   
 
 
-\section{Encapsulation of Context}
+\section{Encapsulation of Context-information}
 
 Extension with properties vs. composite
 Situations
 
-<<<<<<< HEAD
 Object-oriented encapsulation of context can be done in a variety of ways.
 
 We have been looking at two different methods. Using a composite pattern and modeling with properties.
-=======
-\section{Widget}
->>>>>>> b404b38b58c04aea4b2ed4ac8181c14fa48892fd
+
 
 Using a composite pattern enforced relations between entities, entities being locations, persons, things etc.
 
