@@ -4,6 +4,8 @@
 \usepackage[autostyle]{csquotes} 
 \usepackage{parskip}
 \usepackage{graphicx}
+\usepackage{placeins}
+\usepackage{wrapfig}
 \usepackage[T1]{fontenc}
 \usepackage{titlesec, blindtext, color}
 \definecolor{gray75}{gray}{0.75}
@@ -17,6 +19,7 @@
 
 
 \begin{document}
+\graphicspath{{img/}{../img/}}
 \maketitle
 
 \begin{abstract}
@@ -63,14 +66,31 @@ Many of the publications on the subject describes it different, but the one desc
 
 
 \blockquote{
-	Any information that can be used to characterize the situation of an entity. An entity is a person, place or object that is considered relevant to the interaction between a user and an application, including the suer and application themselves. \cite{Dey and Abowd (2000)} 
-} 
+	\textit{Any information that can be used to characterize the situation of an entity. An entity is a person, place or object that is considered relevant to the interaction between a user and an application, including the suer and application themselves.} \cite{Dey and Abowd (2000)} 
+}
 
 We will in this project be focused on how we can effectively model situation in computer software.
 
+The theory available to us mainly describes two main approaches for building a context-aware framework: Blackboard and Widget.
 
 
+The blackboard approach is a centralized solution. Sensors and clients are connected to the blackboard and when ever a new sensor state is available a postit, an entry to the database, is put on the blackboard. The client can at will look through the blackboard and search for context it might find relevant.
 
+The widget approach is an object-oriented distributed solution. Sensors encapsulated by widgets are available for client subscription. The solution is event based and clients are notified whenever a change to the sensor is occurring. This solution is object-oriented as the context is modeled with objects sent from sensor to client. This time and spare coupled solution stands in contrast to the blackboard approach which is a database and is therefore time- and spare uncoupled.
+
+The solution differs a lot in the way the model context, but the main differers is in the way of delivering context from sensor to client.
+
+As mentioned the solutions stands in great contrast when looking at space and time coupling. To briefly describe the theory, space coupling is weather or not the sender knows who the receiver of a message is. Time coupling is if the given message is only available in real-time. 
+
+Where the blackboard at any time offers clients to go though it's context database, it does not offer notifying the client, as the blackboard is space uncoupled, and does not know about the client.
+
+The widget solution offers live updated only when they happens and only to the clients subscribing for the update.
+
+Both solutions is very useful in different applications.
+
+For example a hospital system where you want to use the context framework to track patients, the blackboard solution seams to meet requirements best as you can, when needed, look up a patients whereabout in the hospital.
+
+For a home automation system using sensors, sensor input is only interesting the moment it happens, and only to actuator whom it concern. When a person enters the room the light should go on instantly, only in the room where the person entered and only at the given time.
 
 
   
@@ -79,18 +99,47 @@ We will in this project be focused on how we can effectively model situation in 
 
 This chapter describes the different design choices we have though about in developing the framework.
 
+As described 
+
+\section{Central}
+
+When looking at the blackboard and widget based methods, we have decided that we want to include a little of both.
+
+We want to do a centralized system where clients can register a predicate. A predicate could be that the client would like to be notified whenever a person is sitting down.
+
+The framework should be event-based so when ever the state of a clients predicate changes, an event will be fired to notify the client.  
+
+This combines the blackboards centralization with the widgets time and space coupling making it transparent for the developer which sensor is actually given the input, but also having the space and time coupling from the widget based method.
+
+With this our framework will be an If-this-then-that solution where the client can use sensor input for control without the  client developers having to put much though into using and managing sensors   
+
 
 \section{Encapsulation of Context}
 
 Extension with properties vs. composite
 Situations
 
+Object-oriented encapsulation of context can be done in a variety of ways.
+
+We have been looking at two different methods. Using a composite pattern and modeling with properties.
+
+Using a composite pattern enforced relations between entities, entities being locations, persons, things etc.
+
+Lets say we want to model a location with some rooms with some persons with different items or actions. Using the composite modeling we can have a location object containing room objects containing person objects containing item objects. We'll then have a relationship between the objects compositing the context being that a group of students is in room 3A04 at ITU all having phones in their pockets and all sitting down. This is a fairly complex, but a very extensible and flexible way to model situation (See fig \ref{fig:composite}). The downside to this method is that you can easily have an overflow of entities, and that i can be very complex and computation heavy to check a predicate.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=200px]{composite.png}
+\caption{Diagram illustrating composite modeling}
+\label{fig:composite}
+\end{figure}
+
+
+The other method we are considering is more simple. Having a set of entities that we wish to track, eg persons. All context information relating to a person will be properties to the object. So to use the previous example, a person entity would then have a location property, being ITU room 3A04, a phone property begin true and a property sitting being true. This model is more easy to make, but it limits the developer to know very precisely what information is needed and should be tracked. The previous model had the advantage of being very flexible allowing more complex relations and situations. 
+
+
 
 \section{Widget}
-
-\section{Central}
-
-Blackboard vs. Widget
 
 \section{Client}
 
