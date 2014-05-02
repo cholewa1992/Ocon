@@ -63,9 +63,28 @@ Scoping of our project description - especially what we will NOT do
 
 
 
-\chapter{Background research}
 
 
+
+
+
+
+
+  
+
+\chapter{Design Choices}
+
+This chapter describes the different design choices we have though about in developing the framework.
+
+To establish a vocabulary:
+	Situation - A physical situation eg. A person sitting down
+	
+	Context - Context is knowing the situation and being able to react and be accordingly
+	
+	Context information - Every information that aggregates a context
+	
+
+\section{Background Research}
 To be able to make a context-aware framework, we first had to investigate what context and context-awareness is in a computer science perspective.
 
 
@@ -86,6 +105,8 @@ Many of the publications on the subject describes it different, but the one desc
 
 We will in this project be focused on how we can effectively model situation in computer software.
 
+
+\section{Grand Architecture}
 The theory available to us mainly describes two main approaches for building a context-aware framework: Blackboard and Widget.
 
 
@@ -101,27 +122,12 @@ Where the blackboard at any time offers clients to go though it's context databa
 
 The widget solution offers live updated only when they happens and only to the clients subscribing for the update.
 
-Both solutions is very useful in different applications.
+Both solutions are very useful in different applications.
 
 For example a hospital system where you want to use the context framework to track patients, the blackboard solution seams to meet requirements best as you can, when needed, look up a patients whereabout in the hospital.
 
 For a home automation system using sensors, sensor input is only interesting the moment it happens, and only to actuator whom it concern. When a person enters the room the light should go on instantly, only in the room where the person entered and only at the given time.
 
-
-  
-
-\chapter{Design Choices}
-
-This chapter describes the different design choices we have though about in developing the framework.
-
-To establish a vocabulary:
-	Situation - A physical situation eg. A person sitting down
-	
-	Context - Context is knowing the situation and being able to react and be accordingly
-	
-	Context information - Every information that aggregates a context
-	
-	
 
 \section{Central}
 
