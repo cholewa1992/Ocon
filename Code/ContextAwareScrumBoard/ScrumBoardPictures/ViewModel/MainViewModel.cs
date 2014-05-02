@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Net.Cache;
 using System.Net.Mime;
 using System.Windows;
@@ -21,20 +22,7 @@ namespace ScrumBoardPictures.ViewModel
         
 
 
-        private BitmapImage _board = new BitmapImage();
-
-        public BitmapImage Board
-        {
-            get { return _board; }
-            set
-            {
-                if (_board == value)
-                    return;
-
-                _board = value;
-                RaisePropertyChanged("Board");
-            }
-        }
+       
 
         private string _imageUri;
 
@@ -56,6 +44,7 @@ namespace ScrumBoardPictures.ViewModel
         /// </summary>
         public MainViewModel(IContextService contextService)
         {
+            
             var overviewUri = new Uri("pack://application:,,,/ScrumBoardPictures;component/BoardOverview.jpg");
             var closeupUri = new Uri("pack://application:,,,/ScrumBoardPictures;component/BoardCloseup.jpg");
             var standupUri = new Uri("pack://application:,,,/ScrumBoardPictures;component/BoardStandup.jpg");
