@@ -5,6 +5,7 @@ using System.Net;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using ContextawareFramework.NetworkHelper;
 using Microsoft.Build.Framework;
 
 namespace ContextawareFramework
@@ -16,5 +17,8 @@ namespace ContextawareFramework
         string Description { get; set; }
         bool State { get; set; }
         Predicate<ICollection<IEntity>> SituationPredicate { get; set; }
+
+        void AddSubscriber(Peer peer);
+        void RemoveSubscriber(Peer peer);
     }
 }

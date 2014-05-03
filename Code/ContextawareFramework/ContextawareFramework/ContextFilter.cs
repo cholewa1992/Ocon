@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using ContextawareFramework.NetworkHelper;
 
 namespace ContextawareFramework
 {
@@ -8,15 +9,14 @@ namespace ContextawareFramework
     {
 
         private readonly ICollection<IEntity> _entities = new HashSet<IEntity>(new EntityEquallityCompare());
-        //private readonly ICollection<ISituation> _subscriptions = new HashSet<ISituation>();
-        private readonly Dictionary<ISituation, List<Guid>> _subscriptions = new Dictionary<ISituation, List<Guid>>(new SituationEqualityCompare()); 
+        private readonly Dictionary<string, ISituation> _situations = new Dictionary<string, ISituation>();
 
         
 
         public event EventHandler<SituationChangedEventArgs> SituationStateChanged;
-        public void FireSituationStateChanged(ISituation situation)
+        public void FireSituationStateChanged(ISituation situation, Peer subscriber)
         {
-            if(SituationStateChanged != null) SituationStateChanged.Invoke(this, new SituationChangedEventArgs(){Situation = situation});
+            if(SituationStateChanged != null) SituationStateChanged.Invoke(this, new SituationChangedEventArgs(){Situation = situation, Subscriber = subscriber});
         }
       
         /// <summary>
@@ -42,11 +42,13 @@ namespace ContextawareFramework
         /// </summary>
         /// <param name="situation">An ISituation instance</param>
         /// <returns></returns>
-        public bool RemoveSituation(ISituation situation)
+        public bool RemoveSituation(string situationName)
         {
-            if(situation == null) throw new ArgumentNullException("Parsed situation can't be null");
 
-            return _subscriptions.Remove(situation);
+            if(string.IsNullOrEmpty(situationName)) throw new ArgumentNullException("Parsed situation can't be null");
+
+            return _situations.Remove(situationName);
+
         }
 
 
@@ -60,37 +62,35 @@ namespace ContextawareFramework
             if(situation == null) throw new ArgumentNullException("Parsed situation can't be null");
 
 
-            if (!_subscriptions.ContainsKey(situation))
-            {
-                _subscriptions.Add(situation, new List<Guid>());
-            }
+            //Add the first situation
+            _situations.Add(situation.Name, situation);
 
-            
+           
+            //Add params if any
+            if (situations == null) return;
             foreach (var s in situations)
             {
-                if (!_subscriptions.ContainsKey(s))
-                {
-                    _subscriptions.Add(s, new List<Guid>());
-                }
+                _situations.Add(s.Name, s);
             }
         }
 
 
-        public void Subscribe(Guid subscriber, string situationIdentifier)
+        /// <summary>
+        /// Subscribes an interesant in a situation given situation name
+        /// </summary>
+        /// <param name="subscriber">Guid of interesant</param>
+        /// <param name="situationIdentifier">situation name</param>
+        public void Subscribe(Peer subscriber, string situationName)
         {
+
             if (subscriber == null) throw new ArgumentNullException("Parsed guid can't be null");
-            if (string.IsNullOrEmpty(situationIdentifier)) throw new ArgumentNullException("Parsed situationIdentifier can't be null or empty");
+            if (string.IsNullOrEmpty(situationName)) throw new ArgumentNullException("Parsed situationIdentifier can't be null or empty");
 
 
-            foreach (var subscription in _subscriptions)
+            if (_situations.ContainsKey(situationName))
             {
-                if (subscription.Key.Name == situationIdentifier)
-                {
-                    subscription.Value.Add(subscriber);
-                }
+                _situations[situationName].AddSubscriber(subscriber);
             }
-
-            _subscriptions[situation].Add(subscriber);
 
         }
 
@@ -98,17 +98,7 @@ namespace ContextawareFramework
 
         public void TestSituations()
         {
-            foreach (var situation in _subscriptions)
-            {
-
-                Console.WriteLine("Situation id: " + situation.Key.Id);
-
-                foreach (var subscriber in situation.Value)
-                {
-                    Console.WriteLine(subscriber);
-                }
-                
-            }
+            
         }
 
 

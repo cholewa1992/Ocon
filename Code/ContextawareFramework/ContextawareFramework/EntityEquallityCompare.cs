@@ -2,7 +2,7 @@
 
 namespace ContextawareFramework
 {
-    public class CustomEquallityCompare : IEqualityComparer<IEntity>
+    public class EntityEquallityCompare : IEqualityComparer<IEntity>
     {
         public bool Equals(IEntity x, IEntity y)
         {

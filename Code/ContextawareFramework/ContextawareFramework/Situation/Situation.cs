@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
+using ContextawareFramework.NetworkHelper;
 
 namespace ContextawareFramework
 {
@@ -9,24 +10,7 @@ namespace ContextawareFramework
     public class Situation: ISituation
     {
 
-        public Situation(SerializationInfo info, StreamingContext ctxt)
-        {
-            Id = (Guid) info.GetValue("Id", typeof(Guid));
-            SubscribersAddresse = (Guid)info.GetValue("SubscribersAddresse", typeof(Guid));
-            SituationPredicate =
-                (Predicate<ICollection<IEntity>>)
-                    info.GetValue("SituationPredicate", typeof (Predicate<ICollection<IEntity>>));
-            State = (bool) info.GetValue("State", typeof (bool));
-            Description = (string) info.GetValue("Description", typeof (string));
-
-
-
-            info.AddValue("Id", Id);
-            info.AddValue("SubscribersAddresse", SubscribersAddresse);
-            info.AddValue("SituationPredicate", SituationPredicate);
-            info.AddValue("State", State);
-            info.AddValue("Description", Description);
-        }
+        private HashSet<Peer> _peers = new HashSet<Peer>(new PeerEquallityCompare());
 
         private Guid _id = Guid.NewGuid();
 
@@ -61,6 +45,19 @@ namespace ContextawareFramework
                 _situationPredicate = value;
             }
         }
+
+
+        public void AddSubscriber(Peer peer)
+        {
+            _peers.Add(peer);
+        }
+
+        public void RemoveSubscriber(Peer peer)
+        {
+            _peers.Remove(peer);
+        }
+
+        public ICollection<Guid> Subscribers { get; set; }
 
         public Guid SubscribersAddresse { get; set; }
 
