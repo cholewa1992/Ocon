@@ -47,7 +47,7 @@ namespace Client
             _comHelper.StartListen();
 
             Console.WriteLine("Starting discovery (" + _clientId + ")");
-            _comHelper.DiscoveryService(_clientId, true);
+            _comHelper.DiscoveryService(_clientId);
         }
 
         public event EventHandler<SituationStateUpdateEventArgs> SituationStateChangedEvent;
