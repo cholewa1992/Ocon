@@ -19,7 +19,7 @@ namespace ContextawareFramework
 
 
             var cf = new ContextFilter();
-            var comHelper = TcpHelper.GetInstance(Console.Out);
+            var comHelper = new TcpHelper(Console.Out);
             var cc = new ContextCentral(cf, comHelper);
             cc.Initialize();
             Console.ReadLine();

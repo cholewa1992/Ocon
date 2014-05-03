@@ -8,7 +8,6 @@ namespace Client
 {
     public class Client
     {
-        private readonly Guid _clientId = Guid.NewGuid();
         private readonly ICommunicationHelper _comHelper;
         private readonly ICollection<ISituation> _situations = new HashSet<ISituation>();
 
@@ -40,14 +39,14 @@ namespace Client
             //Forwarding Situation event changes to client
             _comHelper.IncommingSituationChangedEvent +=
                 (sender, args) =>
-                    SituationStateChangedEvent(this, new SituationStateUpdateEventArgs(_situations.Single(t => t.SubscribersAddresse == args.Guid)));
+                    SituationStateChangedEvent(this, new SituationStateUpdateEventArgs(_situations.First())); //TODO! 
 
 
             //Start listening
             _comHelper.StartListen();
 
-            Console.WriteLine("Starting discovery (" + _clientId + ")");
-            _comHelper.DiscoveryService(_clientId);
+            Console.WriteLine("Starting discovery (" + _comHelper.Me.Guid + ")");
+            _comHelper.DiscoveryService();
         }
 
         public event EventHandler<SituationStateUpdateEventArgs> SituationStateChangedEvent;

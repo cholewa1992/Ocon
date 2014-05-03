@@ -12,10 +12,7 @@ namespace Widget
         private readonly ICommunicationHelper _comHelper;
         private readonly Group _group;
 
-        /// <summary>
-        /// An unique identifier. Works like a MAC address
-        /// </summary>
-        public Guid WidgetId { private set; get; }
+
         #endregion
         #region Constructors
         /// <summary>
@@ -26,19 +23,6 @@ namespace Widget
         {
             _comHelper = comHelper;
             _group = new Group(_comHelper);
-            WidgetId = Guid.NewGuid();
-        }
-
-        /// <summary>
-        /// Constructs a new Widget
-        /// </summary>
-        /// <param name="comHelper">The communication helper to use. A communication helper is needed for the widget to talk with the context filter</param>
-        /// <param name="guid">The guid to use. The guid works like a MAC address</param>
-        public Widget(ICommunicationHelper comHelper, Guid guid)
-        {
-            _comHelper = comHelper;
-            _group = new Group(_comHelper);
-            WidgetId = guid;
         }
         #endregion
 
@@ -47,9 +31,9 @@ namespace Widget
         /// </summary>
         public void StartDiscovery()
         {
-            Console.WriteLine("Starting discovery (" + WidgetId + ")");
+            Console.WriteLine("Starting discovery (" + _comHelper.Me.Guid + ")");
             _comHelper.DiscoveryServiceEvent += (sender, args) => _group.AddPeer(args.Peer);
-            _comHelper.DiscoveryService(WidgetId);
+            _comHelper.DiscoveryService();
         }
 
         /// <summary>
@@ -71,7 +55,7 @@ namespace Widget
             if (!_trackedEntities.Contains(entity))
             {
                 entity.Id = Guid.NewGuid();
-                entity.WidgetId = WidgetId;
+                entity.WidgetId = _comHelper.Me.Guid;
                 _trackedEntities.Add(entity);
             }
         }

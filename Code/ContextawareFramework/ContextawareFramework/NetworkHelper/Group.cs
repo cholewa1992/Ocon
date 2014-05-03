@@ -33,7 +33,7 @@ namespace ContextawareFramework.NetworkHelper
             {
                 try
                 {
-                    _comHelper.SendEntity(entity, observer.IpEndPoint);
+                    _comHelper.SendEntity(entity, observer);
                     _tries[observer] = 0;
 
                 }
@@ -61,7 +61,7 @@ namespace ContextawareFramework.NetworkHelper
             {
                 if (!_observers.Contains(peer))
                 {
-                    Console.WriteLine("Adding peer to group: " + peer.IpEndPoint);
+                    Console.WriteLine("Adding peer to group: " + peer.Guid);
                     _observers.Add(peer);
                     _tries.Add(peer, 0);
 
@@ -77,7 +77,7 @@ namespace ContextawareFramework.NetworkHelper
         {
             lock (_observers)
             {
-                Console.WriteLine("Removing peer from group: " + peer.IpEndPoint);
+                Console.WriteLine("Removing peer from group: " + peer.Guid);
                 _observers.Remove(peer);
             }
         }
@@ -91,7 +91,7 @@ namespace ContextawareFramework.NetworkHelper
             Console.WriteLine("------------- Observers -------------");
             foreach (var observer in _observers)
             {
-                Console.WriteLine(observer.IpEndPoint);
+                Console.WriteLine(observer.Guid);
             }
             Console.WriteLine("-------------------------------------");
         }
@@ -100,19 +100,19 @@ namespace ContextawareFramework.NetworkHelper
     #region Helperclasses
     public class Peer
     {
-        public IPEndPoint IpEndPoint { get; set; }
+        public Guid Guid { get; set; }
     }
 
     public class PeerEquallityCompare : IEqualityComparer<Peer>
     {
         public bool Equals(Peer x, Peer y)
         {
-            return x.IpEndPoint.Equals(y.IpEndPoint);
+            return x.Guid.Equals(y.Guid);
         }
 
         public int GetHashCode(Peer obj)
         {
-            return obj.IpEndPoint.GetHashCode();
+            return obj.Guid.GetHashCode();
         }
     }
     #endregion

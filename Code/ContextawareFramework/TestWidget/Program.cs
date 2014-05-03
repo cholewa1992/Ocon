@@ -5,18 +5,17 @@ using System.Threading;
 using System.Threading.Tasks;
 using ContextawareFramework;
 using ContextawareFramework.NetworkHelper;
-using Microsoft.Kinect;
 
 namespace TestWidget
 {
     public class Program
     {
         private static int _lastNumberOfPeople;
-        private static readonly List<Person> _people = new List<Person>();  
+        private static readonly List<Person> People = new List<Person>();  
 
         public static void Main(string[] args)
         {
-            var w = new Widget.Widget(TcpHelper.GetInstance(Console.Out));
+            var w = new Widget.Widget(new TcpHelper(Console.Out));
             w.StartDiscovery();
             var k = new Kinect();
             k.KinectEvent += (sender, eventArgs) =>
@@ -26,26 +25,26 @@ namespace TestWidget
 
                 _lastNumberOfPeople = eventArgs.NumberOfPeople;
 
-                for (var i = 0; i < (_lastNumberOfPeople > _people.Count ? _lastNumberOfPeople : _people.Count ); i++)
+                for (var i = 0; i < (_lastNumberOfPeople > People.Count ? _lastNumberOfPeople : People.Count ); i++)
                 {
                     if (i < _lastNumberOfPeople)
                     {
 
-                        if (_people.Count() < _lastNumberOfPeople)
+                        if (People.Count() < _lastNumberOfPeople)
                         {
                             var person = new Person();
-                            _people.Add(person);
+                            People.Add(person);
                         }
 
-                        _people[i].Present = true;
-                        w.Notify(_people[i]);
+                        People[i].Present = true;
+                        w.Notify(People[i]);
                     }
                     else
                     {
-                        if (_people[i].Present)
+                        if (People[i].Present)
                         {
-                            _people[i].Present = false;
-                            w.Notify(_people[i]);
+                            People[i].Present = false;
+                            w.Notify(People[i]);
                         }
                     }
                 }

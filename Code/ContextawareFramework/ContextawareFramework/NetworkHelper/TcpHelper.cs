@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Odbc;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,33 +14,43 @@ namespace ContextawareFramework.NetworkHelper
 {
     public class TcpHelper : ICommunicationHelper
     {
+        private readonly Peer _me;
 
         #region Cancellation tokens
+
         private CancellationTokenSource _stopBroadcastTokenSource;
         private CancellationTokenSource _stopListenTokenSource;
         private CancellationTokenSource _stopDiscoveryTokenSource;
+
         #endregion
+
         #region Fields
+
         private static TcpHelper _instance;
         private int _multicastPort = 2025;
         private int _communicationPort = 2026;
 
         private IPAddress _multicastAddress = IPAddress.Parse("224.5.6.7");
-        private TextWriter _outputStream;
+        private readonly TextWriter _outputStream;
 
         #endregion
+
         #region Properties
+
         public static bool IsBroadcasting { get; private set; }
+
         public int MulticastPort
         {
             get { return _multicastPort; }
             set { _multicastPort = value; }
         }
+
         public int CommunicationPort
         {
             set { _communicationPort = value; }
             get { return _communicationPort; }
         }
+
         public IPAddress MulticastAddress
         {
             get { return _multicastAddress; }
@@ -50,17 +59,15 @@ namespace ContextawareFramework.NetworkHelper
 
         #endregion
 
-        /// <summary>
-        /// Constructs a new instance, or returns an active instance of the TcpHelper 
-        /// </summary>
-        /// <returns></returns>
-        public static TcpHelper GetInstance(TextWriter errorLogWriter = null)
+        public Peer Me
         {
-            return _instance ?? (_instance = new TcpHelper{_outputStream = errorLogWriter});
+            get { return _me; }
         }
 
-        private TcpHelper()
+        public TcpHelper(TextWriter errorLogWriter = null)
         {
+            _me = new Peer{Guid = Guid.NewGuid()};
+            _outputStream = errorLogWriter;
         }
 
         /// <summary>
@@ -72,7 +79,9 @@ namespace ContextawareFramework.NetworkHelper
             if (IsBroadcasting) return;
             IsBroadcasting = true;
             _stopBroadcastTokenSource = new CancellationTokenSource();
+
             #region Broadcaster
+
             //Start listener for incomming replies
             Task.Run(() =>
             {
@@ -81,6 +90,7 @@ namespace ContextawareFramework.NetworkHelper
                 {
                     try
                     {
+
                         //Broadcasting on every network interface
                         foreach (
                             var localIp in
@@ -104,12 +114,13 @@ namespace ContextawareFramework.NetworkHelper
 
                                 //Creating discovery package to sent out
                                 var json =
-                                    JsonConvert.SerializeObject(new {IPAddress = localIp.ToString(), CommunicationPort});
+                                    JsonConvert.SerializeObject(
+                                        new Handshake() { Peer = _me, Ip = localIp.ToString(), Port = CommunicationPort });
 
                                 //Sending out the package
                                 mSendSocket.SendTo(json.GetBytes(), new IPEndPoint(MulticastAddress, MulticastPort));
                             }
-                            Thread.Sleep(60000);
+                            Thread.Sleep(5000);
                         }
                         if (_stopBroadcastTokenSource.Token.IsCancellationRequested)
                         {
@@ -125,6 +136,7 @@ namespace ContextawareFramework.NetworkHelper
                 }
 
             }, _stopBroadcastTokenSource.Token);
+
             #endregion
         }
 
@@ -141,7 +153,7 @@ namespace ContextawareFramework.NetworkHelper
         /// <summary>
         /// This event will be fired whenever a new client is avalible
         /// </summary>
-        public event EventHandler<IncommingClientEventArgs> IncommingClient;
+        //public event EventHandler<IncommingClientEventArgs> IncommingClient;
 
         /// <summary>
         /// This event will be fired whenever a new situation is avalible
@@ -185,63 +197,42 @@ namespace ContextawareFramework.NetworkHelper
                             var stream = client.GetStream();
 
                             //Getting and deserializing message header
-                            var header = new byte[1];
-                            stream.Read(header, 0, 1);
-                            var type = JsonConvert.DeserializeObject<PackageType>(header.GetString());
+                            var message = JsonConvert.DeserializeObject<Message>(ReadStringFromStream(stream));
+
+                            //Adding peer to _peers
+                            AddIpep(message.Peer, client.Client.RemoteEndPoint as IPEndPoint);
+
+                            var body = message.Body;
 
 
-                            if (type == PackageType.Entity)
+                            if (message.Type == PackageType.Entity)
                             {
                                 //If no one is subsribing, continue
                                 if (IncommingEntityEvent == null) continue;
 
-                                //Getting json string
-                                var json = ReadStringFromStream(stream);
-
                                 //Getting entity type from string
-                                var entityType = Type.GetType(GetEntityTypeString(json));
+                                var entityType = Type.GetType(GetEntityTypeString(body));
 
                                 //Getting entity from JSON
-                                var entity = (IEntity) JsonConvert.DeserializeObject(json, entityType);
+                                var entity = (IEntity)JsonConvert.DeserializeObject(body, entityType);
 
                                 //Fireing Entity event
                                 IncommingEntityEvent(client.Client.RemoteEndPoint, new IncommingEntityEventArgs(entity));
                             }
-                            else if (type == PackageType.SituationUpdate)
+                            else if (message.Type == PackageType.SituationUpdate)
                             {
-                                //Getting JSON from stream
-                                var json = ReadStringFromStream(stream);
-
                                 //Taking entity and stores it as dynamic
-                                dynamic situationUpdate = JsonConvert.DeserializeObject(json);
+                                dynamic situationUpdate = JsonConvert.DeserializeObject(body);
 
                                 //Fireing event
                                 var eventArgs = new IncommingSituationChangedEventArgs(situationUpdate.Guid,
                                     situationUpdate.State);
                                 IncommingSituationChangedEvent(client.Client.RemoteEndPoint, eventArgs);
                             }
-
-                            else if (type == PackageType.Handshake)
-                            {
-                                //If no one is subsribing, continue
-                                if (IncommingClient == null) continue;
-
-                                //Getting remote endpoint
-                                var ripep = client.Client.RemoteEndPoint as IPEndPoint;
-
-                                //If the remote endpoint is empty continue
-                                if (ripep == null) continue;
-
-                                //Getting guid from JSON
-                                var guid = JsonConvert.DeserializeObject<Guid>(ReadStringFromStream(stream));
-
-                                //Fireing Client event
-                                IncommingClient(client.Client.RemoteEndPoint, new IncommingClientEventArgs(ripep, guid));
-                            }
-                            else if (type == PackageType.SituationSubscription)
+                            else if (message.Type == PackageType.SituationSubscription)
                             {
                                 //Getting json
-                                dynamic subscription = JsonConvert.DeserializeObject(ReadStringFromStream(stream));
+                                dynamic subscription = JsonConvert.DeserializeObject(body);
 
                                 //Getting data and firing event
                                 var eventArgs = new IncommingSituationSubscribtionEventArgs(subscription.Guid,
@@ -277,10 +268,11 @@ namespace ContextawareFramework.NetworkHelper
         }
 
         #region Listener helper methodes
+
         private string ReadStringFromStream(NetworkStream stream)
         {
             var msg = new List<byte>();
-            while (!stream.DataAvailable);
+            while (!stream.DataAvailable) ;
             while (stream.DataAvailable)
             {
                 var buffer = new byte[1024];
@@ -289,12 +281,14 @@ namespace ContextawareFramework.NetworkHelper
             }
             return msg.GetString();
         }
+
         private static string GetEntityTypeString(string json)
         {
             string typeString = JObject.Parse(json)["$type"].ToString();
             string[] trim = typeString.Split(',');
             return trim[0];
         }
+
         #endregion
 
         /// <summary>
@@ -314,7 +308,7 @@ namespace ContextawareFramework.NetworkHelper
         /// <summary>
         /// Starts the Widget Discovery Service
         /// </summary>
-        public void DiscoveryService(Guid guid, bool sendHandshake = false)
+        public void DiscoveryService()
         {
             _stopDiscoveryTokenSource = new CancellationTokenSource();
             Task.Run(() =>
@@ -322,7 +316,9 @@ namespace ContextawareFramework.NetworkHelper
                 try
                 {
                     Log("Discovery service started");
+
                     #region Socket Setup
+
                     //Constructs a new socket
                     var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
@@ -332,7 +328,9 @@ namespace ContextawareFramework.NetworkHelper
 
                     //Set up the socket to listen for multicast messages on IP 224.5.6.7
                     var ip = MulticastAddress;
-                    socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, new MulticastOption(ip, IPAddress.Any));
+                    socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership,
+                        new MulticastOption(ip, IPAddress.Any));
+
                     #endregion
 
                     while (!_stopDiscoveryTokenSource.Token.IsCancellationRequested)
@@ -342,30 +340,22 @@ namespace ContextawareFramework.NetworkHelper
                         socket.Receive(buffer);
 
                         //Getting data
+                        var data = JsonConvert.DeserializeObject<Handshake>(buffer.GetString());
+                        var remoteEndPoint = new IPEndPoint(IPAddress.Parse(data.Ip),data.Port);
 
-
-                        dynamic data = JsonConvert.DeserializeObject(buffer.GetString());
-                        var serverEndPoint = new IPEndPoint(IPAddress.Parse(data.IPAddress.ToString()), (int) data.CommunicationPort );
-
-                        var msg = JsonConvert.SerializeObject(guid);
-
-                        if (sendHandshake)
-
-                        {
-                            SendString(msg, PackageType.Handshake, serverEndPoint);
-                        }
+                        AddIpep(data.Peer, remoteEndPoint);
 
                         //Fires an event about newly discovered context filter
                         if (DiscoveryServiceEvent != null)
                         {
-                            DiscoveryServiceEvent(null, new ContextFilterEventArgs(serverEndPoint));
+                            DiscoveryServiceEvent(null, new ContextFilterEventArgs(data.Peer));
                         }
                     }
                     socket.Close();
                 }
                 catch (SocketException e)
                 {
-                   Log("Discovery service has stopped due to following error: " + e.Message);
+                    Log("Discovery service has stopped due to following error: " + e.Message);
                 }
                 Log("Discovery service stopped");
             }, _stopDiscoveryTokenSource.Token);
@@ -377,11 +367,11 @@ namespace ContextawareFramework.NetworkHelper
         /// <param name="guid">The clients GUID</param>
         /// <param name="situationIdentifier">The situation's identifier whom to subscribe</param>
         /// <param name="ipep">The remote endpoint</param>
-        public void SubscribeSituation(Guid guid, string situationIdentifier, IPEndPoint ipep)
+        public void SubscribeSituation(Guid guid, string situationIdentifier, Peer peer)
         {
             var json = JsonConvert.SerializeObject(new {Guid = guid, SituationIdentifier = situationIdentifier});
 
-            SendString(situationIdentifier, PackageType.SituationSubscription, ipep);
+            SendString(situationIdentifier, PackageType.SituationSubscription, peer);
         }
 
         /// <summary>
@@ -389,10 +379,11 @@ namespace ContextawareFramework.NetworkHelper
         /// </summary>
         /// <param name="entity">The entity to send</param>
         /// <param name="ipep">The remote endpoint</param>
-        public void SendEntity(IEntity entity, IPEndPoint ipep)
+        public void SendEntity(IEntity entity, Peer peer)
         {
-            var json = JsonConvert.SerializeObject(entity, entity.GetType(),new JsonSerializerSettings{TypeNameHandling = TypeNameHandling.Objects});
-            SendString(json, PackageType.Entity, ipep);
+            var json = JsonConvert.SerializeObject(entity, entity.GetType(),
+                new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.Objects});
+            SendString(json, PackageType.Entity, peer);
         }
 
         /// <summary>
@@ -400,14 +391,14 @@ namespace ContextawareFramework.NetworkHelper
         /// </summary>
         /// <param name="situation">The situation whoms state to send</param>
         /// <param name="ipep">The remote endpoint</param>
-        public void SendSituationState(ISituation situation, IPEndPoint ipep)
+        public void SendSituationState(ISituation situation, Peer peer)
         {
             var json = JsonConvert.SerializeObject(new
             {
-                SituationId = situation.SubscribersAddresse,
+                SituationId = situation.Id,
                 State = situation.State
             });
-            SendString(json, PackageType.SituationUpdate, ipep);
+            SendString(json, PackageType.SituationUpdate, peer);
         }
 
         /// <summary>
@@ -415,26 +406,23 @@ namespace ContextawareFramework.NetworkHelper
         /// </summary>
         /// <param name="msg">The message to transmit</param>
         /// <param name="type">The package type</param>
-        /// <param name="ipep">The distination endpoint</param>
-        private void SendString(string msg, PackageType type,  IPEndPoint ipep)
+        /// <param name="peer">The distination peer</param>
+        private void SendString(string msg, PackageType type, Peer peer)
         {
             var client = new TcpClient();
-            var serverEndPoint = ipep;
+            var serverEndPoint = IpepLookup(peer);
             client.Connect(serverEndPoint);
 
             var clientStream = client.GetStream();
 
-            //Sending header
-            var header = JsonConvert.SerializeObject(type).GetBytes();
-            clientStream.Write(header, 0, header.Length);
-
             //Sending message
-            var bytes = msg.GetBytes();
+            var bytes = JsonConvert.SerializeObject(new Message {Type = type, Peer = _me, Body = msg}).GetBytes();
+
             clientStream.Write(bytes, 0, bytes.Length);
 
             clientStream.Flush();
             client.Close();
- }
+        }
 
         /// <summary>
         /// Private method for making error log messages
@@ -442,8 +430,38 @@ namespace ContextawareFramework.NetworkHelper
         /// <param name="msg"></param>
         private void Log(string msg)
         {
-            if(_outputStream != null) _outputStream.WriteLine(msg);
+            if (_outputStream != null) _outputStream.WriteLine(msg);
         }
 
+
+        readonly Dictionary<Peer, IPEndPoint> _peers = new Dictionary<Peer, IPEndPoint>(new PeerEquallityCompare());
+
+        private void AddIpep(Peer peer, IPEndPoint ipep)
+        {
+            if(!_peers.ContainsKey(peer)) _peers.Add(peer,ipep);
+        }
+
+        private IPEndPoint IpepLookup(Peer peer)
+        {
+            if (_peers.ContainsKey(peer))
+            {
+                return _peers[peer];
+            }
+            throw new InvalidOperationException("The peer is not valid");
+        }
+    }
+
+    public struct Handshake
+    {
+        public Peer Peer { get; set; }
+        public string Ip { get; set; }
+        public int Port { get; set; }
+    }
+
+    public struct Message
+    {
+        public Peer Peer { set; get; }
+        public PackageType Type { set; get; }
+        public string Body { set; get; }
     }
 }

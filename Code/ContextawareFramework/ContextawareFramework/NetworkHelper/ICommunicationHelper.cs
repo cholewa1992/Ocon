@@ -1,14 +1,9 @@
-﻿using System;
-using System.Net;
+using System;
 
 namespace ContextawareFramework.NetworkHelper
 {
     public interface ICommunicationHelper
     {
-        int MulticastPort { get; set; }
-        int CommunicationPort { set; get; }
-        IPAddress MulticastAddress { get; set; }
-
         /// <summary>
         /// For broadcasting discovery pacakge so that peers can be auto-discovered. This metode runs on a separate thread and can be stopped by calling StopBroadcast
         /// </summary>
@@ -22,10 +17,10 @@ namespace ContextawareFramework.NetworkHelper
         /// <summary>
         /// This event will be fired whenever a new client is avalible
         /// </summary>
-        event EventHandler<IncommingClientEventArgs> IncommingClient;
+        //public event EventHandler<IncommingClientEventArgs> IncommingClient;
 
         /// <summary>
-        /// This event will be fired whenever a client subscribes a situation
+        /// This event will be fired whenever a new situation is avalible
         /// </summary>
         event EventHandler<IncommingSituationSubscribtionEventArgs> IncommingSituationSubscribtionEvent;
 
@@ -40,12 +35,12 @@ namespace ContextawareFramework.NetworkHelper
         event EventHandler<IncommingSituationChangedEventArgs> IncommingSituationChangedEvent;
 
         /// <summary>
-        /// Starts the listener
+        /// Starts the TCP listener
         /// </summary>
         void StartListen();
 
         /// <summary>
-        /// Stops the listener
+        /// Stops the TCP listener
         /// </summary>
         void StopListen();
 
@@ -57,21 +52,7 @@ namespace ContextawareFramework.NetworkHelper
         /// <summary>
         /// Starts the Widget Discovery Service
         /// </summary>
-        void DiscoveryService(Guid guid, bool sendHandshake = false);
-
-        /// <summary>
-        /// Method for sending an entity
-        /// </summary>
-        /// <param name="entity">The entity to send</param>
-        /// <param name="ipep">The remote endpoint</param>
-        void SendEntity(IEntity entity, IPEndPoint ipep);
-
-        /// <summary>
-        /// Method for sending an Situation state to client
-        /// </summary>
-        /// <param name="situation">The situation whoms state to send</param>
-        /// <param name="ipep">The remote endpoint</param>
-        void SendSituationState(ISituation situation, IPEndPoint ipep);
+        void DiscoveryService();
 
         /// <summary>
         /// Method for subscribing to a Situation.
@@ -79,6 +60,22 @@ namespace ContextawareFramework.NetworkHelper
         /// <param name="guid">The clients GUID</param>
         /// <param name="situationIdentifier">The situation's identifier whom to subscribe</param>
         /// <param name="ipep">The remote endpoint</param>
-        void SubscribeSituation(Guid guid, string situationIdentifier, IPEndPoint ipep);
+        void SubscribeSituation(Guid guid, string situationIdentifier, Peer peer);
+
+        /// <summary>
+        /// Method for sending an entity
+        /// </summary>
+        /// <param name="entity">The entity to send</param>
+        /// <param name="ipep">The remote endpoint</param>
+        void SendEntity(IEntity entity, Peer peer);
+
+        /// <summary>
+        /// Method for sending an Situation state to client
+        /// </summary>
+        /// <param name="situation">The situation whoms state to send</param>
+        /// <param name="ipep">The remote endpoint</param>
+        void SendSituationState(ISituation situation, Peer peer);
+
+        Peer Me { get; }
     }
 }
