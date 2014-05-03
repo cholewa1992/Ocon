@@ -60,7 +60,7 @@ namespace ContextawareFramework.NetworkHelper
         /// <param name="guid">The clients GUID</param>
         /// <param name="situationIdentifier">The situation's identifier whom to subscribe</param>
         /// <param name="ipep">The remote endpoint</param>
-        void SubscribeSituation(Guid guid, string situationIdentifier, Peer peer);
+        void SubscribeSituation(string situationIdentifier, Peer peer);
 
         /// <summary>
         /// Method for sending an entity

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using ContextawareFramework;
 using ContextawareFramework.NetworkHelper;
@@ -9,7 +10,7 @@ namespace Client
     public class Client
     {
         private readonly ICommunicationHelper _comHelper;
-        private readonly ICollection<ISituation> _situations = new HashSet<ISituation>();
+        private readonly string[] _situations;
 
         /// <summary>
         /// Constructs a new Client
@@ -20,12 +21,7 @@ namespace Client
         {
             //Setting the com helper
             _comHelper = comHelper;
-
-            //Adding situations
-            foreach (var s in situations)
-            {
-                
-            }
+            _situations = situations;
 
             //Staring discovery
             SetupCommunication();
@@ -38,9 +34,15 @@ namespace Client
         {
             //Forwarding Situation event changes to client
             _comHelper.IncommingSituationChangedEvent +=
-                (sender, args) =>
-                    SituationStateChangedEvent(this, new SituationStateUpdateEventArgs(_situations.First())); //TODO! 
+                (sender, args) => Console.WriteLine("Cool");
 
+            _comHelper.DiscoveryServiceEvent += (sender, args) =>
+            {
+                foreach (var situation in _situations)
+                {
+                    _comHelper.SubscribeSituation(situation, args.Peer);
+                }
+            };
 
             //Start listening
             _comHelper.StartListen();

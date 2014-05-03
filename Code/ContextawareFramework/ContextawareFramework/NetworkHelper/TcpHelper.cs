@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Odbc;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -115,7 +114,7 @@ namespace ContextawareFramework.NetworkHelper
                                 //Creating discovery package to sent out
                                 var json =
                                     JsonConvert.SerializeObject(
-                                        new Handshake() { Peer = _me, Ip = localIp.ToString(), Port = CommunicationPort });
+                                        new Handshake { Peer = _me, Ip = localIp.ToString(), Port = CommunicationPort });
 
                                 //Sending out the package
                                 mSendSocket.SendTo(json.GetBytes(), new IPEndPoint(MulticastAddress, MulticastPort));
@@ -131,6 +130,7 @@ namespace ContextawareFramework.NetworkHelper
                     }
                     catch (Exception e)
                     {
+                        throw e;
                         Log("Broadcast could not be made " + e.Message);
                     }
                 }
@@ -214,7 +214,7 @@ namespace ContextawareFramework.NetworkHelper
                                 var entityType = Type.GetType(GetEntityTypeString(body));
 
                                 //Getting entity from JSON
-                                var entity = (IEntity)JsonConvert.DeserializeObject(body, entityType);
+                                var entity = (IEntity) JsonConvert.DeserializeObject(body, entityType);
 
                                 //Fireing Entity event
                                 IncommingEntityEvent(client.Client.RemoteEndPoint, new IncommingEntityEventArgs(entity));
@@ -231,12 +231,9 @@ namespace ContextawareFramework.NetworkHelper
                             }
                             else if (message.Type == PackageType.SituationSubscription)
                             {
-                                //Getting json
-                                dynamic subscription = JsonConvert.DeserializeObject(body);
 
                                 //Getting data and firing event
-                                var eventArgs = new IncommingSituationSubscribtionEventArgs(subscription.Guid,
-                                    subscription.SituationIdentifier);
+                                var eventArgs = new IncommingSituationSubscribtionEventArgs(message.Peer, body);
                                 IncommingSituationSubscribtionEvent(client.Client.RemoteEndPoint, eventArgs);
                             }
                             else
@@ -253,13 +250,14 @@ namespace ContextawareFramework.NetworkHelper
                         }
                         catch (Exception e)
                         {
+                            throw e;
                             Log("An error occurred: " + e.Message);
                         }
-
                     }
                 }
                 catch (Exception e)
                 {
+                    throw e;
                     Log("The listener stop due to an unrecoverble error: " + e.Message);
                 }
                 Log("Listening has stopped");
@@ -367,10 +365,8 @@ namespace ContextawareFramework.NetworkHelper
         /// <param name="guid">The clients GUID</param>
         /// <param name="situationIdentifier">The situation's identifier whom to subscribe</param>
         /// <param name="ipep">The remote endpoint</param>
-        public void SubscribeSituation(Guid guid, string situationIdentifier, Peer peer)
+        public void SubscribeSituation(string situationIdentifier, Peer peer)
         {
-            var json = JsonConvert.SerializeObject(new {Guid = guid, SituationIdentifier = situationIdentifier});
-
             SendString(situationIdentifier, PackageType.SituationSubscription, peer);
         }
 

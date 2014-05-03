@@ -13,9 +13,8 @@ namespace TestClient
         {
             ICommunicationHelper comHelper = new TcpHelper(Console.Out);
 
-            var p = new Predicate<ICollection<IEntity>>(entities => entities.OfType<Person>().Count() <= 3 );
 
-            var client = new Client.Client(comHelper);
+            var client = new Client.Client(comHelper, new []{"s1"});
             client.SituationStateChangedEvent += (sender, eventArgs) => Console.WriteLine("State changed to " + eventArgs.Situation.State);
             Console.ReadLine();
         }
