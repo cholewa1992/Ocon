@@ -8,44 +8,48 @@ namespace ContextawareFramework
     public class ContextFilter
     {
 
+        #region Fields
+
         private readonly ICollection<IEntity> _entities = new HashSet<IEntity>(new EntityEquallityCompare());
         private readonly Dictionary<string, ISituation> _situations = new Dictionary<string, ISituation>();
 
-        
+        #endregion
 
-        public event EventHandler<SituationChangedEventArgs> SituationStateChanged;
-        public void FireSituationStateChanged(ISituation situation, Peer subscriber)
-        {
-            if(SituationStateChanged != null) SituationStateChanged.Invoke(this, new SituationChangedEventArgs(){Situation = situation, Subscriber = subscriber});
-        }
-      
+
+        #region Entity handling
+
         /// <summary>
         /// Add an IEntity instance to the collection beeing checked for situations
         /// </summary>
         /// <param name="entity"></param>
         public void TrackEntity(IEntity entity)
         {
-            if(entity == null) throw new ArgumentNullException("Parsed entity can't be null");
+            if (entity == null) throw new ArgumentNullException("Parsed entity can't be null");
 
             if (_entities.Contains(entity))
             {
                 _entities.Remove(entity);
             }
             _entities.Add(entity);
-            
+
 
             TestSituations();
         }
 
+        #endregion
+
+
+        #region Situation handling
+
         /// <summary>
-        /// Removes an ISituation instance from the collection of recognized situations
+        /// Removes an ISituation given name
         /// </summary>
-        /// <param name="situation">An ISituation instance</param>
-        /// <returns></returns>
+        /// <param name="situationName">Name of the situation to remove</param>
+        /// <returns>Whether removal succeeded</returns>
         public bool RemoveSituation(string situationName)
         {
 
-            if(string.IsNullOrEmpty(situationName)) throw new ArgumentNullException("Parsed situation can't be null");
+            if (string.IsNullOrEmpty(situationName)) throw new ArgumentNullException("Parsed situation can't be null");
 
             return _situations.Remove(situationName);
 
@@ -53,19 +57,19 @@ namespace ContextawareFramework
 
 
         /// <summary>
-        /// Adds an ISituation instance to the collection of recognized situations
+        /// Adds one or more situations to the collection
         /// </summary>
         /// <param name="situation">An ISituation instance</param>
         /// <param name="situations">zero or more ISituation instances</param>
         public void AddSituation(ISituation situation, params ISituation[] situations)
         {
-            if(situation == null) throw new ArgumentNullException("Parsed situation can't be null");
+            if (situation == null) throw new ArgumentNullException("Parsed situation can't be null");
 
 
             //Add the first situation
             _situations.Add(situation.Name, situation);
 
-           
+
             //Add params if any
             if (situations == null) return;
             foreach (var s in situations)
@@ -76,10 +80,10 @@ namespace ContextawareFramework
 
 
         /// <summary>
-        /// Subscribes an interesant in a situation given situation name
+        /// Subscribes an interesant to a situation given situation name
         /// </summary>
         /// <param name="subscriber">Guid of interesant</param>
-        /// <param name="situationIdentifier">situation name</param>
+        /// <param name="situationName">Situation name</param>
         public void Subscribe(Peer subscriber, string situationName)
         {
 
@@ -116,12 +120,25 @@ namespace ContextawareFramework
                         FireSituationStateChanged(situation.Value, subscriber);
                     }
                 }
-                
+
             }
+
         }
 
+        #endregion
 
-       
-        
+
+        #region Situation Event
+        /// <summary>
+        /// This event will be fired when a situations state has changed
+        /// </summary>
+        public event EventHandler<SituationChangedEventArgs> SituationStateChanged;
+        public void FireSituationStateChanged(ISituation situation, Peer subscriber)
+        {
+            if (SituationStateChanged != null) SituationStateChanged.Invoke(this, new SituationChangedEventArgs() { Situation = situation, Subscriber = subscriber });
+        }
+
+        #endregion
+
     }
 }
