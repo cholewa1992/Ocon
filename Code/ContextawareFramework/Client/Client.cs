@@ -17,7 +17,7 @@ namespace Client
         /// </summary>
         /// <param name="comHelper">The ICommunicationHelper implementation to use</param>
         /// <param name="situations">The situations to send to the context framework for tracking</param>
-        public Client(ICommunicationHelper comHelper, params ISituation[] situations)
+        public Client(ICommunicationHelper comHelper, params string[] situations)
         {
             //Setting the com helper
             _comHelper = comHelper;
@@ -25,8 +25,7 @@ namespace Client
             //Adding situations
             foreach (var s in situations)
             {
-                s.SubscribersAddresse = _clientId;
-                _situations.Add(s);
+                
             }
 
             //Staring discovery
@@ -42,6 +41,7 @@ namespace Client
             _comHelper.IncommingSituationChangedEvent +=
                 (sender, args) =>
                     SituationStateChangedEvent(this, new SituationStateUpdateEventArgs(_situations.Single(t => t.SubscribersAddresse == args.Guid)));
+
 
             //Start listening
             _comHelper.StartListen();
