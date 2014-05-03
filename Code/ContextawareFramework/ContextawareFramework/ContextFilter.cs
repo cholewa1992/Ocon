@@ -7,9 +7,9 @@ namespace ContextawareFramework
     public class ContextFilter
     {
 
-        private readonly ICollection<IEntity> _entities = new HashSet<IEntity>(new CustomEquallityCompare());
-        private readonly ICollection<ISituation> _situations = new HashSet<ISituation>();
-        private readonly Dictionary<Guid, IPEndPoint>  _clients = new Dictionary<Guid, IPEndPoint>();
+        private readonly ICollection<IEntity> _entities = new HashSet<IEntity>(new EntityEquallityCompare());
+        //private readonly ICollection<ISituation> _subscriptions = new HashSet<ISituation>();
+        private readonly Dictionary<ISituation, List<Guid>> _subscriptions = new Dictionary<ISituation, List<Guid>>(new SituationEqualityCompare()); 
 
         
 
@@ -46,7 +46,7 @@ namespace ContextawareFramework
         {
             if(situation == null) throw new ArgumentNullException("Parsed situation can't be null");
 
-            return _situations.Remove(situation);
+            return _subscriptions.Remove(situation);
         }
 
 
@@ -59,46 +59,60 @@ namespace ContextawareFramework
         {
             if(situation == null) throw new ArgumentNullException("Parsed situation can't be null");
 
-            _situations.Add(situation);
 
+            if (!_subscriptions.ContainsKey(situation))
+            {
+                _subscriptions.Add(situation, new List<Guid>());
+            }
+
+            
             foreach (var s in situations)
             {
-                _situations.Add(s);
+                if (!_subscriptions.ContainsKey(s))
+                {
+                    _subscriptions.Add(s, new List<Guid>());
+                }
             }
+        }
+
+
+        public void Subscribe(Guid subscriber, string situationIdentifier)
+        {
+            if (subscriber == null) throw new ArgumentNullException("Parsed guid can't be null");
+            if (string.IsNullOrEmpty(situationIdentifier)) throw new ArgumentNullException("Parsed situationIdentifier can't be null or empty");
+
+
+            foreach (var subscription in _subscriptions)
+            {
+                if (subscription.Key.Name == situationIdentifier)
+                {
+                    subscription.Value.Add(subscriber);
+                }
+            }
+
+            _subscriptions[situation].Add(subscriber);
+
         }
 
 
 
         public void TestSituations()
         {
-            foreach (var situation in _situations)
+            foreach (var situation in _subscriptions)
             {
-                Console.WriteLine(situation.SubscribersAddresse);
-                if (situation.SituationPredicate == null) continue;
-                Console.WriteLine("Ok");
 
+                Console.WriteLine("Situation id: " + situation.Key.Id);
 
-                bool currentState = situation.SituationPredicate(_entities);
-
-                if (situation.State != currentState)
+                foreach (var subscriber in situation.Value)
                 {
-                    situation.State = currentState;
-                    FireSituationStateChanged(situation);
+                    Console.WriteLine(subscriber);
                 }
-
+                
             }
         }
 
 
-        public void AddClient(Guid guid, IPEndPoint ipEndPoint)
-        {
-            _clients.Add(guid, ipEndPoint);
-        }
-
-        public IPEndPoint GetClientEndPoint(Guid guid)
-        {
-            return _clients[guid];
-        }
+       
         
     }
 }

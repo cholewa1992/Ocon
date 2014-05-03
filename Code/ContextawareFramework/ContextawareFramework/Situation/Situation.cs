@@ -29,6 +29,9 @@ namespace ContextawareFramework
         }
 
         private Guid _id = Guid.NewGuid();
+
+        public string Name { get; set; }
+
         public Guid Id
         {
             get { return _id; }
