@@ -1,5 +1,4 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -218,8 +217,11 @@ namespace ContextawareFramework.NetworkHelper
                             }
                             else if (type == PackageType.SituationSubscription)
                             {
+                                //Getting json
+                                dynamic subscription = JsonConvert.DeserializeObject(ReadStringFromStream(stream));
+
                                 //Getting data and firing event
-                                var eventArgs = new IncommingSituationSubscribtionEventArgs(ReadStringFromStream(stream));
+                                var eventArgs = new IncommingSituationSubscribtionEventArgs(subscription.Guid, subscription.SituationIdentifier);
                                 IncommingSituationSubscribtionEvent(client.Client.RemoteEndPoint, eventArgs);
                             }
                             else
@@ -344,10 +346,13 @@ namespace ContextawareFramework.NetworkHelper
         /// <summary>
         /// Method for subscribing to a Situation.
         /// </summary>
+        /// <param name="guid">The clients GUID</param>
         /// <param name="situationIdentifier">The situation's identifier whom to subscribe</param>
         /// <param name="ipep">The remote endpoint</param>
-        public void SubscribeSituation(string situationIdentifier, IPEndPoint ipep)
+        public void SubscribeSituation(Guid guid, string situationIdentifier, IPEndPoint ipep)
         {
+            var json = JsonConvert.SerializeObject(new {Guid = guid, SituationIdentifier = situationIdentifier});
+
             SendString(situationIdentifier, PackageType.SituationSubscription, ipep);
         }
 

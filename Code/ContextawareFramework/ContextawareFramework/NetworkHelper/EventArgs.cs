@@ -15,9 +15,11 @@ namespace ContextawareFramework.NetworkHelper
 
     public class IncommingSituationSubscribtionEventArgs : EventArgs
     {
+        public Guid Guid { get; set; }
         public string SituationIdentifier { set; get; }
-        internal IncommingSituationSubscribtionEventArgs(string situationIdentifier)
+        internal IncommingSituationSubscribtionEventArgs(Guid guid, string situationIdentifier)
         {
+            Guid = guid;
             SituationIdentifier = situationIdentifier;
         }
     }
