@@ -25,9 +25,9 @@ namespace ContextawareFramework.NetworkHelper
         event EventHandler<IncommingClientEventArgs> IncommingClient;
 
         /// <summary>
-        /// This event will be fired whenever a new situation is avalible
+        /// This event will be fired whenever a client subscribes a situation
         /// </summary>
-        event EventHandler<IncommingSituationEventArgs> IncommingSituationEvent;
+        event EventHandler<IncommingSituationSubscribtionEventArgs> IncommingSituationSubscribtionEvent;
 
         /// <summary>
         /// This event will be fired whenever a new entity is avalible

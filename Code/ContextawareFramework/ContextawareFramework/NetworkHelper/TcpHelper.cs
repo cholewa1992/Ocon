@@ -122,7 +122,7 @@ namespace ContextawareFramework.NetworkHelper
         /// <summary>
         /// This event will be fired whenever a new situation is avalible
         /// </summary>
-        public event EventHandler<IncommingSituationEventArgs> IncommingSituationEvent;
+        public event EventHandler<IncommingSituationSubscribtionEventArgs> IncommingSituationSubscribtionEvent;
 
         /// <summary>
         /// This event will be fired whenever a new entity is avalible
@@ -212,7 +212,7 @@ namespace ContextawareFramework.NetworkHelper
                     }
                     else if (type == PackageType.SituationSubscription)
                     {
-                        //TODO
+                        IncommingSituationSubscribtionEvent(client.Client.RemoteEndPoint, new IncommingSituationSubscribtionEventArgs(ReadStringFromStream(stream)));
                     }
                     else
                     {
