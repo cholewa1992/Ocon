@@ -25,9 +25,9 @@ namespace ContextawareFramework.NetworkHelper
         event EventHandler<IncommingClientEventArgs> IncommingClient;
 
         /// <summary>
-        /// This event will be fired whenever a new situation is avalible
+        /// This event will be fired whenever a client subscribes a situation
         /// </summary>
-        event EventHandler<IncommingSituationEventArgs> IncommingSituationEvent;
+        event EventHandler<IncommingSituationSubscribtionEventArgs> IncommingSituationSubscribtionEvent;
 
         /// <summary>
         /// This event will be fired whenever a new entity is avalible
@@ -67,17 +67,17 @@ namespace ContextawareFramework.NetworkHelper
         void SendEntity(IEntity entity, IPEndPoint ipep);
 
         /// <summary>
-        /// Method for sending an Situation
-        /// </summary>
-        /// <param name="situation">The situation to send</param>
-        /// <param name="ipep">The remote endpoint</param>
-        void SendSituation(ISituation situation, IPEndPoint ipep);
-
-        /// <summary>
         /// Method for sending an Situation state to client
         /// </summary>
         /// <param name="situation">The situation whoms state to send</param>
         /// <param name="ipep">The remote endpoint</param>
-        void SendSituationStatusUpdate(ISituation situation, IPEndPoint ipep);
+        void SendSituationState(ISituation situation, IPEndPoint ipep);
+
+        /// <summary>
+        /// Method for subscribing to a Situation.
+        /// </summary>
+        /// <param name="situationIdentifier">The situation's identifier whom to subscribe</param>
+        /// <param name="ipep">The remote endpoint</param>
+        void SubscribeSituation(string situationIdentifier, IPEndPoint ipep);
     }
 }

@@ -13,12 +13,12 @@ namespace ContextawareFramework.NetworkHelper
         }
     }
 
-    public class IncommingSituationEventArgs : EventArgs
+    public class IncommingSituationSubscribtionEventArgs : EventArgs
     {
-        public ISituation Situation { set; get; }
-        internal IncommingSituationEventArgs(ISituation situation)
+        public string SituationIdentifier { set; get; }
+        internal IncommingSituationSubscribtionEventArgs(string situationIdentifier)
         {
-            Situation = situation;
+            SituationIdentifier = situationIdentifier;
         }
     }
 

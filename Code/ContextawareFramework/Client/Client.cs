@@ -47,19 +47,11 @@ namespace Client
             _comHelper.StartListen();
 
             Console.WriteLine("Starting discovery (" + _clientId + ")");
-            _comHelper.DiscoveryServiceEvent += (sender, args) => RegisterSituation(args.Peer);
             _comHelper.DiscoveryService(_clientId, true);
         }
 
         public event EventHandler<SituationStateUpdateEventArgs> SituationStateChangedEvent;
 
-        private void RegisterSituation(Peer peer)
-        {
-            foreach (var situation in _situations)
-            {
-                _comHelper.SendSituation(situation, peer.IpEndPoint);
-            }
-        }
     }
 
     public class SituationStateUpdateEventArgs : EventArgs

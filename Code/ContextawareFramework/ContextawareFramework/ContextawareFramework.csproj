@@ -87,6 +87,7 @@
     <Compile Include="NetworkHelper\EventArgs.cs" />
     <Compile Include="NetworkHelper\Group.cs" />
     <Compile Include="NetworkHelper\ICommunicationHelper.cs" />
+    <Compile Include="NetworkHelper\PackageType.cs" />
     <Compile Include="NetworkHelper\TcpHelper.cs" />
     <Compile Include="SituationChangedEventArgs.cs" />
     <Compile Include="Situation\Situation.cs" />
