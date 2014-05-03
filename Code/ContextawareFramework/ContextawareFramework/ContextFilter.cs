@@ -95,10 +95,29 @@ namespace ContextawareFramework
         }
 
 
-
+        /// <summary>
+        /// Tests situation predicates against entities
+        /// </summary>
         public void TestSituations()
         {
-            
+            foreach (var situation in _situations)
+            {
+
+                bool currentState = situation.Value.SituationPredicate.Invoke(_entities);
+
+                //Notify subscribers if there's a change in state
+                if (currentState != situation.Value.State)
+                {
+
+                    situation.Value.State = currentState;
+
+                    foreach (var subscriber in situation.Value.GetSubscribersList())
+                    {
+                        FireSituationStateChanged(situation.Value, subscriber);
+                    }
+                }
+                
+            }
         }
 
 
