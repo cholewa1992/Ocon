@@ -24,7 +24,7 @@ namespace ContextawareFramework
             // Set up
             _contextFilter.SituationStateChanged +=
                 (sender, args) =>
-                    _comHelper.SendSituationStatusUpdate(args.Situation, _clients[args.Situation.SubscribersAddresse]);
+                    _comHelper.SendSituationState(args.Situation, _clients[args.Situation.SubscribersAddresse]);
 
             // Set up events
             _comHelper.IncommingClient          += (sender, args) =>

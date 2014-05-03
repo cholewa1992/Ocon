@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Net.Sockets;
 
@@ -51,33 +50,6 @@ namespace ContextawareFramework.NetworkHelper
             }
         }
 
-        /// <summary>
-        /// Sends a situation to all peers in the group
-        /// </summary>
-        /// <param name="situation">The situation to sent</param>
-        public void SendSituation(ISituation situation)
-        {
-            var toRemove = new List<Peer>();
-            foreach (var observer in _observers)
-            {
-                try
-                {
-                    _comHelper.SendSituation(situation, observer.IpEndPoint);
-                    _tries[observer] = 0;
-
-                }
-                catch (SocketException e)
-                {
-                    Console.WriteLine(e.Message);
-                    _tries[observer]++;
-                    if (_tries[observer] >= 3) toRemove.Add(observer);
-                }
-            }
-            foreach (var peer in toRemove)
-            {
-                RemovePeer(peer);
-            }
-        }
 
         /// <summary>
         /// Adds a peer to the group

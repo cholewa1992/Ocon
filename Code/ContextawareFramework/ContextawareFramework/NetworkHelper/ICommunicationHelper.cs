@@ -67,17 +67,17 @@ namespace ContextawareFramework.NetworkHelper
         void SendEntity(IEntity entity, IPEndPoint ipep);
 
         /// <summary>
-        /// Method for sending an Situation
-        /// </summary>
-        /// <param name="situation">The situation to send</param>
-        /// <param name="ipep">The remote endpoint</param>
-        void SendSituation(ISituation situation, IPEndPoint ipep);
-
-        /// <summary>
         /// Method for sending an Situation state to client
         /// </summary>
         /// <param name="situation">The situation whoms state to send</param>
         /// <param name="ipep">The remote endpoint</param>
-        void SendSituationStatusUpdate(ISituation situation, IPEndPoint ipep);
+        void SendSituationState(ISituation situation, IPEndPoint ipep);
+
+        /// <summary>
+        /// Method for subscribing to a Situation.
+        /// </summary>
+        /// <param name="situationIdentifier">The situation's identifier whom to subscribe</param>
+        /// <param name="ipep">The remote endpoint</param>
+        void SubscribeSituation(string situationIdentifier, IPEndPoint ipep);
     }
 }
