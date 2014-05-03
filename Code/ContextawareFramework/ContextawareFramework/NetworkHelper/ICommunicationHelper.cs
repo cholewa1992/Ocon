@@ -76,8 +76,9 @@ namespace ContextawareFramework.NetworkHelper
         /// <summary>
         /// Method for subscribing to a Situation.
         /// </summary>
+        /// <param name="guid">The clients GUID</param>
         /// <param name="situationIdentifier">The situation's identifier whom to subscribe</param>
         /// <param name="ipep">The remote endpoint</param>
-        void SubscribeSituation(string situationIdentifier, IPEndPoint ipep);
+        void SubscribeSituation(Guid guid, string situationIdentifier, IPEndPoint ipep);
     }
 }

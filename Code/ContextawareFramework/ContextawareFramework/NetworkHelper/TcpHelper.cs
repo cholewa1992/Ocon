@@ -1,6 +1,6 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -25,6 +25,8 @@ namespace ContextawareFramework.NetworkHelper
         private int _communicationPort = 2002;
 
         private IPAddress _multicastAddress = IPAddress.Parse("224.5.6.7");
+        private TextWriter _outputStream;
+
         #endregion
         #region Properties
         public static bool IsBroadcasting { get; private set; }
@@ -43,15 +45,16 @@ namespace ContextawareFramework.NetworkHelper
             get { return _multicastAddress; }
             set { _multicastAddress = value; }
         }
+
         #endregion
 
         /// <summary>
         /// Constructs a new instance, or returns an active instance of the TcpHelper 
         /// </summary>
         /// <returns></returns>
-        public static TcpHelper GetInstance()
+        public static TcpHelper GetInstance(TextWriter errorLogWriter = null)
         {
-            return _instance ?? (_instance = new TcpHelper());
+            return _instance ?? (_instance = new TcpHelper{_outputStream = errorLogWriter});
         }
 
         private TcpHelper()
@@ -144,91 +147,110 @@ namespace ContextawareFramework.NetworkHelper
                 _stopListenTokenSource = new CancellationTokenSource();
             Task.Run(() =>
             {
-                var localEndPoint = new IPEndPoint(IPAddress.Any, CommunicationPort);
-                var tcpListener = new TcpListener(localEndPoint);
-                tcpListener.Start();
-
-                while (true)
+                try
                 {
-                    var client = tcpListener.AcceptTcpClient();
-                    var stream = client.GetStream();
+                    var localEndPoint = new IPEndPoint(IPAddress.Any, CommunicationPort);
+                    var tcpListener = new TcpListener(localEndPoint);
+                    tcpListener.Start();
 
-                    var header = new byte[1];
-                    stream.Read(header, 0, 1);
-                    var type = JsonConvert.DeserializeObject<PackageType>(header.GetString());
-
-
-                    if (type == PackageType.Entity)
+                    while (true)
                     {
-                        //If no one is subsribing, continue
-                        if (IncommingEntityEvent == null) continue;
+                        try
+                        {
+                            //Accepting client and starting stream
+                            var client = tcpListener.AcceptTcpClient();
+                            var stream = client.GetStream();
 
-                        //try
-                        //{
-                            //Getting json string
-                            var json = ReadStringFromStream(stream);
+                            //Getting and deserializing message header
+                            var header = new byte[1];
+                            stream.Read(header, 0, 1);
+                            var type = JsonConvert.DeserializeObject<PackageType>(header.GetString());
 
-                            //Getting entity type from string
-                            var entityType = Type.GetType(GetEntityTypeString(json));
 
-                            //Getting entity from JSON
-                            var entity = (IEntity) JsonConvert.DeserializeObject(json, entityType);
+                            if (type == PackageType.Entity)
+                            {
+                                //If no one is subsribing, continue
+                                if (IncommingEntityEvent == null) continue;
 
-                            //Fireing Entity event
-                            IncommingEntityEvent(client.Client.RemoteEndPoint, new IncommingEntityEventArgs(entity));
-                        //}
-                        //catch (Exception e)
-                        //{
-                        //    throw e;
-                        //}
+                                //Getting json string
+                                var json = ReadStringFromStream(stream);
+
+                                //Getting entity type from string
+                                var entityType = Type.GetType(GetEntityTypeString(json));
+
+                                //Getting entity from JSON
+                                var entity = (IEntity) JsonConvert.DeserializeObject(json, entityType);
+
+                                //Fireing Entity event
+                                IncommingEntityEvent(client.Client.RemoteEndPoint, new IncommingEntityEventArgs(entity));
+                            }
+                            else if (type == PackageType.SituationUpdate)
+                            {
+                                //Getting JSON from stream
+                                var json = ReadStringFromStream(stream);
+
+                                //Taking entity and stores it as dynamic
+                                dynamic situationUpdate = JsonConvert.DeserializeObject(json);
+
+                                //Fireing event
+                                var eventArgs = new IncommingSituationChangedEventArgs(situationUpdate.Guid,
+                                    situationUpdate.State);
+                                IncommingSituationChangedEvent(client.Client.RemoteEndPoint, eventArgs);
+                            }
+
+                            else if (type == PackageType.Handshake)
+                            {
+                                //If no one is subsribing, continue
+                                if (IncommingClient == null) continue;
+
+                                //Getting remote endpoint
+                                var ripep = client.Client.RemoteEndPoint as IPEndPoint;
+
+                                //If the remote endpoint is empty continue
+                                if (ripep == null) continue;
+
+                                //Getting guid from JSON
+                                var guid = JsonConvert.DeserializeObject<Guid>(ReadStringFromStream(stream));
+
+                                //Fireing Client event
+                                IncommingClient(client.Client.RemoteEndPoint, new IncommingClientEventArgs(ripep, guid));
+                            }
+                            else if (type == PackageType.SituationSubscription)
+                            {
+                                //Getting json
+                                dynamic subscription = JsonConvert.DeserializeObject(ReadStringFromStream(stream));
+
+                                //Getting data and firing event
+                                var eventArgs = new IncommingSituationSubscribtionEventArgs(subscription.Guid, subscription.SituationIdentifier);
+                                IncommingSituationSubscribtionEvent(client.Client.RemoteEndPoint, eventArgs);
+                            }
+                            else
+                            {
+                                Log("Got an wired message from " + client.Client.LocalEndPoint);
+                                Log(ReadStringFromStream(stream));
+                            }
+
+                            if (_stopListenTokenSource.Token.IsCancellationRequested)
+                            {
+                                client.Close();
+                                _stopListenTokenSource.Token.ThrowIfCancellationRequested();
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            Log("An error occurred: " + e.Message);
+                        }
 
                     }
-                    else if (type == PackageType.SituationUpdate)
-                    {
-                        var json = ReadStringFromStream(stream);
-                        dynamic situationUpdate = JsonConvert.DeserializeObject(json);
-                        IncommingSituationChangedEvent(
-                            client.Client.RemoteEndPoint,
-                            new IncommingSituationChangedEventArgs(situationUpdate.Guid, situationUpdate.State)
-                            );
-                    }
-
-                    else if (type == PackageType.Handshake)
-                    {
-                        //If no one is subsribing, continue
-                        if (IncommingClient == null) continue;
-
-                        //Getting remote endpoint
-                        var ripep = client.Client.RemoteEndPoint as IPEndPoint;
-
-                        //If the remote endpoint is empty continue
-                        if (ripep == null) continue;
-
-                        //Getting guid from JSON
-                        var guid = JsonConvert.DeserializeObject<Guid>(ReadStringFromStream(stream));
-
-                        //Fireing Client event
-                        IncommingClient(client.Client.RemoteEndPoint, new IncommingClientEventArgs(ripep, guid));
-                    }
-                    else if (type == PackageType.SituationSubscription)
-                    {
-                        IncommingSituationSubscribtionEvent(client.Client.RemoteEndPoint, new IncommingSituationSubscribtionEventArgs(ReadStringFromStream(stream)));
-                    }
-                    else
-                    {
-                        Console.WriteLine("Got an wired message from " + client.Client.LocalEndPoint);
-                        Console.WriteLine(ReadStringFromStream(stream));
-                    }
-
-                    if (_stopListenTokenSource.Token.IsCancellationRequested)
-                    {
-                        client.Close();
-                        _stopListenTokenSource.Token.ThrowIfCancellationRequested();
-                    }
+                }
+                catch (Exception e)
+                {
+                    Log("The listener stop due to an unrecoverble error: " + e.Message);
                 }
             },
                 _stopListenTokenSource.Token);
         }
+
         #region Listener helper methodes
         private string ReadStringFromStream(NetworkStream stream)
         {
@@ -315,7 +337,7 @@ namespace ContextawareFramework.NetworkHelper
                 }
                 catch (SocketException e)
                 {
-                    Console.WriteLine("Discovery service has stopped due to following error: " + e.Message);
+                   Log("Discovery service has stopped due to following error: " + e.Message);
                 }
 
             }, _stopDiscoveryTokenSource.Token);
@@ -324,10 +346,13 @@ namespace ContextawareFramework.NetworkHelper
         /// <summary>
         /// Method for subscribing to a Situation.
         /// </summary>
+        /// <param name="guid">The clients GUID</param>
         /// <param name="situationIdentifier">The situation's identifier whom to subscribe</param>
         /// <param name="ipep">The remote endpoint</param>
-        public void SubscribeSituation(string situationIdentifier, IPEndPoint ipep)
+        public void SubscribeSituation(Guid guid, string situationIdentifier, IPEndPoint ipep)
         {
+            var json = JsonConvert.SerializeObject(new {Guid = guid, SituationIdentifier = situationIdentifier});
+
             SendString(situationIdentifier, PackageType.SituationSubscription, ipep);
         }
 
@@ -365,22 +390,39 @@ namespace ContextawareFramework.NetworkHelper
         /// <param name="ipep">The distination endpoint</param>
         private void SendString(string msg, PackageType type,  IPEndPoint ipep)
         {
-            var client = new TcpClient();
-            var serverEndPoint = ipep;
-            client.Connect(serverEndPoint);
+            try
+            {
+                var client = new TcpClient();
+                var serverEndPoint = ipep;
+                client.Connect(serverEndPoint);
 
-            var clientStream = client.GetStream();
+                var clientStream = client.GetStream();
 
-            //Sending header
-            var header = JsonConvert.SerializeObject(type).GetBytes();
-            clientStream.Write(header, 0, header.Length);
+                //Sending header
+                var header = JsonConvert.SerializeObject(type).GetBytes();
+                clientStream.Write(header, 0, header.Length);
 
-            //Sending message
-            var bytes = msg.GetBytes();
-            clientStream.Write(bytes, 0, bytes.Length);
+                //Sending message
+                var bytes = msg.GetBytes();
+                clientStream.Write(bytes, 0, bytes.Length);
 
-            clientStream.Flush();
-            client.Close();
+                clientStream.Flush();
+                client.Close();
+            }
+            catch (Exception e)
+            {
+                Log("Could not send message: " + e.Message);
+            }
         }
+
+        /// <summary>
+        /// Private method for making error log messages
+        /// </summary>
+        /// <param name="msg"></param>
+        private void Log(string msg)
+        {
+            if(_outputStream != null) _outputStream.WriteLine(msg);
+        }
+
     }
 }

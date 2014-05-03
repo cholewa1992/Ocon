@@ -11,7 +11,7 @@ namespace TestClient
     {
         static void Main(string[] args)
         {
-            ICommunicationHelper comHelper = TcpHelper.GetInstance();
+            ICommunicationHelper comHelper = TcpHelper.GetInstance(Console.Out);
 
             var p = new Predicate<ICollection<IEntity>>(entities => entities.OfType<Person>().Count() <= 3 );
 
