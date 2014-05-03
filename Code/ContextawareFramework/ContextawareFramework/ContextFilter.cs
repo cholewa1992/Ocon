@@ -95,10 +95,21 @@ namespace ContextawareFramework
         }
 
 
-
+        /// <summary>
+        /// Tests situation predicates against entities
+        /// </summary>
         public void TestSituations()
         {
-            
+            foreach (var situation in _situations)
+            {
+                if (situation.Value.SituationPredicate.Invoke(_entities))
+                {
+                    foreach (var subscriber in situation.Value.GetSubscribersList())
+                    {
+                        FireSituationStateChanged(situation.Value, subscriber);
+                    }
+                }
+            }
         }
 
 

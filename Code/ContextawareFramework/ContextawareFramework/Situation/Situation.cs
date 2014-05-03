@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using System.Runtime.Serialization;
 using ContextawareFramework.NetworkHelper;
 
@@ -55,6 +56,11 @@ namespace ContextawareFramework
         public void RemoveSubscriber(Peer peer)
         {
             _peers.Remove(peer);
+        }
+
+        public ICollection<Peer> GetSubscribersList()
+        {
+            return _peers.ToList();
         }
 
         public ICollection<Guid> Subscribers { get; set; }

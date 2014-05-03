@@ -20,5 +20,6 @@ namespace ContextawareFramework
 
         void AddSubscriber(Peer peer);
         void RemoveSubscriber(Peer peer);
+        ICollection<Peer> GetSubscribersList();
     }
 }
