@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using System.Runtime.Serialization;
 using ContextawareFramework.NetworkHelper;
 
 namespace ContextawareFramework
@@ -60,11 +59,6 @@ namespace ContextawareFramework
         {
             return _peers.ToList();
         }
-
-        public ICollection<Guid> Subscribers { get; set; }
-
-        public Guid SubscribersAddresse { get; set; }
-
 
         public Situation(Predicate<ICollection<IEntity>> situationPredicate)
         {

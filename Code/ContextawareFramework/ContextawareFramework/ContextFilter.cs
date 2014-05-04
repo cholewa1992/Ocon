@@ -119,6 +119,7 @@ namespace ContextawareFramework
 
                     foreach (var subscriber in situation.Value.GetSubscribersList())
                     {
+                        Console.WriteLine("ok");
                         FireSituationStateChanged(situation.Value, subscriber);
                     }
                 }
