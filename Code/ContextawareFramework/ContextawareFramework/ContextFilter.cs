@@ -100,10 +100,12 @@ namespace ContextawareFramework
         /// </summary>
         public void TestSituations()
         {
+
             foreach (var situation in _situations)
             {
 
                 bool currentState = situation.Value.SituationPredicate.Invoke(_entities);
+                Console.WriteLine(currentState + " - " + _entities.Count);
 
                 //Notify subscribers if there's a change in state
                 if (currentState != situation.Value.State)

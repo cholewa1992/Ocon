@@ -11,16 +11,14 @@ namespace ContextawareFramework
     public class Situation: ISituation
     {
 
-        private HashSet<Peer> _peers = new HashSet<Peer>(new PeerEquallityCompare());
-
-        private Guid _id = Guid.NewGuid();
+        private readonly HashSet<Peer> _peers = new HashSet<Peer>(new PeerEquallityCompare());
+        private readonly Guid _id = Guid.NewGuid();
 
         public string Name { get; set; }
 
         public Guid Id
         {
             get { return _id; }
-            private set { _id = value; }
         }
 
         private string _description;
@@ -71,15 +69,6 @@ namespace ContextawareFramework
         public Situation(Predicate<ICollection<IEntity>> situationPredicate)
         {
             SituationPredicate = situationPredicate;
-        }
-
-        public void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            info.AddValue("Id", Id);
-            info.AddValue("SubscribersAddresse", SubscribersAddresse);
-            info.AddValue("SituationPredicate", SituationPredicate);
-            info.AddValue("State", State);
-            info.AddValue("Description", Description);
         }
     }
 }
