@@ -8,11 +8,20 @@ namespace ContextawareFramework
         private readonly ICommunicationHelper _comHelper;
         private readonly ContextFilter _contextFilter;
 
+        /// <summary>
+        /// Constructs the object given contextFilter and communicationHelper
+        /// </summary>
+        /// <param name="contextFilter"></param>
+        /// <param name="communicationHelper"></param>
         public ContextCentral(ContextFilter contextFilter, ICommunicationHelper communicationHelper)
         {
             _contextFilter = contextFilter;
             _comHelper = communicationHelper;
         }
+
+        /// <summary>
+        /// Registers events and starts communication
+        /// </summary>
 
         public void Initialize()
         {
