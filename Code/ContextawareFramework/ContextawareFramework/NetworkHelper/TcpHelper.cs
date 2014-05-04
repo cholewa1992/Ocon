@@ -251,8 +251,8 @@ namespace ContextawareFramework.NetworkHelper
                 dynamic situationUpdate = JsonConvert.DeserializeObject(message.Body);
 
                 //Fireing event
-                var eventArgs = new IncommingSituationChangedEventArgs(situationUpdate.SituationId,
-                    situationUpdate.State);
+                var eventArgs = new IncommingSituationChangedEventArgs((Guid) situationUpdate.SituationId,
+                    (bool) situationUpdate.State);
                 IncommingSituationChangedEvent(message.Peer, eventArgs);
             }
             else if (message.Type == PackageType.SituationSubscription)
