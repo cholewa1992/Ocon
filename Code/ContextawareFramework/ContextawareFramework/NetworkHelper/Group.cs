@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Net.Sockets;
 
 namespace ContextawareFramework.NetworkHelper
@@ -81,39 +80,5 @@ namespace ContextawareFramework.NetworkHelper
                 _observers.Remove(peer);
             }
         }
-
-        /// <summary>
-        /// Helper class to print who's observing
-        /// </summary>
-        public void PrintObservers()
-        {
-            Console.Clear();
-            Console.WriteLine("------------- Observers -------------");
-            foreach (var observer in _observers)
-            {
-                Console.WriteLine(observer.Guid);
-            }
-            Console.WriteLine("-------------------------------------");
-        }
     }
-
-    #region Helperclasses
-    public class Peer
-    {
-        public Guid Guid { get; set; }
-    }
-
-    public class PeerEquallityCompare : IEqualityComparer<Peer>
-    {
-        public bool Equals(Peer x, Peer y)
-        {
-            return x.Guid.Equals(y.Guid);
-        }
-
-        public int GetHashCode(Peer obj)
-        {
-            return obj.Guid.GetHashCode();
-        }
-    }
-    #endregion
 }
