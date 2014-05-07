@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using ContextawareFramework;
 using ContextawareFramework.NetworkHelper;
 
-namespace Widget
+namespace ContextawareFramework
 {
     public class Widget
     {
