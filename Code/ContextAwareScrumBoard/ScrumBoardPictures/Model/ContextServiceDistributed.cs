@@ -9,11 +9,7 @@ namespace ScrumBoardPictures.Model
         public void GetData(Action<BoardState, Exception> callback)
         {
 
-            TcpHelper.GetInstance().IncommingSituationChangedEvent +=
-                (sender, args) =>
-                {
-                    Console.WriteLine(args.State);
-                };
+            
 
         }
     }
