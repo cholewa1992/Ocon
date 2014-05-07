@@ -3,9 +3,13 @@ using System.Drawing;
 using System.Net.Cache;
 using System.Net.Mime;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using ContextawareFramework;
+using ContextawareFramework.NetworkHelper;
 using GalaSoft.MvvmLight;
 using ScrumBoardPictures.Model;
+
 
 namespace ScrumBoardPictures.ViewModel
 {
@@ -19,7 +23,7 @@ namespace ScrumBoardPictures.ViewModel
     {
         private readonly IContextService _contextService;
 
-        
+        private readonly Client frameworkClient;
 
 
        
@@ -44,6 +48,9 @@ namespace ScrumBoardPictures.ViewModel
         /// </summary>
         public MainViewModel(IContextService contextService)
         {
+            var comHelper = new TcpHelper(Console.Out);
+
+            frameworkClient = new Client(new TcpHelper());
             
             var overviewUri = new Uri("pack://application:,,,/ScrumBoardPictures;component/BoardOverview.jpg");
             var closeupUri = new Uri("pack://application:,,,/ScrumBoardPictures;component/BoardCloseup.jpg");
