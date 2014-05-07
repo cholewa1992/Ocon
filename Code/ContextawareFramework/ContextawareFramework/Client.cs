@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using ContextawareFramework;
 using ContextawareFramework.NetworkHelper;
 
-namespace Client
+namespace ContextawareFramework
 {
     public class Client
     {

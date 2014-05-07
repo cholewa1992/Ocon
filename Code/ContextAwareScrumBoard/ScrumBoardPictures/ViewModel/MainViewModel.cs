@@ -1,11 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Net.Cache;
 using System.Net.Mime;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using ContextawareFramework;
+using ContextawareFramework.NetworkHelper;
 using GalaSoft.MvvmLight;
 using ScrumBoardPictures.Model;
+
 
 namespace ScrumBoardPictures.ViewModel
 {
@@ -17,11 +22,17 @@ namespace ScrumBoardPictures.ViewModel
     /// </summary>
     public class MainViewModel : ViewModelBase
     {
+
+
+        private const string OverviewSituationName = "Overview";
+        private const string StandupSituationName = "Standup";
+        private const string CloseupSituationName = "Closeup";
+
+
+
         private readonly IContextService _contextService;
 
-        
-
-
+        private Dictionary<string, string> _viewMap = new Dictionary<string, string>();
        
 
         private string _imageUri;
@@ -44,38 +55,35 @@ namespace ScrumBoardPictures.ViewModel
         /// </summary>
         public MainViewModel(IContextService contextService)
         {
+
             
-            var overviewUri = new Uri("pack://application:,,,/ScrumBoardPictures;component/BoardOverview.jpg");
-            var closeupUri = new Uri("pack://application:,,,/ScrumBoardPictures;component/BoardCloseup.jpg");
-            var standupUri = new Uri("pack://application:,,,/ScrumBoardPictures;component/BoardStandup.jpg");
+            _viewMap.Add(OverviewSituationName, "pack://application:,,,/ScrumBoardPictures;component/BoardOverview.jpg");
+            _viewMap.Add(StandupSituationName, "pack://application:,,,/ScrumBoardPictures;component/BoardStandup.jpg");
+            _viewMap.Add(CloseupSituationName, "pack://application:,,,/ScrumBoardPictures;component/BoardCloseup.jpg");
 
-            ImageUri = "pack://application:,,,/ScrumBoardPictures;component/BoardOverview.jpg";
-
-            _contextService = contextService;
-            _contextService.GetData(
-                (item, error) =>
-                {
-                    if (error != null)
-                    {
-                        MessageBox.Show(error.Message);
-                    }
+            ImageUri = _viewMap["Overview"];
 
 
-                    switch (item)
-                    {
-                        case BoardState.Overview:
-                            ImageUri = "pack://application:,,,/ScrumBoardPictures;component/BoardOverview.jpg";
-                            break;
+            var comHelper = new TcpHelper(Console.Out);
+            string[] situationNames = { CloseupSituationName, CloseupSituationName };
 
-                        case BoardState.Closeup:
-                            ImageUri = "pack://application:,,,/ScrumBoardPictures;component/BoardCloseup.jpg";
-                            break;
+            var frameworkClient = new Client(comHelper, situationNames);
 
-                        case BoardState.Standup:
-                            ImageUri = "pack://application:,,,/ScrumBoardPictures;component/BoardStandup.jpg";
-                            break;
-                    }
-                });
+            frameworkClient.SituationStateChangedEvent += (sender, args) =>
+            {
+                UpdatePicture(args.SituationName, args.State);
+                MessageBox.Show(args.SituationName);
+            };
+
+
+        }
+
+        private void UpdatePicture(string name, bool state)
+        {
+            if (_viewMap.ContainsKey(name))
+            {
+                ImageUri = state ? _viewMap[name] : _viewMap["Overview"];
+            }
         }
 
         ////public override void Cleanup()

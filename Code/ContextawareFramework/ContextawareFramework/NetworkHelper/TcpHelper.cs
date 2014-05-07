@@ -252,7 +252,7 @@ namespace ContextawareFramework.NetworkHelper
 
                 //Fireing event
                 var eventArgs = new IncommingSituationChangedEventArgs((Guid) situationUpdate.SituationId,
-                    (bool) situationUpdate.State);
+                    (bool) situationUpdate.State, (string) situationUpdate.SituationName);
                 IncommingSituationChangedEvent(message.Peer, eventArgs);
             }
             else if (message.Type == PackageType.SituationSubscription)
@@ -264,7 +264,7 @@ namespace ContextawareFramework.NetworkHelper
             }
             else
             {
-                Log("Got an wired message from " + message.Peer);
+                Log("Got a wired message from " + message.Peer);
             }
         }
 
@@ -394,7 +394,8 @@ namespace ContextawareFramework.NetworkHelper
             var json = JsonConvert.SerializeObject(new
             {
                 SituationId = situation.Id,
-                State = situation.State
+                State = situation.State,
+                SituationName = situation.Name
             });
             SendString(json, PackageType.SituationUpdate, peer);
         }

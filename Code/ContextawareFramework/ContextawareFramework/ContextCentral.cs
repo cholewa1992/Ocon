@@ -26,7 +26,7 @@ namespace ContextawareFramework
         public void Initialize()
         {
             // Set up
-            _contextFilter.SituationStateChanged        +=  (sender, args) => _comHelper.SendSituationState(args.Situation, args.Subscriber);
+            _contextFilter.SituationStateChanged += (sender, args) => _comHelper.SendSituationState(args.Situation, args.Subscriber);
 
             // Set up events
             _comHelper.IncommingEntityEvent += (sender, args) =>
@@ -41,6 +41,7 @@ namespace ContextawareFramework
                 Console.WriteLine("Situation request" + args.Peer.Guid);
             };
     
+
             // Start listening for widgets and clients
             _comHelper.StartListen();
 
