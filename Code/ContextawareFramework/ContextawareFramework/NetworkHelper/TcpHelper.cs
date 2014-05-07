@@ -185,6 +185,7 @@ namespace ContextawareFramework.NetworkHelper
                     var localEndPoint = new IPEndPoint(IPAddress.Any, CommunicationPort);
                     var tcpListener = new TcpListener(localEndPoint);
                     tcpListener.Start();
+                 
 
                     Log("Started listening on port " + CommunicationPort);
 
@@ -194,70 +195,32 @@ namespace ContextawareFramework.NetworkHelper
                         {
                             //Accepting client and starting stream
                             var client = tcpListener.AcceptTcpClient();
-                            var stream = client.GetStream();
+
+                            client.GetStream();
 
                             //Getting and deserializing message header
-                            var message = JsonConvert.DeserializeObject<Message>(ReadStringFromStream(stream));
+                            var message = JsonConvert.DeserializeObject<Message>(ReadStringFromStream(client.GetStream()).Result);
 
                             //Adding peer to _peers
-                            AddIpep(message.Peer, client.Client.RemoteEndPoint as IPEndPoint);
-
-                            var body = message.Body;
-
-
-                            if (message.Type == PackageType.Entity)
-                            {
-                                //If no one is subsribing, continue
-                                if (IncommingEntityEvent == null) continue;
-
-                                //Getting entity type from string
-                                var entityType = Type.GetType(GetEntityTypeString(body));
-
-                                //Getting entity from JSON
-                                var entity = (IEntity) JsonConvert.DeserializeObject(body, entityType);
-
-                                //Fireing Entity event
-                                IncommingEntityEvent(client.Client.RemoteEndPoint, new IncommingEntityEventArgs(entity));
-                            }
-                            else if (message.Type == PackageType.SituationUpdate)
-                            {
-                                //Taking entity and stores it as dynamic
-                                dynamic situationUpdate = JsonConvert.DeserializeObject(body);
-
-                                //Fireing event
-                                var eventArgs = new IncommingSituationChangedEventArgs(situationUpdate.Guid,
-                                    situationUpdate.State);
-                                IncommingSituationChangedEvent(client.Client.RemoteEndPoint, eventArgs);
-                            }
-                            else if (message.Type == PackageType.SituationSubscription)
-                            {
-
-                                //Getting data and firing event
-                                var eventArgs = new IncommingSituationSubscribtionEventArgs(message.Peer, body);
-                                IncommingSituationSubscribtionEvent(client.Client.RemoteEndPoint, eventArgs);
-                            }
-                            else
-                            {
-                                Log("Got an wired message from " + client.Client.LocalEndPoint);
-                                Log(ReadStringFromStream(stream));
-                            }
+                            AddIpep(message.Peer, new IPEndPoint((client.Client.RemoteEndPoint as IPEndPoint).Address, CommunicationPort));
+                            Parse(message);
+                            
+                            client.Close();
 
                             if (_stopListenTokenSource.Token.IsCancellationRequested)
                             {
-                                client.Close();
+                                tcpListener.Stop();
                                 _stopListenTokenSource.Token.ThrowIfCancellationRequested();
                             }
                         }
                         catch (Exception e)
                         {
-                            throw e;
                             Log("An error occurred: " + e.Message);
                         }
                     }
                 }
                 catch (Exception e)
                 {
-                    throw e;
                     Log("The listener stop due to an unrecoverble error: " + e.Message);
                 }
                 Log("Listening has stopped");
@@ -265,16 +228,56 @@ namespace ContextawareFramework.NetworkHelper
                 _stopListenTokenSource.Token);
         }
 
+
+        private void Parse(Message message)
+        {
+            if (message.Type == PackageType.Entity)
+            {
+                //If no one is subsribing, continue
+                if (IncommingEntityEvent == null) return;
+
+                //Getting entity type from string
+                var entityType = Type.GetType(GetEntityTypeString(message.Body));
+
+                //Getting entity from JSON
+                var entity = (IEntity)JsonConvert.DeserializeObject(message.Body, entityType);
+
+                //Fireing Entity event
+                IncommingEntityEvent(message.Peer, new IncommingEntityEventArgs(entity));
+            }
+            else if (message.Type == PackageType.SituationUpdate)
+            {
+                //Taking entity and stores it as dynamic
+                dynamic situationUpdate = JsonConvert.DeserializeObject(message.Body);
+
+                //Fireing event
+                var eventArgs = new IncommingSituationChangedEventArgs((Guid) situationUpdate.SituationId,
+                    (bool) situationUpdate.State);
+                IncommingSituationChangedEvent(message.Peer, eventArgs);
+            }
+            else if (message.Type == PackageType.SituationSubscription)
+            {
+
+                //Getting data and firing event
+                var eventArgs = new IncommingSituationSubscribtionEventArgs(message.Peer, message.Body);
+                IncommingSituationSubscribtionEvent(message.Peer, eventArgs);
+            }
+            else
+            {
+                Log("Got an wired message from " + message.Peer);
+            }
+        }
+
         #region Listener helper methodes
 
-        private string ReadStringFromStream(NetworkStream stream)
+        private async Task<string> ReadStringFromStream(NetworkStream stream)
         {
             var msg = new List<byte>();
             while (!stream.DataAvailable) ;
             while (stream.DataAvailable)
             {
                 var buffer = new byte[1024];
-                stream.Read(buffer, 0, buffer.Length);
+                await stream.ReadAsync(buffer, 0, buffer.Length);
                 msg.AddRange(buffer);
             }
             return msg.GetString();
@@ -362,9 +365,8 @@ namespace ContextawareFramework.NetworkHelper
         /// <summary>
         /// Method for subscribing to a Situation.
         /// </summary>
-        /// <param name="guid">The clients GUID</param>
         /// <param name="situationIdentifier">The situation's identifier whom to subscribe</param>
-        /// <param name="ipep">The remote endpoint</param>
+        /// <param name="peer">The distination peer</param>
         public void SubscribeSituation(string situationIdentifier, Peer peer)
         {
             SendString(situationIdentifier, PackageType.SituationSubscription, peer);
@@ -374,7 +376,7 @@ namespace ContextawareFramework.NetworkHelper
         /// Method for sending an entity
         /// </summary>
         /// <param name="entity">The entity to send</param>
-        /// <param name="ipep">The remote endpoint</param>
+        /// <param name="peer">The distination peer</param>
         public void SendEntity(IEntity entity, Peer peer)
         {
             var json = JsonConvert.SerializeObject(entity, entity.GetType(),
@@ -386,7 +388,7 @@ namespace ContextawareFramework.NetworkHelper
         /// Method for sending an Situation state to client
         /// </summary>
         /// <param name="situation">The situation whoms state to send</param>
-        /// <param name="ipep">The remote endpoint</param>
+        /// <param name="peer">The distination peer</param>
         public void SendSituationState(ISituation situation, Peer peer)
         {
             var json = JsonConvert.SerializeObject(new
@@ -405,19 +407,31 @@ namespace ContextawareFramework.NetworkHelper
         /// <param name="peer">The distination peer</param>
         private void SendString(string msg, PackageType type, Peer peer)
         {
-            var client = new TcpClient();
-            var serverEndPoint = IpepLookup(peer);
-            client.Connect(serverEndPoint);
+            Task.Run(() =>
+            {
+                try
+                {
+                    var client = new TcpClient();
+                    var serverEndPoint = IpepLookup(peer);
+                    client.Connect(serverEndPoint);
 
-            var clientStream = client.GetStream();
+                    var clientStream = client.GetStream();
 
-            //Sending message
-            var bytes = JsonConvert.SerializeObject(new Message {Type = type, Peer = _me, Body = msg}).GetBytes();
+                    //Sending message
+                    var bytes = JsonConvert.SerializeObject(new Message {Type = type, Peer = _me, Body = msg}).GetBytes();
 
-            clientStream.Write(bytes, 0, bytes.Length);
+                    Console.WriteLine(bytes.Length);
 
-            clientStream.Flush();
-            client.Close();
+                    clientStream.Write(bytes, 0, bytes.Length);
+
+                    clientStream.Flush();
+                    client.Close();
+                }
+                catch (Exception e)
+                {
+                    Log(e.Message);
+                }
+            });
         }
 
         /// <summary>
@@ -434,7 +448,7 @@ namespace ContextawareFramework.NetworkHelper
 
         private void AddIpep(Peer peer, IPEndPoint ipep)
         {
-            if(!_peers.ContainsKey(peer)) _peers.Add(peer,ipep);
+            lock(_peers) if(!_peers.ContainsKey(peer)) _peers.Add(peer,ipep);
         }
 
         private IPEndPoint IpepLookup(Peer peer)

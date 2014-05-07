@@ -19,19 +19,17 @@ namespace ContextawareFramework
 
 
             var cf = new ContextFilter();
-            cf.AddSituation(new Situation(entities => true){Name = "s1", State = false});
+
+            cf.AddSituation(new Situation(t => t.OfType<Person>().Count(c => c.Present) > 2)
+            {
+                Name = "s1"
+            });
 
             var comHelper = new TcpHelper(Console.Out);
             var cc = new ContextCentral(cf, comHelper);
             cc.Initialize();
             Console.ReadLine();
 
-        }
-
-        public static bool TestPredicate(ICollection<IEntity> entities)
-        {
-            Console.WriteLine(entities.OfType<Person>().First().Id);
-            return entities.OfType<Person>().Any(t => t.Id == new Guid());
         }
     }
 }
