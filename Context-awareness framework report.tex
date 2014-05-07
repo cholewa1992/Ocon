@@ -185,24 +185,31 @@ Initially we decided that making the framework distributed would be out scoped, 
 
 The reason for doing so is that our vision of having a centralized system distributing situation from sensors to clients is not very useful if not distributed.
 
-For the framework two different communication protocols need to be implemented.
+For the framework two different communication protocols need to be implemented.\\
 
 \begin{itemize}
 	\item A protocol for establishing link between peers
-	\item A protocol for send text/json messages for updates and notifications
+	\item A protocol for send text/json messages for subscriptions, subscription events and, sensor events \\
 \end{itemize}
 
-We do not wish to bind our users to any concrete communication protocols. Therefore an the communication will be interfaces so a concrete implementation can be dependency inject it into the framework.
+We do not wish to bind our users to any concrete communication protocols. Therefore the communication will be interfaces so a concrete implementation can be dependency injected into the framework.
 
 The framework will contain a default implementation build using the TCP/IP layer. For serialization we have chosen to use json. These decisions have been made so that developers are not bound to the .NET platform and can make clients and widgets in other languages like Java, or C directly on a micro controllers like Arduino.
 
-For peer discovery we have chosen to use IP multicast. The central will broadcast itself for peers to discover. When a peer is discovered a connection can be established by a TCP/IP handshake. If the developer does not want to use the discovery it can be disabled and a connection can be established solely by a handshake.
+For peer discovery we have chosen to use IP multicast. The central will broadcast itself for peers to discover. The peer, clients and widgets, will be listening on the multicast endpoint and will invoke an event when a central is discovered. See figure \ref{fig:widgetComHelper} and \ref{fig:clientComHelper} for detailed view of communication between client and central and widget and central
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\linewidth]{comHelperSequence.png}
-\caption{Communication Helper sequence diagram}
-\label{fig:comHelperSequence}
+\includegraphics[width=\linewidth]{comHelperSequence-widget.png}
+\caption{Widget to Central sequence diagram}
+\label{fig:widgetComHelper}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{comHelperSequence-client.png}
+\caption{Client to Central sequence diagram}
+\label{fig:clientComHelper}
 \end{figure}
 
 \chapter{Design}
