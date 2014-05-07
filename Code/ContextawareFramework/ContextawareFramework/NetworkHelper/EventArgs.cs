@@ -26,10 +26,13 @@ namespace ContextawareFramework.NetworkHelper
     {
         public Guid Guid { set; get; }
         public bool State { set; get; }
-        internal IncommingSituationChangedEventArgs(Guid guid, bool state)
+        public string SituationName { get; set; }
+
+        internal IncommingSituationChangedEventArgs(Guid guid, bool state, string situationName)
         {
             Guid = guid;
             State = state;
+            SituationName = situationName;
         }
     }
 
