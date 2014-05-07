@@ -4,7 +4,6 @@
 \usepackage[autostyle]{csquotes} 
 \usepackage{parskip}
 \usepackage{graphicx}
-\usepackage{placeins}
 \usepackage{wrapfig}
 \usepackage{epigraph}
 \usepackage[T1]{fontenc}
@@ -22,6 +21,8 @@
 \@namedef{endshadequote*}{\endshadequote}
 \makeatother
 
+
+\newcommand\todo[1]{\textcolor{red}{TODO: }#1\PackageWarning{TODO:}{TODO tag!!}}
 
 
 
@@ -157,24 +158,41 @@ Using a composite pattern enforced relations between entities, entities being lo
 
 Lets say we want to model a location with some rooms with some persons with different items or actions. Using the composite modeling we can have a location object containing room objects containing person objects containing item objects. We'll then have a relationship between the objects compositing the context being that a group of students is in room 3A04 at ITU all having phones in their pockets and all sitting down. This is a fairly complex, but a very extensible and flexible way to model situation (See fig \ref{fig:composite}). The downside to this method is that you can easily have an overflow of entities, and that it can be very complex and computation heavy to check against a  predicate.
 
-\begin{figure}[H]
+The other method we are considering is more simple. Having a set of entities that we wish to track, eg persons. All context information relating to a person will be properties to the object. So to use the previous example, a person entity would then have a location property, being ITU room 3A04, a phone property begin true and a sitting property being true. This model is more easy to make, but it limits the developer to know very precisely what information is needed and should be tracked. The previous model had the advantage of being very flexible allowing more complex relations and situations. 
+
+Both methods have pros and cons being how dynamic they are, how easily they can be implemented, and what performance they will have and that will be the parameters we'll look at when implementing the framework 
+
+\begin{figure}
 \centering
 \includegraphics[width=200px]{composite.png}
 \caption{Diagram illustrating composite modeling}
 \label{fig:composite}
 \end{figure}
 
-
-The other method we are considering is more simple. Having a set of entities that we wish to track, eg persons. All context information relating to a person will be properties to the object. So to use the previous example, a person entity would then have a location property, being ITU room 3A04, a phone property begin true and a sitting property being true. This model is more easy to make, but it limits the developer to know very precisely what information is needed and should be tracked. The previous model had the advantage of being very flexible allowing more complex relations and situations. 
-
-Both methods have pros and cons being how dynamic they are, how easily they can be implemented, and what performance they will have and that will be the parameters we'll look at when implementing the framework 
-
-\FloatBarrier
-
 \section{Widget}
+
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{sequencediagram-widget.png}
+\caption{Input flow from Widget to central}
+\label{fig:seqwidget}
+\end{figure}
+
+
+In our framework widgets will translate sensor input to entities along with facilitating the communication to the central.
+
+This approach have been chosen to make the system easily distributed as a small, maybe embedded, component can facilitate as widget translating the sensors input to entities before sending them to the central.
+
+This approach will also reduce network load as the widget will only send updates to the central when changes occur. This stands in contrast to sending all sensor input to the central and making it process the data itself which could be useful in some cases.
+
+Latests would also put more computational pressure on the central making it hard to scale to larger systems.
+
 
 \section{Client}
 
+The client will be the entry point into the framework facilitating the developers to subscribe to situations in the central and receive updates whenever an update to that situation occurred. 
+
+\todo write more
 
 \section{Dynamic Entity types}
 
@@ -185,29 +203,35 @@ Initially we decided that making the framework distributed would be out scoped, 
 
 The reason for doing so is that our vision of having a centralized system distributing situation from sensors to clients is not very useful if not distributed.
 
-For the framework two different communication protocols need to be implemented.
+For the framework two different communication protocols need to be implemented.\\
 
 \begin{itemize}
 	\item A protocol for establishing link between peers
-	\item A protocol for send text/json messages for updates and notifications
+	\item A protocol for send text/json messages for subscriptions, subscription events and, sensor events \\
 \end{itemize}
 
-We do not wish to bind our users to any concrete communication protocols. Therefore an the communication will be interfaces so a concrete implementation can be dependency inject it into the framework.
+We do not wish to bind our users to any concrete communication protocols. Therefore the communication will be interfaces so a concrete implementation can be dependency injected into the framework.
 
 The framework will contain a default implementation build using the TCP/IP layer. For serialization we have chosen to use json. These decisions have been made so that developers are not bound to the .NET platform and can make clients and widgets in other languages like Java, or C directly on a micro controllers like Arduino.
 
-For peer discovery we have chosen to use IP multicast. The central will broadcast itself for peers to discover. When a peer is discovered a connection can be established by a TCP/IP handshake. If the developer does not want to use the discovery it can be disabled and a connection can be established solely by a handshake.
+For peer discovery we have chosen to use IP multicast. The central will broadcast itself for peers to discover. The peer, clients and widgets, will be listening on the multicast endpoint and will invoke an event when a central is discovered. See figure \ref{fig:widgetComHelper} and \ref{fig:clientComHelper} for a detailed view of the communication between client and central and widget and central
 
-\begin{figure}[H]
+\begin{figure}
 \centering
-\includegraphics[width=\linewidth]{comHelperSequence.png}
-\caption{Communication Helper sequence diagram}
-\label{fig:comHelperSequence}
+\includegraphics[width=\linewidth]{comHelperSequence-widget.png}
+\caption{Widget to Central sequence diagram}
+\label{fig:widgetComHelper}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{comHelperSequence-client.png}
+\caption{Client to Central sequence diagram}
+\label{fig:clientComHelper}
 \end{figure}
 
 \chapter{Design}
 
-\FloatBarrier
 
 \section{Overview}
 
