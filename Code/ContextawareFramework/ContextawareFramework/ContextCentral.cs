@@ -43,6 +43,7 @@ namespace ContextawareFramework
             _comHelper.IncommingSituationSubscribtionEvent  +=  (sender, args) => 
                                                                 _contextFilter.Subscribe(args.Peer, args.SituationIdentifier);
 
+
             // Start listening for widgets and clients
             _comHelper.StartListen();
 
