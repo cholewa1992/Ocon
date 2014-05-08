@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using ContextawareFramework.Helper;
 using ContextawareFramework.NetworkHelper;
 
 namespace ContextawareFramework
@@ -7,17 +9,21 @@ namespace ContextawareFramework
     {
         private readonly ICommunicationHelper _comHelper;
         private readonly string[] _situations;
+        private readonly TextWriter _log;
+
 
         /// <summary>
         /// Constructs a new Client
         /// </summary>
         /// <param name="comHelper">The ICommunicationHelper implementation to use</param>
+        /// <param name="log">Instance to write log messages to</param>
         /// <param name="situations">The situations to send to the context framework for tracking</param>
-        public Client(ICommunicationHelper comHelper, params string[] situations)
+        public Client(ICommunicationHelper comHelper, TextWriter log = null, params string[] situations)
         {
             //Setting the com helper
             _comHelper = comHelper;
             _situations = situations;
+            _log = log;
 
             //Staring discovery
             SetupCommunication();
@@ -42,7 +48,7 @@ namespace ContextawareFramework
             //Start listening
             _comHelper.StartListen();
 
-            Console.WriteLine("Starting discovery (" + _comHelper.Me.Guid + ")");
+            Logger.Write(_log, "Starting discovery (" + _comHelper.Me.Guid + ")");
             _comHelper.DiscoveryService();
         }
 

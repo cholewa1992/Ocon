@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using ContextawareFramework.Helper;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -30,7 +31,7 @@ namespace ContextawareFramework.NetworkHelper
         private int _communicationPort = 2026;
 
         private IPAddress _multicastAddress = IPAddress.Parse("224.5.6.7");
-        private readonly TextWriter _outputStream;
+        private readonly TextWriter _log;
 
         #endregion
 
@@ -63,10 +64,10 @@ namespace ContextawareFramework.NetworkHelper
             get { return _me; }
         }
 
-        public TcpHelper(TextWriter errorLogWriter = null)
+        public TcpHelper(TextWriter log = null)
         {
             _me = new Peer{Guid = Guid.NewGuid()};
-            _outputStream = errorLogWriter;
+            _log = log;
         }
 
         /// <summary>
@@ -84,7 +85,7 @@ namespace ContextawareFramework.NetworkHelper
             //Start listener for incomming replies
             Task.Run(() =>
             {
-                Log("Broadcast was started on " + MulticastAddress + ":" + MulticastPort);
+                Logger.Write(_log, "Broadcast was started on " + MulticastAddress + ":" + MulticastPort);
                 while (true)
                 {
                     try
@@ -124,14 +125,14 @@ namespace ContextawareFramework.NetworkHelper
                         if (_stopBroadcastTokenSource.Token.IsCancellationRequested)
                         {
                             IsBroadcasting = false;
-                            Log("Broadcast was stopped");
+                            Logger.Write(_log, "Broadcast was stopped");
                             _stopBroadcastTokenSource.Token.ThrowIfCancellationRequested();
                         }
                     }
                     catch (Exception e)
                     {
                         throw e;
-                        Log("Broadcast could not be made " + e.Message);
+                        Logger.Write(_log, "Broadcast could not be made " + e.Message);
                     }
                 }
 
@@ -145,7 +146,7 @@ namespace ContextawareFramework.NetworkHelper
         /// </summary>
         public void StopBroadcast()
         {
-            Log("Broadcast is requested cancelled");
+            Logger.Write(_log, "Broadcast is requested cancelled");
 
             _stopBroadcastTokenSource.Cancel();
         }
@@ -185,9 +186,9 @@ namespace ContextawareFramework.NetworkHelper
                     var localEndPoint = new IPEndPoint(IPAddress.Any, CommunicationPort);
                     var tcpListener = new TcpListener(localEndPoint);
                     tcpListener.Start();
-                 
 
-                    Log("Started listening on port " + CommunicationPort);
+
+                    Logger.Write(_log, "Started listening on port " + CommunicationPort);
 
                     while (true)
                     {
@@ -215,15 +216,15 @@ namespace ContextawareFramework.NetworkHelper
                         }
                         catch (Exception e)
                         {
-                            Log("An error occurred: " + e.Message);
+                            Logger.Write(_log, "An error occurred: " + e.Message);
                         }
                     }
                 }
                 catch (Exception e)
                 {
-                    Log("The listener stop due to an unrecoverble error: " + e.Message);
+                    Logger.Write(_log, "The listener stop due to an unrecoverble error: " + e.Message);
                 }
-                Log("Listening has stopped");
+                Logger.Write(_log, "Listening has stopped");
             },
                 _stopListenTokenSource.Token);
         }
@@ -264,7 +265,7 @@ namespace ContextawareFramework.NetworkHelper
             }
             else
             {
-                Log("Got a wired message from " + message.Peer);
+                Logger.Write(_log, "Got a wired message from " + message.Peer);
             }
         }
 
@@ -297,7 +298,7 @@ namespace ContextawareFramework.NetworkHelper
         /// </summary>
         public void StopListen()
         {
-            Log("Listening is requested cancelled");
+            Logger.Write(_log, "Listening is requested cancelled");
             _stopListenTokenSource.Cancel();
         }
 
@@ -316,7 +317,7 @@ namespace ContextawareFramework.NetworkHelper
             {
                 try
                 {
-                    Log("Discovery service started");
+                    Logger.Write(_log, "Discovery service started");
 
                     #region Socket Setup
 
@@ -356,9 +357,9 @@ namespace ContextawareFramework.NetworkHelper
                 }
                 catch (SocketException e)
                 {
-                    Log("Discovery service has stopped due to following error: " + e.Message);
+                    Logger.Write(_log, "Discovery service has stopped due to following error: " + e.Message);
                 }
-                Log("Discovery service stopped");
+                Logger.Write(_log, "Discovery service stopped");
             }, _stopDiscoveryTokenSource.Token);
         }
 
@@ -430,21 +431,12 @@ namespace ContextawareFramework.NetworkHelper
                 }
                 catch (Exception e)
                 {
-                    Log(e.Message);
+                    Logger.Write(_log, e.ToString());
                 }
             });
         }
 
-        /// <summary>
-        /// Private method for making error log messages
-        /// </summary>
-        /// <param name="msg"></param>
-        private void Log(string msg)
-        {
-            if (_outputStream != null) _outputStream.WriteLine(msg);
-        }
-
-
+        
         readonly Dictionary<Peer, IPEndPoint> _peers = new Dictionary<Peer, IPEndPoint>(new PeerEquallityCompare());
 
         private void AddIpep(Peer peer, IPEndPoint ipep)

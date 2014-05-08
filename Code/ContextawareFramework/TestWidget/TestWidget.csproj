@@ -58,10 +58,6 @@
       <Project>{4ced25d0-faac-486f-8b94-63fe8f1da9fc}</Project>
       <Name>ContextawareFramework</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Widget\Widget.csproj">
-      <Project>{5E0D9B43-7B62-466F-BFE8-0E1F654F513F}</Project>
-      <Name>Widget</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

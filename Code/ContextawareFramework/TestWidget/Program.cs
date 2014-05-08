@@ -16,7 +16,7 @@ namespace TestWidget
 
         public static void Main(string[] args)
         {
-            var w = new Widget.Widget(new TcpHelper(Console.Out));
+            var w = new Widget(new TcpHelper(Console.Out));
             w.StartDiscovery();
             var k = new Kinect();
 

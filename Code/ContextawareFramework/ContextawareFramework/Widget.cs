@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using ContextawareFramework.Helper;
 using ContextawareFramework.NetworkHelper;
 
 namespace ContextawareFramework
@@ -10,6 +12,7 @@ namespace ContextawareFramework
         private readonly HashSet<IEntity> _trackedEntities = new HashSet<IEntity>();
         private readonly ICommunicationHelper _comHelper;
         private readonly Group _group;
+        private readonly TextWriter _log;
 
 
         #endregion
@@ -18,10 +21,12 @@ namespace ContextawareFramework
         /// Constructs a new Widget
         /// </summary>
         /// <param name="comHelper">The communication helper to use. A communication helper is needed for the widget to talk with the context filter</param>
-        public Widget(ICommunicationHelper comHelper)
+        /// <param name="log">Instance to write log information to</param>
+        public Widget(ICommunicationHelper comHelper, TextWriter log = null)
         {
             _comHelper = comHelper;
             _group = new Group(_comHelper);
+            _log = log;
         }
         #endregion
 
@@ -30,7 +35,7 @@ namespace ContextawareFramework
         /// </summary>
         public void StartDiscovery()
         {
-            Console.WriteLine("Starting discovery (" + _comHelper.Me.Guid + ")");
+            Logger.Write(_log, "Starting discovery (" + _comHelper.Me.Guid + ")");
             _comHelper.DiscoveryServiceEvent += (sender, args) => _group.AddPeer(args.Peer);
             _comHelper.DiscoveryService();
         }
