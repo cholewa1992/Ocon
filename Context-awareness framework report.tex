@@ -271,16 +271,70 @@ Entities are generalized by the type IEntity, specifying general information for
 \chapter{Proof of concept}
 
 \blockquote{
-We can only evaluate the user experience afforded by the toolkit and its features by building applications that use it, and then evaluating them. While the toolkit itself can be evaluated on its technical criteria, the aspects of it that are designed to support a particular user experience can only be evaluated in the context of use and thus must be evaluated indirectly - through applications built with the toolkit}\cite{Infrastructure (2003)}
+We can only evaluate the user experience afforded by the toolkit and its features by building applications that use it, and then evaluating them. While the toolkit itself can be evaluated on its technical criteria, the aspects of it that are designed to support a particular user experience can only be evaluated in the context of use and thus must be evaluated indirectly - through applications built with the toolkit. \cite{Infrastructure (2003)} \\}
 
-The framework has been evaluated on it's technical criteria 
-In previous chapters we evaluated the framework on it's technical criteria by the design and choices made. In this chapter we will answer to our project \textit{Goal 2} by implementing the framework.
+In previous chapters we evaluated the framework on it's technical criteria by the design and choices made. In this chapter we will answer to our \textit{Goal 2} by implementing the framework.
 
 \section{Motivation}
 
+%Scrum is a popular agile process of developing software. Originally thought as using a whiteboard for scheduling development tasks, it has been hard for to make use of Scrum in distributed teams, or 
+
+
+
+Scrum is a popular agile process for developing software. Center of focus is the whiteboard where tasks are coordinated, estimated and assigned. For more on Scrum see \textit{scrum.org}.
+
+We ourselves have used Scrum for several projects but never with the pleasure of a physical Scrumboard. We never had a room allocated and it simply wasn't possible to maintain a physical Scrumboard in a new space every day. A lot of tools for this problem have sprung up\footnote{Confluence, Scrumwise, Team Foundation, Trello} and made Scrum possible in this scenario, and even for a fully distributed team who would not be gathered physically in the first place.
+
+While we have never used a whitebord for a full Scrum project, we have used it occasionally for single work days. We believe the physical board is important for:
+
+\begin{itemize}
+\item Always being able to turn ones head to the huge todo list is great motivation
+\item No need for projecting a software tool during Scrum meetings
+\end{itemize}
+
+
+We have established our opinion that the online tools today lack the presence of the whiteboard which is important. If you are able to maintain a physical Scrumboard, another problem surfaces. However there is one great point where the whiteboard is lacking; It's Analog. Maintaining the data is all manual translation form the board to a spreadsheet or the likes.
+
+
+
+\begin{itemize}
+\item[] \Large{There is no solution today that digitalizes the whiteboard while maintaining it's presence}
+\end{itemize}
+
+\normalsize
+
+
+While this project does not cover implementing a Scrumboard which would solve these problems, we have still chosen this as proof of concept because we think it's an interesting topic.
+
 \section{Context awareness}
 
-\section{Design}
+There are two situations we deem important which we want the Scrumboard to act upon:
+
+\begin{itemize}
+\item The standup meeting: When more than one person is standing
+\item An individual closeup with the board
+\end{itemize}
+
+Actuation on these situations is purely graphical. There will be change in the graphical interface according to which information the interactors are interested in given the situation.
+
+\begin{itemize}
+\item Standup
+\item Closeup
+\item Overview. This view is our default for when none of the other contexts are true
+\end{itemize}
+
+
+
+
+\section{Implementation}
+
+The Context-aware Scrumboard consists of three parts: The Widget, The Central and the Scrumboard. These parts are in our case distributed and communicate by the TcpHelper implemented for the framework.
+
+\paragraph{The Widget}
+
+\paragraph{The Central}
+
+\paragraph{The Scrumboard}
 
 
 \chapter{Conclusion}
