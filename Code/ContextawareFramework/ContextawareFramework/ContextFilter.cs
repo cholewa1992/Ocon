@@ -94,8 +94,8 @@ namespace ContextawareFramework
             if (_situations.ContainsKey(situationName))
             {
                 _situations[situationName].AddSubscriber(subscriber);
+                FireSituationStateChanged(_situations[situationName], subscriber);
             }
-
         }
 
 

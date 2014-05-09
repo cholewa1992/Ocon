@@ -23,10 +23,8 @@ namespace ContextawareFramework.NetworkHelper
         private CancellationTokenSource _stopDiscoveryTokenSource;
 
         #endregion
-
         #region Fields
 
-        private static TcpHelper _instance;
         private int _multicastPort = 2025;
         private int _communicationPort = 2026;
 
@@ -34,7 +32,6 @@ namespace ContextawareFramework.NetworkHelper
         private readonly TextWriter _log;
 
         #endregion
-
         #region Properties
 
         public static bool IsBroadcasting { get; private set; }
@@ -131,7 +128,6 @@ namespace ContextawareFramework.NetworkHelper
                     }
                     catch (Exception e)
                     {
-                        throw e;
                         Logger.Write(_log, "Broadcast could not be made " + e.Message);
                     }
                 }
@@ -203,7 +199,7 @@ namespace ContextawareFramework.NetworkHelper
                             var message = JsonConvert.DeserializeObject<Message>(ReadStringFromStream(client.GetStream()).Result);
 
                             //Adding peer to _peers
-                            AddIpep(message.Peer, new IPEndPoint((client.Client.RemoteEndPoint as IPEndPoint).Address, CommunicationPort));
+                            AddIpep(message.Peer, new IPEndPoint(((IPEndPoint) client.Client.RemoteEndPoint).Address, CommunicationPort));
                             Parse(message);
                             
                             client.Close();
@@ -345,12 +341,15 @@ namespace ContextawareFramework.NetworkHelper
                         var data = JsonConvert.DeserializeObject<Handshake>(buffer.GetString());
                         var remoteEndPoint = new IPEndPoint(IPAddress.Parse(data.Ip),data.Port);
 
-                        AddIpep(data.Peer, remoteEndPoint);
-
-                        //Fires an event about newly discovered context filter
-                        if (DiscoveryServiceEvent != null)
+                        if (!_peers.ContainsKey(data.Peer))
                         {
-                            DiscoveryServiceEvent(null, new ContextFilterEventArgs(data.Peer));
+                            AddIpep(data.Peer, remoteEndPoint);
+
+                            //Fires an event about newly discovered context filter
+                            if (DiscoveryServiceEvent != null)
+                            {
+                                DiscoveryServiceEvent(null, new ContextFilterEventArgs(data.Peer));
+                            }
                         }
                     }
                     socket.Close();
@@ -421,9 +420,6 @@ namespace ContextawareFramework.NetworkHelper
 
                     //Sending message
                     var bytes = JsonConvert.SerializeObject(new Message {Type = type, Peer = _me, Body = msg}).GetBytes();
-
-                    Console.WriteLine(bytes.Length);
-
                     clientStream.Write(bytes, 0, bytes.Length);
 
                     clientStream.Flush();
