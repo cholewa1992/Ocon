@@ -93,7 +93,7 @@ namespace ScrumBoardPictures.ViewModel
 
 
             var comHelper = new TcpHelper(writer);
-            string[] situationNames = { CloseupSituationName, CloseupSituationName };
+            string[] situationNames = { CloseupSituationName, StandupSituationName };
 
             var frameworkClient = new Client(comHelper, null, situationNames);
 
