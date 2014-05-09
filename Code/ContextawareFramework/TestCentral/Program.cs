@@ -15,7 +15,8 @@ namespace TestCentral
 
             var filter = new ContextFilter();
 
-            filter.AddSituation(new Situation(TestForCloseupSituation){Name = "Closeup"});
+            filter.AddSituation(new Situation(TestForCloseupSituation) { Name = "Closeup" });
+            filter.AddSituation(new Situation(TestForCloseupSituation) { Name = "Standup" });
 
             var central = new ContextCentral(filter, new TcpHelper(Console.Out), Console.Out);
 
@@ -29,6 +30,21 @@ namespace TestCentral
             foreach (var p in entities.OfType<Person>())
             {
                 if (p.Present) return true;
+            }
+
+            return false;
+        }
+
+        public static bool TestForStandupMeetingSituation(ICollection<IEntity> entities)
+        {
+
+            int count = 0;
+
+            foreach (var p in entities.OfType<Person>())
+            {
+                if (count >= 2) return true;
+
+                if (p.Present) count++;
             }
 
             return false;
