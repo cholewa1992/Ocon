@@ -19,5 +19,7 @@
         
         <Image Source="{Binding ImageUri}" HorizontalAlignment="Left" Height="Auto" Margin="10,10,0,0" VerticalAlignment="Top" Width="Auto"/>
 
+        <TextBlock FontSize="20" Text="{Binding StatusText}" Height="Auto" Width="Auto" />
+        
     </Grid>
 </Window>

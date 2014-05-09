@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Net.Cache;
 using System.Net.Mime;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
@@ -50,12 +53,37 @@ namespace ScrumBoardPictures.ViewModel
             }
         }
 
+        private string _statusText = "status";
+
+        public string StatusText
+        {
+            get { return _statusText; }
+            set
+            {
+                if (_statusText == value)
+                    return;
+
+                _statusText = value;
+                RaisePropertyChanged("StatusText");
+            }
+        }
+
+
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
         /// </summary>
         public MainViewModel(IContextService contextService)
         {
+            var writer = new StringWriter();
 
+            Task.Run(() =>
+            {
+                while (true)
+                {
+                    StatusText = writer.ToString();
+                    Thread.Sleep(200);
+                }
+            });
             
             _viewMap.Add(OverviewSituationName, "pack://application:,,,/ScrumBoardPictures;component/BoardOverview.jpg");
             _viewMap.Add(StandupSituationName, "pack://application:,,,/ScrumBoardPictures;component/BoardStandup.jpg");
@@ -64,7 +92,7 @@ namespace ScrumBoardPictures.ViewModel
             ImageUri = _viewMap["Overview"];
 
 
-            var comHelper = new TcpHelper();
+            var comHelper = new TcpHelper(writer);
             string[] situationNames = { CloseupSituationName, CloseupSituationName };
 
             var frameworkClient = new Client(comHelper, null, situationNames);
