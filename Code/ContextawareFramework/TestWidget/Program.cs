@@ -16,13 +16,12 @@ namespace TestWidget
 
         public static void Main(string[] args)
         {
-            var w = new Widget(new TcpHelper(Console.Out));
+            var w = new Widget(new TcpHelper());
             w.StartDiscovery();
             var k = new Kinect();
 
             for (var i = 0; i < 6; i++)
             {
-                Console.WriteLine("a");
                 People.Add(new Person
                 {
                     Id = Guid.NewGuid()
@@ -32,15 +31,15 @@ namespace TestWidget
             k.KinectEvent += (sender, eventArgs) =>
             {
                 if (eventArgs == null) return;
+                if (!eventArgs.PeoplePresent) return;
 
                 
                 for (var i = 0; i < eventArgs.NumberOfPeople; i++)
                 {
                     People[i].Present = (eventArgs.NumberOfPeople > j);
-                    Console.WriteLine(People[i].Present);
                 }
 
-
+                
 
                 foreach (var t in People)
                 {
@@ -48,10 +47,11 @@ namespace TestWidget
                 }
 
                 j = eventArgs.NumberOfPeople;
+                Console.WriteLine("j: "+j);
             };
 
 
-            Task.Run(() =>
+            /*Task.Run(() =>
             {
                 while (true)
                 {
@@ -59,9 +59,9 @@ namespace TestWidget
                     k.FireTestEvent();
                     Thread.Sleep(new Random().Next(5000, 10000));
                 }
-            });
+            });*/
 
-            //k.StartKinect();
+            k.StartKinect();
             Console.ReadLine();
             k.Close();
         }

@@ -15,7 +15,7 @@ namespace ContextawareFramework
         public abstract string WidgetName { get; set; }
 
 
-        private Guid _id = Guid.NewGuid();
+        private Guid _id;
         public Guid Id
         {
             get { return _id; }

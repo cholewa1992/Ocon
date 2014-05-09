@@ -104,6 +104,7 @@ namespace ContextawareFramework
         /// </summary>
         public void TestSituations()
         {
+            Console.Clear();
 
             foreach (var situation in _situations)
             {

@@ -64,10 +64,10 @@ namespace ScrumBoardPictures.ViewModel
             ImageUri = _viewMap["Overview"];
 
 
-            var comHelper = new TcpHelper(Console.Out);
+            var comHelper = new TcpHelper();
             string[] situationNames = { CloseupSituationName, CloseupSituationName };
 
-            var frameworkClient = new Client(comHelper, situationNames);
+            var frameworkClient = new Client(comHelper, null, situationNames);
 
             frameworkClient.SituationStateChangedEvent += (sender, args) =>
             {

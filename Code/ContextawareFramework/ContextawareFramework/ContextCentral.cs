@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using ContextawareFramework.Helper;
 using ContextawareFramework.NetworkHelper;
 
 namespace ContextawareFramework
@@ -7,16 +9,18 @@ namespace ContextawareFramework
     {
         private readonly ICommunicationHelper _comHelper;
         private readonly ContextFilter _contextFilter;
+        private readonly TextWriter _log;
 
         /// <summary>
         /// Constructs the object given contextFilter and communicationHelper
         /// </summary>
         /// <param name="contextFilter"></param>
         /// <param name="communicationHelper"></param>
-        public ContextCentral(ContextFilter contextFilter, ICommunicationHelper communicationHelper)
+        public ContextCentral(ContextFilter contextFilter, ICommunicationHelper communicationHelper, TextWriter log = null)
         {
             _contextFilter = contextFilter;
             _comHelper = communicationHelper;
+            _log = log;
         }
 
         /// <summary>
@@ -32,13 +36,13 @@ namespace ContextawareFramework
             _comHelper.IncommingEntityEvent += (sender, args) =>
             {
                 _contextFilter.TrackEntity(args.Entity);
-                Console.WriteLine("New entity");
+                Logger.Write(_log, "Incoming entity event: " + args.Entity.Name);
             };
     
             _comHelper.IncommingSituationSubscribtionEvent += (sender, args) =>
             {
                 _contextFilter.Subscribe(args.Peer, args.SituationIdentifier);
-                Console.WriteLine("Situation request" + args.Peer.Guid);
+                Logger.Write(_log, "Incoming situation subscribtion on: " + args.SituationIdentifier + " form:" + args.Peer.Guid);
             };
     
 
