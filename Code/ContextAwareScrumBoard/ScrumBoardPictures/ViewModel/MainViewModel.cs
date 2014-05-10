@@ -80,7 +80,8 @@ namespace ScrumBoardPictures.ViewModel
             {
                 while (true)
                 {
-                    StatusText = writer.ToString();
+                    if (!string.IsNullOrEmpty(writer.ToString())) StatusText += "\n" + writer.ToString();
+
                     Thread.Sleep(200);
                 }
             });
@@ -92,7 +93,7 @@ namespace ScrumBoardPictures.ViewModel
             ImageUri = _viewMap["Overview"];
 
 
-            var comHelper = new TcpHelper(writer);
+            var comHelper = new TcpHelper();
             string[] situationNames = { CloseupSituationName, CloseupSituationName };
 
             var frameworkClient = new Client(comHelper, null, situationNames);
@@ -100,7 +101,7 @@ namespace ScrumBoardPictures.ViewModel
             frameworkClient.SituationStateChangedEvent += (sender, args) =>
             {
                 UpdatePicture(args.SituationName, args.State);
-                MessageBox.Show(args.SituationName);
+                //MessageBox.Show(args.SituationName);
             };
 
 
@@ -108,9 +109,11 @@ namespace ScrumBoardPictures.ViewModel
 
         private void UpdatePicture(string name, bool state)
         {
+
             if (_viewMap.ContainsKey(name))
             {
                 ImageUri = state ? _viewMap[name] : _viewMap["Overview"];
+                StatusText += "\n update view request: " + name + " - state: " + state;
             }
         }
 

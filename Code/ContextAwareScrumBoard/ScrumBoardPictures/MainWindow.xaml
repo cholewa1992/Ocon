@@ -12,14 +12,15 @@
         WindowStyle="None"
         DataContext="{Binding Main, Source={StaticResource Locator}}">
 
-    
+
 
     <Grid x:Name="LayoutRoot">
 
-        
-        <Image Source="{Binding ImageUri}" HorizontalAlignment="Left" Height="Auto" Margin="10,10,0,0" VerticalAlignment="Top" Width="Auto"/>
 
-        <TextBlock FontSize="20" Text="{Binding StatusText}" Height="Auto" Width="Auto" />
-        
+        <Image Source="{Binding ImageUri}" HorizontalAlignment="Left" Height="Auto" Margin="10,10,0,0" VerticalAlignment="Top" Width="Auto"/>
+        <ScrollViewer VerticalAlignment="Bottom">
+            <TextBlock FontSize="20" Foreground="Red" Text="{Binding StatusText}" Height="100" Width="Auto" />
+        </ScrollViewer>
+
     </Grid>
 </Window>
