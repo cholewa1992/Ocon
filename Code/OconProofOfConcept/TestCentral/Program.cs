@@ -15,27 +15,25 @@ namespace TestCentral
         static void Main(string[] args)
         {
 
-            var filter = new ContextFilter();
+            var log = Console.Out;
 
-            filter.AddSituation(new Situation(TestForCloseupSituation) { Name = "Closeup" });
-            filter.AddSituation(new Situation(TestForCloseupSituation) { Name = "Standup" });
+            var tcpCom = new OconTcpCom(log);
 
-            var central = new OconCentral(filter, new OconTcpCom(Console.Out), Console.Out);
+            var OconFilter = new OconContextFilter(log);
+
+            //Instantiate situations with names and predicates
+            var closeupSituation = new Situation("Closeup", e => e.OfType<Person>().Count(p => p.Present) == 1);
+            var standupSituation = new Situation("Standup", e => e.OfType<Person>().Count(p => p.Present) == 2);
+
+            OconFilter.AddSituation(closeupSituation, standupSituation);
+
+            var central = new OconCentral(OconFilter, tcpCom, log);
 
             central.Initialize();
 
             Console.Read();
         }
 
-        public static bool TestForCloseupSituation(ICollection<IEntity> entities)
-        {
-            foreach (var p in entities.OfType<Person>())
-            {
-                if (p.Present) return true;
-            }
-
-            return false;
-        }
 
         public static bool TestForStandupMeetingSituation(ICollection<IEntity> entities)
         {

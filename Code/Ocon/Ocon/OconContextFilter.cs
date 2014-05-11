@@ -1,18 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using Ocon.Entity;
 using Ocon.OconCommunication;
 
 namespace Ocon
 {
-    public class ContextFilter
+    public class OconContextFilter
     {
         #region Fields
 
         private readonly ICollection<IEntity> _entities = new HashSet<IEntity>(new EntityEquallityCompare());
         private readonly Dictionary<string, Situation> _situations = new Dictionary<string, Situation>();
+        private readonly TextWriter _log;
 
         #endregion
+
+
+        public OconContextFilter(TextWriter log = null)
+        {
+            _log = log;
+        }
+
 
         #region Entity handling
 

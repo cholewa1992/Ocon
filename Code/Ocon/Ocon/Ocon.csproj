@@ -92,7 +92,7 @@
     <Compile Include="OconCommunication\OconTcpCom.cs" />
     <Compile Include="SituationChangedEventArgs.cs" />
     <Compile Include="Situation.cs" />
-    <Compile Include="ContextFilter.cs" />
+    <Compile Include="OconContextFilter.cs" />
     <Compile Include="EntityEquallityCompare.cs" />
     <Compile Include="Entity\IEntity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

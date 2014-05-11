@@ -78,10 +78,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Model\BoardState.cs" />
-    <Compile Include="Model\ContextServiceDistributed.cs" />
-    <Compile Include="Model\ContextServiceStub.cs" />
-    <Compile Include="Model\IContextService.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Page Include="MainWindow.xaml">

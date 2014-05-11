@@ -14,8 +14,9 @@ namespace Ocon
         private string _description;
         private Predicate<ICollection<IEntity>> _situationPredicate;
 
-        public Situation(Predicate<ICollection<IEntity>> situationPredicate)
+        public Situation(string name, Predicate<ICollection<IEntity>> situationPredicate)
         {
+            Name = name;
             SituationPredicate = situationPredicate;
         }
 
@@ -31,8 +32,6 @@ namespace Ocon
             get { return _description; }
             set
             {
-                Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(value),
-                    "Description argument can't be null or empty");
                 _description = value;
             }
         }
@@ -57,7 +56,7 @@ namespace Ocon
             _peers.Remove(peer);
         }
 
-        public ICollection<Peer> GetSubscribersList()
+        public List<Peer> GetSubscribersList()
         {
             return _peers.ToList();
         }

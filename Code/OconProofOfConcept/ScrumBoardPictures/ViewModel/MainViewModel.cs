@@ -25,8 +25,6 @@ namespace ScrumBoardPictures.ViewModel
         private const string CloseupSituationString = "Closeup";
 
 
-
-
         private readonly Dictionary<string, string> _viewMap = new Dictionary<string, string>();
        
 
@@ -108,10 +106,10 @@ namespace ScrumBoardPictures.ViewModel
 
             //Instantiate a network helper. Here passing the logging target
             //alternatively instantiate as new TcpHelper(); if no logging is needed
-            var comHelper = new OconTcpCom(log);
+            var TcpCom = new OconTcpCom(log);
 
             //Instantiate the client with communication, log, and params of situation names strings
-            var oconClient = new OconClient(comHelper, log, StandupSituationString, CloseupSituationString);
+            var oconClient = new OconClient(TcpCom, log, StandupSituationString, CloseupSituationString);
 
             //Subscribe a delegate to be run when a situation change event is fired
             oconClient.SituationStateChangedEvent += (sender, args) => UpdatePicture(args.SituationName, args.State);

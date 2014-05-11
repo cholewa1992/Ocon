@@ -7,7 +7,7 @@ namespace Ocon
     public class OconCentral
     {
         private readonly IOconCom _comHelper;
-        private readonly ContextFilter _contextFilter;
+        private readonly OconContextFilter _contextFilter;
         private readonly TextWriter _log;
 
         /// <summary>
@@ -15,7 +15,7 @@ namespace Ocon
         /// </summary>
         /// <param name="contextFilter"></param>
         /// <param name="oconCom"></param>
-        public OconCentral(ContextFilter contextFilter, IOconCom oconCom,
+        public OconCentral(OconContextFilter contextFilter, IOconCom oconCom,
             TextWriter log = null)
         {
             _contextFilter = contextFilter;
