@@ -75,13 +75,58 @@ It is not in our scope to implement a functional or useful Scrum board.
 
 
 
+\chapter{Background Research}
+\section{Context awareness}
+To be able to make a context-aware framework, we first had to investigate what context and context-awareness is in a computer science perspective.
+
+Context-awareness is a term associated with Ubiquitous computing. Ubiquitous computing, ubicomp, was coined in the early nineties by Mark Weiser whose vision was to make technology that could seamlessly assist in everyday tasks. Weisers research-unit at Xerox PARC developed some of the first mobile devices, and the development of ubi computing clearly reflects in todays technology boom of smart phones and tablets.
+
+For a system to seamlessly interact with a human the system must acquire knowledge to the current situation or \textit{context}. Many of the publications on the subject describes context different, but the one description fitting best our understanding was coined by Dey and Abowd whom described context as:
+
+\blockquote{\textit{Any information that can be used to characterize the situation of an entity. An entity is a person, place or object that is considered relevant to the interaction between a user and an application, including the user and application themselves.}} \cite{Dey and Abowd (2000)} 
+
+When humans interact, they can interpret the ongoing situation from implicitly understanding body language, tone of voice, the surrounding environment as well as maybe having a relation to the person or knowing about past and future events. These \textit{context informations} is essential factors in effective communication. By increasing the amount of context information available to computers, human-machine interaction can be improved.\\
+
+% Holy grail is to understand and perform human intent
+\todo{We strive to understand human intent, with sensors. We might not catch it all, but that's not because it's a machine, this can happen in all kinds of interactions; culture differneces... Something on this}
 
 
+Much research have been done in increasing the available amount of context-information, but also heightening the quality and correctness of the information is in focus. As the amount of context increases, the context-aware application becomes able to take actions without explicit user input. When doing so, action can be taken on wrong or typically incomplete snaps of context. 
 
-  
 
-\chapter{Design Choices}
+\blockquote{\textit{Intelligibility and control are important user concerns in context-aware applications. They allow a user to understand why an application is behaving a certain way, and to change its behavior.}} \cite{Dey and Newberger (2009)}
 
+\todo Write more about context accuracy
+
+
+\section{Context aware frameworks}
+% Frameworks have been developed to accomadate this
+To support application developers a number of context-frameworks have been developed. When looking at the frameworks mainly two approaches were used: Blackboard and Widget-based architecture.
+
+The blackboard approach is a centralized solution. Sensors and application are connected to the blackboard and when ever a new sensor state is available a post-it, an entry to the database, is put on the blackboard. The application can at will look through the blackboard and search for context it might find relevant. The blackboard abstracts away the sensor allowing the client to focus on only the context information. 
+
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{blackboard-widget.png}
+\caption{Blackboard and widget-based approach}
+\label{fig:blackboard-widget}
+\end{figure}
+
+The widget approach is an object-oriented distributed solution. Sensors encapsulated by widgets are available for application subscription. The solution is event based and applications are notified whenever a change to the sensor is occurring. This solution is object-oriented as the context is modeled with objects sent from sensor to application. This time and spare coupled solution stands in contrast to the blackboard approach which is a database and is therefore time- and spare uncoupled.
+
+The solution differs a lot in the way the model context, but the main differers is in the way of delivering context from sensor to application. The solutions stands in great contrast when looking at space and time coupling. To briefly describe the theory, space coupling is weather or not the sender knows who the receiver of a message is. Time coupling is if the given message is only available in real-time. 
+
+Where the blackboard at any time offers applications to go though it's context database, it does not offer notifying the application, as the blackboard is space uncoupled, and does not know about the application. The widget solution offers live updated only when they happens and only to the applications subscribing for the update.
+
+Both solutions are very useful in different applications.
+
+\todo Should the two examples stay?\\
+For example a hospital system where you want to use the context framework to track patients, the blackboard solution seams to meet requirements best as you can, when needed, look up a patients whereabout in the hospital.
+
+For a home automation system using sensors, sensor input is only interesting the moment it happens, and only to actuator whom it concern. When a person enters the room the light should go on instantly, only in the room where the person entered and only at the given time. 
+
+
+\chapter{Design}
 This chapter describes the different design choices we have though about in developing the framework.
 
 To establish a vocabulary:
@@ -91,54 +136,7 @@ To establish a vocabulary:
 
 	Context information - Every information that aggregates a context
 
-
-\section{Background Research}
-To be able to make a context-aware framework, we first had to investigate what context and context-awareness is in a computer science perspective.
-
-
-When being face-to-face with a person people can interpret the situation and that is a very important factor in effective communication. 
-
-When communication with computers they can not understand and interpret the situation and that leads to inefficient human-machine interaction. Context-aware computing can apply situation information to machines.
-
-Context-awareness is a term associated with Ubiquitous computing also known as Pervasive computing.
-
-Ubiquitous computing, ubicomp, was coined in the early nineties by Mark Weiser whose vision was to make technology that could seamlessly assist in everyday tasks. Weisers research-unit at Xerox PARC developed some of the first mobile devices, and the development of ubi computing clearly reflects in todays technology boom of smart phones and tablets.
-
-Many of the publications on the subject describes it different, but the one description fitting best our understanding was coined by Dey and Abowd whom described context as:
-
-
-\blockquote{
-	\textit{Any information that can be used to characterize the situation of an entity. An entity is a person, place or object that is considered relevant to the interaction between a user and an application, including the user and application themselves.} \cite{Dey and Abowd (2000)} 
-}
-
-We will in this project be focused on how we can effectively model situation in computer software.
-
-
 \section{Grand Architecture}
-The theory available to us mainly describes two main approaches for building a context-aware framework: Blackboard and Widget.
-
-
-The blackboard approach is a centralized solution. Sensors and clients are connected to the blackboard and when ever a new sensor state is available a postit, an entry to the database, is put on the blackboard. The client can at will look through the blackboard and search for context it might find relevant.
-
-The widget approach is an object-oriented distributed solution. Sensors encapsulated by widgets are available for client subscription. The solution is event based and clients are notified whenever a change to the sensor is occurring. This solution is object-oriented as the context is modeled with objects sent from sensor to client. This time and spare coupled solution stands in contrast to the blackboard approach which is a database and is therefore time- and spare uncoupled.
-
-The solution differs a lot in the way the model context, but the main differers is in the way of delivering context from sensor to client.
-
-As mentioned the solutions stands in great contrast when looking at space and time coupling. To briefly describe the theory, space coupling is weather or not the sender knows who the receiver of a message is. Time coupling is if the given message is only available in real-time. 
-
-Where the blackboard at any time offers clients to go though it's context database, it does not offer notifying the client, as the blackboard is space uncoupled, and does not know about the client.
-
-The widget solution offers live updated only when they happens and only to the clients subscribing for the update.
-
-Both solutions are very useful in different applications.
-
-For example a hospital system where you want to use the context framework to track patients, the blackboard solution seams to meet requirements best as you can, when needed, look up a patients whereabout in the hospital.
-
-For a home automation system using sensors, sensor input is only interesting the moment it happens, and only to actuator whom it concern. When a person enters the room the light should go on instantly, only in the room where the person entered and only at the given time.
-
-
-\section{Central}
-
 When looking at the blackboard and widget based methods, we have decided that we want to include a little of both.
 
 We want to do a centralized system where clients can register a predicate. A predicate could be that the client would like to be notified whenever the situation is that a person is sitting down.
@@ -147,8 +145,11 @@ The framework should be event-based so when ever the state of a clients predicat
 
 This combines the blackboards centralization with the widgets time and space coupling making it transparent for the developer which sensor is actually given the input, but also having the space and time coupling from the widget based method.
 
-With this our framework will be an If-this-then-that solution where the client can use sensor input for control without the  client developers having to put much though into using and managing sensors   
+With this our framework will be an If-this-then-that solution where the client can use sensor input for control without the  client developers having to put much though into using and managing sensors  
 
+
+\section{Central}
+ 
 
 \section{Encapsulation of Context-information}
 Object-oriented encapsulation of context can be done in a variety of ways.
@@ -231,7 +232,7 @@ For peer discovery we have chosen to use IP multicast. The central will broadcas
 \label{fig:clientComHelper}
 \end{figure}
 
-\chapter{Design}
+\chapter{Implementation}
 
 
 \section{Overview}
@@ -353,12 +354,21 @@ The Context-aware Scrumboard consists of three parts: The Widget, The Central an
   \emph{Towards a better understanding of context and context-awareness. Workshop on the What, Who, Where, When and How Context-awareness, afflicted with the 2000 ACM Conference on Human Factors in Computer Systems},
   2000.
   
+\bibitem{Dey and Newberger (2009)}
+  	Anind K. Dey and Alan Newberger
+  	\emph{Support for Context-Aware Intelligibility and Control}, 2009
+  
+  
 \bibitem{Infrastructure (2003)}
   W. Keith Edwards, Victoria Bellotti, Anind K. Dey,
   Mark W. Newman.
   \emph{Stuck in the Middle: The Challenges of
   User-Centered Design and Evaluation for Infrastructure},
   2003.
+  
+\bibitem{Context-aware computing (2010)}
+	Anind K. Dey
+	\emph{Context-aware computing} in Ubiquitous Computing Fundamentals, 2010, 321-352
 
 \end{thebibliography}
 \chapter{Appendixes}
