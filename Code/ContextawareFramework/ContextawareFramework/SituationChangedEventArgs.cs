@@ -1,11 +1,11 @@
 ﻿using System;
-using ContextawareFramework.NetworkHelper;
+using Ocon.OconCommunication;
 
-namespace ContextawareFramework
+namespace Ocon
 {
-    public class SituationChangedEventArgs: EventArgs
+    public class SituationChangedEventArgs : EventArgs
     {
-        public ISituation Situation { get; set; }
+        public Situation Situation { get; set; }
         public Peer Subscriber { get; set; }
     }
 }

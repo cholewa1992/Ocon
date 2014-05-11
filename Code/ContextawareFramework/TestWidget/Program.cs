@@ -4,8 +4,10 @@ using System.Linq;
 using System.Security.Policy;
 using System.Threading;
 using System.Threading.Tasks;
-using ContextawareFramework;
-using ContextawareFramework.NetworkHelper;
+using Entities;
+using Ocon;
+using Ocon.Entity;
+using Ocon.OconCommunication;
 
 namespace TestWidget
 {
@@ -16,7 +18,7 @@ namespace TestWidget
 
         public static void Main(string[] args)
         {
-            var w = new Widget(new TcpHelper());
+            var w = new OconWidget(new OconTcpCom());
             w.StartDiscovery();
             var k = new Kinect();
 

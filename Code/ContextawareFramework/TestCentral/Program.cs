@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ContextawareFramework;
-using ContextawareFramework.NetworkHelper;
+using Ocon;
+using Ocon.Entity;
+using Ocon.OconCommunication;
 
 namespace TestCentral
 {
@@ -18,7 +19,7 @@ namespace TestCentral
             filter.AddSituation(new Situation(TestForCloseupSituation) { Name = "Closeup" });
             filter.AddSituation(new Situation(TestForCloseupSituation) { Name = "Standup" });
 
-            var central = new ContextCentral(filter, new TcpHelper(Console.Out), Console.Out);
+            var central = new OconCentral(filter, new OconTcpCom(Console.Out), Console.Out);
 
             central.Initialize();
 

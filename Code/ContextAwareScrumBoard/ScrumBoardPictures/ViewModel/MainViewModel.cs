@@ -80,9 +80,17 @@ namespace ScrumBoardPictures.ViewModel
             {
                 while (true)
                 {
-                    if (!string.IsNullOrEmpty(writer.ToString())) StatusText += "\n" + writer.ToString();
-
+                    if (!string.IsNullOrEmpty(writer.ToString())) StatusText = writer.ToString();
                     Thread.Sleep(200);
+                }
+            });
+
+            Task.Run(() =>
+            {
+                while (true)
+                {
+                    writer.Write("hej");
+                    Thread.Sleep(800);
                 }
             });
             
@@ -94,18 +102,27 @@ namespace ScrumBoardPictures.ViewModel
 
 
 
-            var comHelper = new TcpHelper(writer);
+            /*var comHelper = new TcpHelper(writer);
             string[] situationNames = { CloseupSituationName, StandupSituationName };
 
             var frameworkClient = new Client(comHelper, null, situationNames);
 
-            frameworkClient.SituationStateChangedEvent += (sender, args) =>
-            {
-                UpdatePicture(args.SituationName, args.State);
-                //MessageBox.Show(args.SituationName);
-            };
+            frameworkClient.SituationStateChangedEvent += (sender, args) => UpdatePicture(args.SituationName, args.State);*/
 
+            //Choose a logging instance if any
+            var log = Console.Out;
 
+            //Instantiate a network helper. Here passing the logging target
+            //alternatively instantiate as new TcpHelper(); if no logging is needed
+            var comHelper = new TcpHelper(log);
+
+            //
+
+            //Instantiate the client
+            var oconClient = new Client(comHelper, log, "situationName1", "SituationName2");
+
+            //Subscribe a delegate to be run when a situation change event is fired
+            oconClient.SituationStateChangedEvent += (sender, args) => ActOnChange(args.SituationName, args.State);
         }
 
         private void UpdatePicture(string name, bool state)

@@ -1,37 +1,44 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using ContextawareFramework.Helper;
-using ContextawareFramework.NetworkHelper;
+using Ocon.Entity;
+using Ocon.Helper;
+using Ocon.OconCommunication;
 
-namespace ContextawareFramework
+namespace Ocon
 {
-    public class Widget
+    public class OconWidget
     {
         #region Properties
-        private readonly HashSet<IEntity> _trackedEntities = new HashSet<IEntity>();
-        private readonly ICommunicationHelper _comHelper;
+
+        private readonly IOconCom _comHelper;
         private readonly Group _group;
         private readonly TextWriter _log;
-
+        private readonly HashSet<IEntity> _trackedEntities = new HashSet<IEntity>();
 
         #endregion
+
         #region Constructors
+
         /// <summary>
-        /// Constructs a new Widget
+        ///     Constructs a new Widget
         /// </summary>
-        /// <param name="comHelper">The communication helper to use. A communication helper is needed for the widget to talk with the context filter</param>
+        /// <param name="comHelper">
+        ///     The communication helper to use. A communication helper is needed for the widget to talk with
+        ///     the context filter
+        /// </param>
         /// <param name="log">Instance to write log information to</param>
-        public Widget(ICommunicationHelper comHelper, TextWriter log = null)
+        public OconWidget(IOconCom comHelper, TextWriter log = null)
         {
             _comHelper = comHelper;
             _group = new Group(_comHelper);
             _log = log;
         }
+
         #endregion
 
         /// <summary>
-        /// This will start a discovery service that will find any avalible context filters on the local network
+        ///     This will start a discovery service that will find any avalible context filters on the local network
         /// </summary>
         public void StartDiscovery()
         {
@@ -41,7 +48,8 @@ namespace ContextawareFramework
         }
 
         /// <summary>
-        /// This methode should be invoked when ever a tracked entity is updated. This will send the update to the context filter
+        ///     This methode should be invoked when ever a tracked entity is updated. This will send the update to the context
+        ///     filter
         /// </summary>
         /// <param name="entity">The entity that was updated</param>
         public void Notify(IEntity entity)
@@ -51,7 +59,7 @@ namespace ContextawareFramework
         }
 
         /// <summary>
-        /// Registers the enetity and givs it an unique Id.
+        ///     Registers the enetity and givs it an unique Id.
         /// </summary>
         /// <param name="entity"></param>
         private void RegisterEntity(IEntity entity)

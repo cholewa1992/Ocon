@@ -1,36 +1,36 @@
-﻿using System;
-using System.IO;
-using ContextawareFramework.Helper;
-using ContextawareFramework.NetworkHelper;
+﻿using System.IO;
+using Ocon.Helper;
+using Ocon.OconCommunication;
 
-namespace ContextawareFramework
+namespace Ocon
 {
-    public class ContextCentral
+    public class OconCentral
     {
-        private readonly ICommunicationHelper _comHelper;
+        private readonly IOconCom _comHelper;
         private readonly ContextFilter _contextFilter;
         private readonly TextWriter _log;
 
         /// <summary>
-        /// Constructs the object given contextFilter and communicationHelper
+        ///     Constructs the object given contextFilter and oconCom
         /// </summary>
         /// <param name="contextFilter"></param>
-        /// <param name="communicationHelper"></param>
-        public ContextCentral(ContextFilter contextFilter, ICommunicationHelper communicationHelper, TextWriter log = null)
+        /// <param name="oconCom"></param>
+        public OconCentral(ContextFilter contextFilter, IOconCom oconCom,
+            TextWriter log = null)
         {
             _contextFilter = contextFilter;
-            _comHelper = communicationHelper;
+            _comHelper = oconCom;
             _log = log;
         }
 
         /// <summary>
-        /// Registers events and starts communication
+        ///     Registers events and starts communication
         /// </summary>
-
         public void Initialize()
         {
             // Set up
-            _contextFilter.SituationStateChanged += (sender, args) => _comHelper.SendSituationState(args.Situation, args.Subscriber);
+            _contextFilter.SituationStateChanged +=
+                (sender, args) => _comHelper.SendSituationState(args.Situation, args.Subscriber);
 
             // Set up events
             _comHelper.IncommingEntityEvent += (sender, args) =>
@@ -38,13 +38,14 @@ namespace ContextawareFramework
                 _contextFilter.TrackEntity(args.Entity);
                 Logger.Write(_log, "Incoming entity event: " + args.Entity.Name);
             };
-    
+
             _comHelper.IncommingSituationSubscribtionEvent += (sender, args) =>
             {
                 _contextFilter.Subscribe(args.Peer, args.SituationIdentifier);
-                Logger.Write(_log, "Incoming situation subscribtion on: " + args.SituationIdentifier + " form:" + args.Peer.Guid);
+                Logger.Write(_log,
+                    "Incoming situation subscribtion on: " + args.SituationIdentifier + " form:" + args.Peer.Guid);
             };
-    
+
 
             // Start listening for widgets and clients
             _comHelper.StartListen();

@@ -1,8 +1,6 @@
 ﻿using System;
-using Microsoft.Build.Framework;
 
-
-namespace ContextawareFramework
+namespace Ocon.Entity
 {
     public interface IEntity
     {

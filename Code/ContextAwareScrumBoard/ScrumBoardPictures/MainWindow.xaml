@@ -18,9 +18,7 @@
 
 
         <Image Source="{Binding ImageUri}" HorizontalAlignment="Left" Height="Auto" Margin="10,10,0,0" VerticalAlignment="Top" Width="Auto"/>
-        <ScrollViewer VerticalAlignment="Bottom">
-            <TextBlock FontSize="20" Foreground="Red" Text="{Binding StatusText}" Height="100" Width="Auto" />
-        </ScrollViewer>
+        
 
     </Grid>
 </Window>

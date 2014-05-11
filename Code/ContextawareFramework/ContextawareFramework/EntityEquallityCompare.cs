@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using Ocon.Entity;
 
-namespace ContextawareFramework
+namespace Ocon
 {
     public class EntityEquallityCompare : IEqualityComparer<IEntity>
     {
@@ -11,7 +12,7 @@ namespace ContextawareFramework
 
         public int GetHashCode(IEntity obj)
         {
-            return obj.WidgetId.GetHashCode() * obj.Id.GetHashCode();
+            return obj.WidgetId.GetHashCode()*obj.Id.GetHashCode();
         }
     }
 }

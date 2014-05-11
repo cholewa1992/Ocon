@@ -1,35 +1,19 @@
 ﻿using System;
 
-namespace ContextawareFramework
+namespace Ocon.Entity
 {
-    public abstract class AbstractEntity: IEntity
+    public abstract class AbstractEntity : IEntity
     {
-
-        private Guid _widgetId = Guid.NewGuid();
-        public Guid WidgetId
-        {
-            get { return _widgetId; }
-            set { _widgetId = value; }
-        }
-
-        public abstract string WidgetName { get; set; }
-
-
-        private Guid _id;
-        public Guid Id
-        {
-            get { return _id; }
-            set { _id = value; }
-        }
-
-        public abstract string Name { get; set; }
-        public abstract string Description { get; set; }
-
-
+        
         public override string ToString()
         {
-            return "Name:" + Name
-                   + " from widget: " + WidgetName;
+            return "Name:" + Name + " from widget: " + WidgetName;
         }
+
+        public string WidgetName { get; set; }
+        public Guid Id { get; set; }
+        public Guid WidgetId { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
     }
 }

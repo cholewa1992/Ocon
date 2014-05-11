@@ -1,40 +1,42 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
+using Ocon.Entity;
 
-namespace ContextawareFramework.NetworkHelper
+namespace Ocon.OconCommunication
 {
-    public class Group
+    internal class Group
     {
         #region Fields
-        private readonly ICommunicationHelper _comHelper;
+
+        private readonly IOconCom _comHelper;
         private readonly HashSet<Peer> _observers = new HashSet<Peer>(new PeerEquallityCompare());
         private readonly Dictionary<Peer, int> _tries = new Dictionary<Peer, int>();
+
         #endregion
 
         /// <summary>
-        /// Constructs a new Communicationn Group
+        ///     Constructs a new Communicationn Group
         /// </summary>
         /// <param name="comHelper">The ComHelper to use</param>
-        public Group(ICommunicationHelper comHelper)
+        public Group(IOconCom comHelper)
         {
             _comHelper = comHelper;
         }
 
         /// <summary>
-        /// Sends a entity to all peers in the group
+        ///     Sends a entity to all peers in the group
         /// </summary>
         /// <param name="entity">The entity to sent</param>
         public void SendEntity(IEntity entity)
         {
             var toRemove = new List<Peer>();
-            foreach (var observer in _observers)
+            foreach (Peer observer in _observers)
             {
                 try
                 {
                     _comHelper.SendEntity(entity, observer);
                     _tries[observer] = 0;
-
                 }
                 catch (SocketException e)
                 {
@@ -43,7 +45,7 @@ namespace ContextawareFramework.NetworkHelper
                     if (_tries[observer] >= 3) toRemove.Add(observer);
                 }
             }
-            foreach (var peer in toRemove)
+            foreach (Peer peer in toRemove)
             {
                 RemovePeer(peer);
             }
@@ -51,7 +53,7 @@ namespace ContextawareFramework.NetworkHelper
 
 
         /// <summary>
-        /// Adds a peer to the group
+        ///     Adds a peer to the group
         /// </summary>
         /// <param name="peer">The peer to add</param>
         public void AddPeer(Peer peer)
@@ -63,13 +65,12 @@ namespace ContextawareFramework.NetworkHelper
                     Console.WriteLine("Adding peer to group: " + peer.Guid);
                     _observers.Add(peer);
                     _tries.Add(peer, 0);
-
                 }
             }
         }
 
         /// <summary>
-        /// Removes a peer from the group
+        ///     Removes a peer from the group
         /// </summary>
         /// <param name="peer"></param>
         public void RemovePeer(Peer peer)

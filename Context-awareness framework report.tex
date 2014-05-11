@@ -27,7 +27,29 @@
 
 
 
+\usepackage{listings}
+\usepackage{color}
 
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  language=[Sharp]C,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true
+  tabsize=3
+}
 
 
 
@@ -336,13 +358,29 @@ Actuation on these situations is purely graphical. There will be change in the g
 The Context-aware Scrumboard consists of three parts: The Widget, The Central and the Scrumboard. These parts are in our case distributed and communicate by the TcpHelper implemented for the framework.
 
 
-\paragraph{The Widget}
+\paragraph{The Widget} blah\\
+
+
 
 \paragraph{The Central}
 
-\paragraph{The Scrumboard}
+\paragraph{The Scrumboard} blah \\
+\begin{lstlisting}
+//Choose a logging instance if any
+var log = Console.Out;
 
+//Instantiate a network helper. Here passing the logging target
+//alternatively instantiate as new TcpHelper(); if no logging is needed
+var comHelper = new TcpHelper(log);
 
+//Instantiate the client
+var oconClient = new Client(comHelper, log, "situationName1", "SituationName2");
+
+//Subscribe a delegate to be run when a situation change event is fired
+oconClient.SituationStateChangedEvent += (sender, args) => ActOnChange(args.SituationName, args.State);
+\end{lstlisting}
+
+\todo{This solution with the elements from blackboard makes development very uncoupled. The bloackboard requires a concensus and so Widget/sensor and client can be implemented independently}
 
 \chapter{Conclusion}
 

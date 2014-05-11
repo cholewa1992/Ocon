@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Client;
-using ContextawareFramework;
-using ContextawareFramework.NetworkHelper;
+using Ocon.OconCommunication;
+using Ocon;
 
 namespace TestClient
 {
@@ -11,11 +10,11 @@ namespace TestClient
     {
         static void Main(string[] args)
         {
-            ICommunicationHelper comHelper = new TcpHelper(Console.Out);
+            IOconCom comHelper = new OconTcpCom(Console.Out);
 
 
-            var client = new Client.Client(comHelper, new []{"s1"});
-            client.SituationStateChangedEvent += (sender, eventArgs) => Console.WriteLine("State changed to " + eventArgs.Situation.State);
+            var client = new OconClient(comHelper, Console.Out, "s1", "s2");
+            client.SituationStateChangedEvent += (sender, eventArgs) => Console.WriteLine("State changed to " + eventArgs.State);
             Console.ReadLine();
         }
     }

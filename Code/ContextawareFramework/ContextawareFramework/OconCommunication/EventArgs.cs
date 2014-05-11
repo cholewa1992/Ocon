@@ -1,51 +1,54 @@
 using System;
+using Ocon.Entity;
 
-namespace ContextawareFramework.NetworkHelper
+namespace Ocon.OconCommunication
 {
     public class IncommingEntityEventArgs : EventArgs
     {
-        public IEntity Entity { set; get; }
         internal IncommingEntityEventArgs(IEntity entity)
         {
             Entity = entity;
         }
+
+        public IEntity Entity { set; get; }
     }
 
     public class IncommingSituationSubscribtionEventArgs : EventArgs
     {
-        public Peer Peer { get; set; }
-        public string SituationIdentifier { set; get; }
         internal IncommingSituationSubscribtionEventArgs(Peer peer, string situationIdentifier)
         {
             Peer = peer;
             SituationIdentifier = situationIdentifier;
         }
+
+        public Peer Peer { get; set; }
+        public string SituationIdentifier { set; get; }
     }
 
     public class IncommingSituationChangedEventArgs : EventArgs
     {
-        public Guid Guid { set; get; }
-        public bool State { set; get; }
-        public string SituationName { get; set; }
-
         internal IncommingSituationChangedEventArgs(Guid guid, bool state, string situationName)
         {
             Guid = guid;
             State = state;
             SituationName = situationName;
         }
+
+        public Guid Guid { set; get; }
+        public bool State { set; get; }
+        public string SituationName { get; set; }
     }
 
     /// <summary>
-    /// Custom EventArgs to use for notification about new Widgets
+    ///     Custom EventArgs to use for notification about new Widgets
     /// </summary>
     public class ContextFilterEventArgs : EventArgs
     {
-        public Peer Peer { get; set; }
-
         internal ContextFilterEventArgs(Peer peer)
         {
             Peer = peer;
         }
+
+        public Peer Peer { get; set; }
     }
 }

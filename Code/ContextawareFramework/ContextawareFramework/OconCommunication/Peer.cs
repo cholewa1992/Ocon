@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ContextawareFramework.NetworkHelper
+namespace Ocon.OconCommunication
 {
     public class Peer
     {

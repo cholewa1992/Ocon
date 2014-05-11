@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContextawareFramework", "ContextawareFramework\ContextawareFramework.csproj", "{4CED25D0-FAAC-486F-8B94-63FE8F1DA9FC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ocon", "ContextawareFramework\Ocon.csproj", "{4CED25D0-FAAC-486F-8B94-63FE8F1DA9FC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MulticastListener", "MulticastListener\MulticastListener.csproj", "{3E07E5F5-5D35-4328-809F-D1913F95C925}"
 EndProject

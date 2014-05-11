@@ -48,9 +48,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ContextawareFramework\ContextawareFramework.csproj">
+    <ProjectReference Include="..\ContextawareFramework\Ocon.csproj">
       <Project>{4ced25d0-faac-486f-8b94-63fe8f1da9fc}</Project>
-      <Name>ContextawareFramework</Name>
+      <Name>Ocon</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
