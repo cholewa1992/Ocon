@@ -19,6 +19,17 @@
 
         <Image Source="{Binding ImageUri}" HorizontalAlignment="Left" Height="Auto" Margin="10,10,0,0" VerticalAlignment="Top" Width="Auto"/>
         
+        
+        <StackPanel Width="Auto" Height="100" HorizontalAlignment="Left" Background="AntiqueWhite">
+            <StackPanel Orientation="Horizontal">
+                <Label Content="overrule sensor" />
+                <CheckBox IsChecked="{Binding Overrule, Mode=TwoWay}"/>
+            </StackPanel>
+            <Button Content="Overview" Command="{Binding OverviewCommand}"/>
+            <Button Content="Standup" Command="{Binding StandupCommand}"/>
+            <Button Content="Closeup" Command="{Binding CloseupCommand}"/>
+        </StackPanel>
+        
 
     </Grid>
 </Window>
