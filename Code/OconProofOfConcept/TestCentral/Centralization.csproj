@@ -7,8 +7,8 @@
     <ProjectGuid>{5A49C5CB-D79B-4BB9-A338-9D0FE169B23C}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TestCentral</RootNamespace>
-    <AssemblyName>TestCentral</AssemblyName>
+    <RootNamespace>Centralization</RootNamespace>
+    <AssemblyName>Centralization</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

@@ -1,15 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScrumBoardPictures", "ScrumBoardPictures\ScrumBoardPictures.csproj", "{4C852A99-C6BA-4DFA-AB33-66154183CB82}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScrumBoard", "ScrumBoardPictures\ScrumBoard.csproj", "{4C852A99-C6BA-4DFA-AB33-66154183CB82}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Entities", "Entities\Entities.csproj", "{96778E0E-2050-4F1D-BEC8-78F9A80F52D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestCentral", "TestCentral\TestCentral.csproj", "{5A49C5CB-D79B-4BB9-A338-9D0FE169B23C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Centralization", "TestCentral\Centralization.csproj", "{5A49C5CB-D79B-4BB9-A338-9D0FE169B23C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestClient", "TestClient\TestClient.csproj", "{0CC8A234-B6D6-46C9-AD8E-F6DD19A7DE21}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestWidget", "TestWidget\TestWidget.csproj", "{842D67C1-FFDD-4088-88AB-609BFE722C52}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KinectEntitySensor", "TestWidget\KinectEntitySensor.csproj", "{842D67C1-FFDD-4088-88AB-609BFE722C52}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

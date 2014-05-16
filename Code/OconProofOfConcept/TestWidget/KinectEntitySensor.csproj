@@ -7,8 +7,8 @@
     <ProjectGuid>{842D67C1-FFDD-4088-88AB-609BFE722C52}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TestWidget</RootNamespace>
-    <AssemblyName>TestWidget</AssemblyName>
+    <RootNamespace>KinectEntitySensor</RootNamespace>
+    <AssemblyName>KinectEntitySensor</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.Kinect;
 
-namespace TestWidget
+namespace KinectEntitySensor
 {
     internal class Kinect
     {
