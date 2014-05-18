@@ -9,6 +9,5 @@ namespace Entities
     public class Person : AbstractEntity
     {
         public bool Present { get; set; }
-        public double Distance { get; set; }
     }
 }
