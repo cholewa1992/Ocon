@@ -1,0 +1,92 @@
+\documentclass[]{report}
+\usepackage{subfiles}
+\usepackage[autostyle]{csquotes} 
+\usepackage{parskip}
+\usepackage{graphicx}
+\usepackage{placeins}
+\usepackage{wrapfig}
+\usepackage{epigraph}
+\usepackage[T1]{fontenc}
+\usepackage{titlesec, blindtext, color}
+\definecolor{gray75}{gray}{0.75}
+\newcommand{\hsp}{\hspace{20pt}}
+\titleformat{\chapter}[hang]{\Huge\bfseries}{\thechapter\hsp\textcolor{gray75}{|}\hsp}{0pt}{\Huge\bfseries}
+\makeatletter
+\newif\if@right
+\def\shadequote{\@righttrue\shadequote@i}
+\def\shadequote@i{\begin{snugshade}\begin{quote}\openquote}
+\def\endshadequote{%
+  \if@right\hfill\fi\closequote\end{quote}\end{snugshade}}
+\@namedef{shadequote*}{\@rightfalse\shadequote@i}
+\@namedef{endshadequote*}{\endshadequote}
+\makeatother
+
+
+\newcommand\todo[1]{\textcolor{red}{TODO: }#1\PackageWarning{TODO:}{TODO tag!!}}
+
+
+
+\usepackage{listings}
+\usepackage{color}
+\usepackage{courier}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  language=[Sharp]C,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true
+  tabsize=3
+}
+\begin{document}
+\graphicspath{{img/}{../img/}}
+
+% Front page
+\input{./title.tex}
+
+%Abstract
+\subfile{tex/abstract.tex}
+
+% Introduction
+\chapter{Introduction}
+\subfile{tex/intro.tex}
+
+% Background research
+\chapter{Background Research}
+\subfile{tex/research.tex}
+
+% Design
+\chapter{Design}
+\subfile{tex/design.tex}
+
+% Implementation
+\chapter{Implementation}
+\subfile{tex/implementation.tex}
+
+% Proof of concept
+\chapter{Proof of concept}
+\subfile{tex/proof.tex}
+
+\chapter{Conclusion}
+\subfile{tex/conclusion.tex}
+
+% Bibliography
+\subfile{tex/bibliography.tex}
+
+% Appendixes
+\chapter{Appendixes}
+\subfile{tex/appendixes.tex}
+
+\end{document}

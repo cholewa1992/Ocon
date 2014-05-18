@@ -1,0 +1,82 @@
+\documentclass[../report.tex]{subfiles}
+\begin{document}
+\graphicspath{{img/}{../img/}}
+\section{Overview}
+
+\begin{center}
+\includegraphics[scale=0.2]{ComponentDiagram.png}
+\end{center}
+
+
+\paragraph{The Client} is an observer interested in sensor data. It subscribes to a situation on the ContextCentral.
+
+\paragraph{The Widget} wraps a sensor and translates the raw data to entities which are sent to the ContextCentral.
+
+\paragraph{The ContextCentral} is the central for entity information and situations. When an entity is received from a widget it is saved to the central and all situations are checked and subscribers notified if their statuses changed due to the update.
+
+
+
+\section{Encapsulation of Context}
+Implementation choices in encapsulating context
+
+Entities are generalized by the type IEntity, specifying general information for all entities.
+
+
+\begin{center}
+\includegraphics[scale=0.15]{ContextClassDiagram.png}
+\end{center}
+
+\section{Situation predicate evaluation}
+
+\section{Widget}
+
+The widget's purpose is to track entities and keep them updated in the central. The widget developer should translate sensor input to entities and then the OCon widget will facilitate tracking the entity and sending it to the central. (See figure \ref{seqwidget})
+
+When the widget is notified about an entity from the sensor first it's checked weather or not the entity is already tracked by the widget. If not tracked it will be allocated a new GUID before it is sent to the central. The GUID is a unique ID used for distributed systems and allows OCon to distinguish between adding the entity as a new entity or updating an entity already know to the framework.
+
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{sequencediagram-widget.png}
+\caption{Information flow from Widget to central}
+\label{fig:seqwidget}
+\end{figure}
+
+
+\section{Central}
+
+\section{Client}
+
+The client's purpose it to sent predicates to the central for tracking. When a situation update is sent from the central the client must be able to notify the parent application about the situation update. (See figure \ref{seqclient})
+
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{clientsequencediagram.png}
+\caption{Information flow between client and central}
+\label{fig:seqclient}
+\end{figure}
+
+When the central is discovered the client will sent its situations to the central. The central will compute the situation state and sent it back. Whenever the situation state changes the central will sent an update to the client containing the situations new state. The client will then fire an event which the application can listen and react to.
+
+\section{Communication}
+
+
+
+See figure \ref{fig:widgetComHelper} and \ref{fig:clientComHelper} for a detailed view of the communication between client and central and widget and central
+
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{comHelperSequence-widget.png}
+\caption{Widget to Central sequence diagram}
+\label{fig:widgetComHelper}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{comHelperSequence-client.png}
+\caption{Client to Central sequence diagram}
+\label{fig:clientComHelper}
+\end{figure}
+
+
+
+\end{document}
