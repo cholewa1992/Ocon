@@ -20,11 +20,11 @@ Much research have been done in increasing the available amount of context-infor
 
 
 \blockquote{\textit{Intelligibility and control are important user concerns in context-aware applications. They allow a user to understand why an application is behaving a certain way, and to change its behaviour.}} \cite{Dey and Newberger (2009)}
-\todo Write more about context accuracy
 
+The above cited article stresses that insight to why an implicit action is carried out is important, and that it is important to offer the user to override this action. This brings us back to the previous discussed topic of understanding human intent. Computers will never fully understand human intent and therefore it is important to understand when implicit actions might be erroneous and the user therefore should be prompted before the action or have the ability to change the state back again.
 
 \section{Context aware frameworks}
-% Frameworks have been developed to accomadate this
+% Frameworks have been developed to accommodate this
 To support application developers a number of context-frameworks have been developed. When looking at the frameworks mainly two approaches were used: Blackboard and Widget-based architecture.
 
 The blackboard approach is a centralized solution. Sensors and application are connected to the blackboard and when ever a new sensor state is available a post-it, an entry to the database, is put on the blackboard. The application can at will look through the blackboard and search for context it might find relevant. The blackboard abstracts away the sensor allowing the client to focus on only the context information. 
