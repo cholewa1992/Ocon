@@ -3,12 +3,12 @@
 \graphicspath{{img/}{../img/}}
 This chapter describes the different design choices we have though about in developing the framework.
 
-To establish a vocabulary:
-    Situation - A physical situation eg. A person sitting down
-
-    Context - Context is knowing the situation and being able to react and be accordingly
-
-    Context information - Every information that aggregates a context
+%To establish a vocabulary:
+%    Situation - A physical situation eg. A person sitting down
+%
+%    Context - Context is knowing the situation and being able to react and be accordingly
+%
+%    Context information - Every information that aggregates a context
 
 \section{Grand Architecture}
 When looking at the blackboard and widget based methods, we have decided that we want to include a little of both.
@@ -92,8 +92,4 @@ For the OCon two different communication protocols need to be implemented.\\
 \end{itemize}
 
 We do not wish to bind our users to any concrete communication protocols. Therefore the communication will be interfaces so a concrete implementation can be dependency injected into the OCon.
-
-OCon will contain a default implementation build using the TCP/IP layer. For serialization we have chosen to use json. These decisions have been made so that developers are not bound to the .NET platform and can make clients and widgets in other languages like Java, or C directly on a micro controllers like Arduino.
-
-For peer discovery we have chosen to use IP multicast. The central will broadcast itself for peers to discover. The peer, clients and widgets, will be listening on the multicast endpoint and will invoke an event when a central is discovered. 
 \end{document}
