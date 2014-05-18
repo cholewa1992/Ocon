@@ -93,6 +93,7 @@ It is not in our scope to implement a functional or useful Scrum board.
 
 \chapter{Background Research}
 \section{Context awareness}
+\label{sec:Context awareness}
 To be able to make a context-aware framework, we first had to investigate what context and context-awareness is in a computer science perspective.
 
 Context-awareness is a term associated with Ubiquitous computing. Ubiquitous computing, ubicomp, was coined in the early nineties by Mark Weiser whose vision was to make technology that could seamlessly assist in everyday tasks. Weisers research-unit at Xerox PARC developed some of the first mobile devices, and the development of ubi computing clearly reflects in todays technology boom of smart phones and tablets.
@@ -324,34 +325,52 @@ See figure \ref{fig:widgetComHelper} and \ref{fig:clientComHelper} for a detaile
 \blockquote{
 We can only evaluate the user experience afforded by the toolkit and its features by building applications that use it, and then evaluating them. While the toolkit itself can be evaluated on its technical criteria, the aspects of it that are designed to support a particular user experience can only be evaluated in the context of use and thus must be evaluated indirectly - through applications built with the toolkit. \cite{Infrastructure (2003)} \\}
 
-In previous chapters we evaluated OCon on it's technical criteria by the design and choices made. In this chapter we will answer to our \textit{Goal 2} by implementing OCon.
+In previous chapters we evaluated Ocon on it's technical criteria by the design and choices made. In this chapter we will answer to our \textit{Goal 2} by implementing Ocon.
 
 \section{Motivation}
+
+Proof of concept will be a digital context-aware Scrumboard, and in this section we will briefly describe our motivation for this choice.
 
 %Scrum is a popular agile process of developing software. Originally thought as using a whiteboard for scheduling development tasks, it has been hard for to make use of Scrum in distributed teams, or 
 
 
 
-Scrum is a popular agile process for developing software. In modern Scrum the task board is center of focus. It can be a whiteboard where tasks are coordinated, estimated and assigned. For more on Scrum see \textit{Scrum.org}.
+%Scrum is a popular agile process for developing software. In modern Scrum the task board is center of activity planning. It can be a whiteboard where tasks are coordinated, estimated and assigned. For more on Scrum see \textit{Scrum.org}.
 %Center of focus is the whiteboard where tasks are coordinated, estimated and assigned. For more on Scrum see \textit{scrum.org}.
 
+Scrum is a popular agile process for developing software. It focuses on rigid disciplines with timeboxing. Our motivation lies as part of the discipline of sprinting, and more precisely on the Scrumboard which has been adapted as a means to articulate the tasks in focus. This articulation is an important factor in teamwork which under the term articulation work describes the effort a team puts into communication.
 
-%We ourselves have used Scrum for several projects but never with the pleasure of a physical Scrumboard. We never had a room allocated and it simply wasn't possible to maintain a physical Scrumboard in a new space every day.
-The Scrumboard can take many forms, and we are interested in 
-
-A lot of tools for this problem have sprung up\footnote{Confluence, Scrumwise, Team Foundation, Trello} and made Scrum possible in this scenario, and even for a fully distributed team who would not be gathered physically in the first place.
-
-While we have never used a whitebord for a full Scrum project, we have used it occasionally for single work days. We believe the physical board is important for:
+The classic physique of the Scrumboard is a whiteboard with post-its, but two reasons have been the driving force behind development of digital Scrumboards.
 
 \begin{itemize}
-\item Always being able to turn ones head to the huge todo list is great motivation
-\item No need for projecting a software tool during Scrum meetings
+\item The whiteboard is analog, and there is labor in digitalizing it, for example for a Scrummaster to calculate burndowns or velocity.
+\item Distributed Scrum teams have become more frequent with off-shoring and they need a digital solution for organizing tasks.
+\end{itemize}
+
+Many tools have sprung up motivated of these factors\footnote{Confluence, Scrumwise, Team Foundation, Trello}. These tools are not on par with the whiteboard when it comes to decreasing articulation work, because they lack the physical presence that the whiteboard has with a team. They do however solve the problems of distribution and digitalization.
+
+\begin{itemize}
+\item[\textbf{Motivation 1}] \textit{Popular digital Scrum tools are intended to be used by individuals. This increases articulation work}
+\end{itemize}
+
+Expanding on this is the motivation for context awareness as described in section \ref{sec:Context awareness} on page \pageref{sec:Context awareness}.
+
+\begin{itemize}
+\item[\textbf{Motivation 2}] \textit{Context awareness can improve the interaction between technology and humans}
 \end{itemize}
 
 
-We have established our opinion that the presence of the whiteboard is important. The software tools for Scrum are confined to individuals computers and are not central like the whiteboard, which is why they lack this presence.
 
-If you are able to maintain a physical Scrumboard, another problem surfaces. There is one great point where the whiteboard is lacking; It's Analog. Maintaining the data is all manual translation form the board to a spreadsheet or the likes.
+Going forward in this chapter we will look to implement an idea of how these motivations could be satisfied by means of a digital Scrumboard and Ocon.
+
+
+%We ourselves have used Scrum for several projects but never with the pleasure of a physical Scrumboard. We never had a room allocated and it simply wasn't possible to maintain a physical Scrumboard in a new space every day.
+
+
+%A lot of tools for this problem have sprung up\footnote{Confluence, Scrumwise, Team Foundation, Trello} and made Scrum possible in this scenario, and even for a fully distributed team who would not be gathered physically in the first place.
+
+
+
 
 %\begin{itemize}
 %\item[] \Large{There is no solution today that digitalizes the whiteboard while maintaining it's presence}
@@ -360,10 +379,21 @@ If you are able to maintain a physical Scrumboard, another problem surfaces. The
 %\normalsize
 %\vspace{0.2cm}
 
-While this project does not cover implementing a Scrumboard which would solve these problems, we have still chosen this as proof of concept because we think it's an interesting topic.
+%This project does not cover implementation of a solution to these problems, but a some good ideas on it
+
+
 
 
 \section{Context awareness}
+
+The Scrumboard's purpose as a boundary object is to display information relevant to the team. The relevant information for the team depends on the situation, 
+We have chosen three situations in Scrum where we believe the Scrumboard can benefit the team in having Context awareness
+
+\begin{itemize}
+\item Overview
+\item Closeup
+\item Standup
+\end{itemize}
 
 There are two situations we deem important which we want the Scrumboard to act upon:
 
