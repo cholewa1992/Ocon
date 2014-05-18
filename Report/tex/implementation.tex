@@ -66,7 +66,7 @@ When the central is discovered the client will sent its situations to the centra
 
 \section{Communication}
 
-To supoort the design decision that the communication part should be injectable the communication have been inferfaced.
+To supoort the design decision that the communication part should be injectable the communication have been interfaced.
 
 OCon will contain a default communication implementation build using the TCP/IP layer. For serialization we have chosen to use json. These decisions have been made so that developers are not bound to the .NET platform and can make clients and widgets in other languages like Java, or C directly on a micro controllers like Arduino.
 
@@ -74,7 +74,9 @@ For peer discovery we have chosen to use IP multicast. The central will broadcas
 
 The communication subsystem is a vital part of OCon as all communication between peers will go though the subsystem. See figure \ref{fig:widgetComHelper} and \ref{fig:clientComHelper} for a detailed view of the communication between client and central and widget and central.
 
-To support clients being able to sent predicates to the central we must be able to serialize Predicates, but this is unfortunately not supported in .NET. Framework for handling the serialization have been researched, but none of the investigated frameworks was able serialize the predicates. Therefore serializing the predicate was forced out of scope. Instead of sending the predicate, predicates is hard coded in the central. The client can then subscribe them by sending a predicate identifier. This limits the usage of OCon, but it was not possible to include this feature in this project. A framework for serializing the predicates as expression trees should be doable, but that project is left for a later iteration of OCon.
+Just like entities, peers are assigned a GUID. The GUID is an unique identifier for the peer and the communication class stores the IPEndPoints associated with the GUIDs. By doing this messages can be sent only by using the GUID and not the IPEndPoint which adds an abstraction layer to the subsystem.
+
+To support clients being able to sent predicates to the central we must be able to serialize Predicates, but this is unfortunately not supported in .NET. Frameworks for handling the serialization have been researched, but none of the investigated frameworks was able serialize the predicates in OCon as custom types are used. Therefore serializing the predicate was forced out of scope. Instead of sending the predicate, predicates is hard coded in the central. The client can then subscribe them by sending a predicate identifier. This limits the usage of OCon, but it was not possible to include this feature in this project. A framework for serializing the predicates as expression trees should be doable, but that project is left for a later iteration of OCon.
 
 \begin{figure}
 \centering
