@@ -1,23 +1,26 @@
 \documentclass[../report.tex]{subfiles}
 \begin{document}
 \graphicspath{{img/}{../img/}}
-\section{Overview}
-
-\todo{Add section intro}
-
-\begin{figure}
-\centering
-\includegraphics[width=\linewidth]{ComponentDiagram.png}
-\caption{OCon component decomposition}
-\label{fig:componentdiagram}
-\end{figure}
 
 
-\paragraph{The Client} is an observer interested in sensor data. It subscribes to a situation on the ContextCentral.
 
-\paragraph{The Widget} wraps a sensor and translates the raw data to entities which are sent to the ContextCentral.
+%\section{Overview}
 
-\paragraph{The ContextCentral} is the central for entity information and situations. When an entity is received from a widget it is saved to the central and all situations are checked and subscribers notified if their statuses changed due to the update.
+%\todo{Add section intro}
+
+%\begin{figure}
+%\centering
+%\includegraphics[width=\linewidth]{ComponentDiagram.png}
+%\caption{OCon component decomposition}
+%\label{fig:componentdiagram}
+%\end{figure}
+
+
+%\paragraph{The Client} is an observer interested in sensor data. It subscribes to a situation on the ContextCentral.
+
+%\paragraph{The Widget} wraps a sensor and translates the raw data to entities which are sent to the ContextCentral.
+
+%\paragraph{The ContextCentral} is the central for entity information and situations. When an entity is received from a widget it is saved to the central and all situations are checked and subscribers notified if their statuses changed due to the update.
 
 
 
@@ -27,9 +30,13 @@ Implementation choices in encapsulating context
 Entities are generalized by the type IEntity, specifying general information for all entities.
 
 
-\begin{center}
-\includegraphics[scale=0.15]{ContextClassDiagram.png}
-\end{center}
+\begin{figure}[H]
+\includegraphics[width=\linewidth]{customEntityClass.png}
+\caption{Person as a custom IEntity implementation}
+\label{fig:PersonImplementation}
+\end{figure}
+
+
 
 \section{Situation predicate evaluation}
 \todo{Here goes explanation to how we evaluate predicates}
