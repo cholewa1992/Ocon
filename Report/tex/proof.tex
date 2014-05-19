@@ -3,10 +3,11 @@
 \graphicspath{{img/}{../img/}}
 
 
-\chapter{Proof of concept}
+
 
 \blockquote{
 We can only evaluate the user experience afforded by the toolkit and its features by building applications that use it, and then evaluating them. While the toolkit itself can be evaluated on its technical criteria, the aspects of it that are designed to support a particular user experience can only be evaluated in the context of use and thus must be evaluated indirectly - through applications built with the toolkit. \cite{Infrastructure (2003)} \\}
+\todo{page to quote}
 
 In previous chapters we evaluated Ocon on it's technical criteria by the design and choices made. In this chapter we will answer to our \textit{Goal 2} by implementing Ocon.
 
@@ -26,14 +27,14 @@ Scrum is a popular agile process for developing software. It focuses on rigid di
 The classic physique of the Scrumboard is a whiteboard with post-its, but two reasons have been the driving force behind development of digital Scrumboards.
 
 \begin{itemize}
-\item The whiteboard is analog, and there is labor in digitalizing it, for example for a Scrummaster to calculate burndowns or velocity.
-\item Distributed Scrum teams have become more frequent with off-shoring and they need a digital solution for organizing tasks.
+\item The whiteboard is analog, and there is labor in digitalizing its' information. E.g. for a Scrummaster to calculate burndowns or velocity.
+\item Distributed Scrum teams have become more frequent with off-shoring and they need a digital solution for organizing tasks together.
 \end{itemize}
 
-Many tools have sprung up motivated of these factors\footnote{Confluence, Scrumwise, Team Foundation, Trello}. These tools are not on par with the whiteboard when it comes to decreasing articulation work, because they lack the physical presence that the whiteboard has with a team. They do however solve the problems of distribution and digitalization.
+Many tools have sprung up motivated by those factors\footnote{Confluence, Scrumwise, Team Foundation, Trello}. These tools are not on par with the whiteboard when it comes to decreasing articulation work, because they lack the physical presence that the whiteboard has with a team. They do however solve the problems of distribution and digitalization.
 
 \begin{itemize}
-\item[\textbf{Motivation 1}] \textit{Popular digital Scrum tools are intended to be used by individuals. This increases articulation work}
+\item[\textbf{Motivation 1}] \textit{Popular digital Scrum tools are intended to be used by individuals. The lack of presence with the team increases articulation work compared to the whiteboard.}
 \end{itemize}
 
 Expanding on this is the motivation for context awareness as described in section \ref{sec:Context awareness} on page \pageref{sec:Context awareness}.
@@ -42,7 +43,7 @@ Expanding on this is the motivation for context awareness as described in sectio
 \item[\textbf{Motivation 2}] \textit{Context awareness can improve the interaction between technology and humans}
 \end{itemize}
 
-
+\todo{add sources}
 
 Going forward in this chapter we will look to implement an idea of how these motivations could be satisfied by means of a digital Scrumboard and Ocon.
 
@@ -67,51 +68,53 @@ Going forward in this chapter we will look to implement an idea of how these mot
 
 
 
-\section{Context awareness}
 
-The Scrumboard's purpose as a boundary object is to display information relevant to the team. The relevant information for the team depends on the situation, 
-We have chosen three situations in Scrum where we believe the Scrumboard can benefit the team in having Context awareness
 
-\begin{itemize}
-\item Overview
-\item Closeup
-\item Standup
-\end{itemize}
+\section{Situations and their informations}
+\label{sec:proofSituations}
 
-There are two situations we deem important which we want the Scrumboard to act upon:
+The Scrumboard's purpose as a boundary object is to display information relevant to the team. Out of the information pool only some parts are interesting in a situation, and so we will use Context awareness to detect three situations in a Scrum environment and display relevant information on the Scrumboard accordingly.
+
 
 \begin{itemize}
-\item The standup meeting: When more than one person is standing in front of the Board
-\item An individual closeup with the board
-\end{itemize}
+\item Overview. This is a default situation valid when none of the others are.
+\subitem \textit{Information: Task overview}
 
-Actuation on these situations is purely graphical. There will be change in the graphical interface according to which information the interactors are interested in given the situation.
+\item Closeup. This situation is valid when one person is detected in front of the board. Items on screen can be smaller and more detailed in this view than the overview.
+\subitem \textit{Information: Task overview, burndown and calendar.}
 
-\begin{itemize}
-\item Standup
-\item Closeup
-\item Overview. This view is our default for when none of the other contexts are true
+\item Standup. Envisioned for the Standup meeting, this situation is valid when 2 or more persons are detected. Items are medium sized and rather abstract.
+\subitem \textit{Information: Task overview, burndown and calendar.}
 \end{itemize}
 
 
-\todo{more explanation of the context involved and how we'll represent it with OCon...}
 
 
 
 \section{Implementation and environment}
 
-The Context-aware Scrumboard consists of three parts: The KinectEntitySensor, The Centralization and the Scrumboard. These parts are distributed and communicate with the OconTcpCom implementation over LAN from each of their own hardware nodes.
+The situations described in section \ref{sec:proofSituations} are simple so to only require little context information - In this case whether persons are present. To encapsulate this we are extending on AbstractEntity since Ocon needs an IEntity type, and adding a present property. See figure \ref{fig:PersonImplementation}. 
+
+
+For communication we will use OconTcpCom which depends on serialization between an OconWidget and OconCentral. Therefore the Person implementation has to be known to both these projects.
+
+
+
+The Context-aware Scrumboard consists of three parts: The KinectEntitySensor, The Centralization and the Scrumboard. These parts are distributed and communicate with the OconTcpCom implementation over LAN from each of their own hardware nodes. See deployment on figure \ref{fig:ProofofConceptDeployment}.
+
 
 \begin{figure}[H]
-\includegraphics[width=\linewidth]{./ProofOfConceptDeployment.png}
+\begin{center}
+\includegraphics[scale=0.155]{./ProofOfConceptDeployment.png}
 \caption{Proof of concept deployment}
+\end{center}
 \label{fig:ProofofConceptDeployment}
 \end{figure}
 
-\subsection{The KinectEntitySensor}
-The KinectEntitySensor's task is to gather Context Information and send it to the centralization. Ocon has been implemented to help with that. This part of the Context-aware Scrumboard implementation involves transferring information to the OconCentral, and it is for that purpose the OconWidget has been implemented.
+\todo{clarify that this is just one way to use Ocon}
 
-The widget's task is to translate sensor data into IEntity implementation types and pass them to the OconWidget which will handle transfering it to the central.
+\subsection{The KinectEntitySensor}
+The KinectEntitySensor's task is to gather Context Information and send it to the centralization. This part of the Context-aware Scrumboard implementation involves transferring information to the OconCentral, and it is for that purpose the OconWidget has been implemented. On figure \ref{code:OconWidget} is a snippet of the implementation.
 \begin{figure}[H]
 \begin{lstlisting}
 //Instantiate a logging instance
@@ -135,10 +138,19 @@ widget.Notify(entity);
 \label{code:OconWidget}
 \end{figure}
 
+This code is mostly object instantiation followed by passing a hardcoded Person implementation to the OconWidget. Generally the job of this component is to transform captured context information into IEntity implementations and passing them to the OconWidget to be transfered to the OconCentral.
+
+
+
+\newpage
 
 
 \subsection{The centralization}
-The central
+
+
+The centralization has multiple tasks. First of all it's task is to receive Person objects from the KinectEntitySensor and coordinate them accordingly. Second of all it's task is to check registered situation predicates when entities are added or changed. And finally it's task is to notify subscribers when situation predicate states change.
+
+
 \begin{figure}[H]
 \begin{lstlisting}
 //Instantiate a logging instance
@@ -167,7 +179,12 @@ central.Initialize();
 \label{code:OconCentral}
 \end{figure}
 
+
+\newpage
+
 \subsection{The Scrumboard}
+
+The Scrumboard's task is to firstly register to situations on the Centralization and secondly bind and action with the OconClient which is fired when a subscribed situation's state has changed.
 
 \begin{figure}[H]
 \begin{lstlisting}
@@ -189,7 +206,13 @@ oconClient.SituationStateChangedEvent += (sender, args) => UpdatePicture(args.Si
 \end{figure}
 
 
-\todo{This solution with the elements from blackboard makes development very uncoupled. The blackboard requires a consensus and so Widget/sensor and client can be implemented independently}
+\todo{This solution with the elements from blackboard makes development very uncoupled.}
+
+
+
+\section{Proof of concept}
+
+\todo{reflections on goal 2}
 
 
 \end{document}
