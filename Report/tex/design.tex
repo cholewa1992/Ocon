@@ -1,7 +1,7 @@
 \documentclass[../report.tex]{subfiles}
 \begin{document}
 \graphicspath{{img/}{../img/}}
-This chapter describes the different design choices we have though about in developing the framework.
+This chapter describes the different design choices considered while developing the framework.
 
 %To establish a vocabulary:
 %    Situation - A physical situation eg. A person sitting down
@@ -13,39 +13,32 @@ This chapter describes the different design choices we have though about in deve
 \section{Architecture}
 When looking at the blackboard and widget based methods, we have decided that we want to include a little of both.
 
-We want to do a centralized system where clients can register a situation predicate. Our implementation, the OCon framework, will be event-based so when ever the state of a clients predicate changes, an event will be fired to notify the client. \todo{Clarification on the uses of client}
+We want to do a centralized system where clients can register a situation predicate. Our implementation, the OCon framework, will be event-based. Sensors encapsulated by widgets will provide sensor input. The central will evaluate the predicate based on the input and whenever the state changes, an event will be fired to notify the client. The client will be the applications entry point to OCon.
 
 This combines the blackboards centralization and abstraction with the widgets object-oriented modelling and time and space coupling. This will result in a solution where it's transparent for the developer which sensor is actually given the input, like the blackboard, but also having the space and time coupling from the widget based method.
 
-With this OCon will be an If-this-then-that solution where the client can use sensor input for control without the client developers having to put much though into using and managing sensors. This will be realized by three different components. A client, a central and a widget. 
+With this OCon will be an If-this-then-that solution where the client can use sensor input for control without the client developers having to put much though into using and managing sensors. This will be realized by three different components. A client, a central and a widget (See figure \ref{GrandArchitecture}).
 
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.2]{grandarchitecture.png}
-\caption{Grand architecture of OCon}
+\caption{Architecture of OCon}
 \label{fig:GrandArchitecture}
 \end{figure}
 
-\todo{Please QA}
-
 \section{Encapsulation of Context-information}
-Object-oriented encapsulation of context can be done in a variety of ways.
+Object-oriented encapsulation of context can be done in a variety of ways. We have been looking at two different methods. Using a composite pattern and modelling with properties. In this chapter we will examine the two methods.
 
-We have been looking at two different methods. Using a composite pattern and modelling with properties.
+Using a composite pattern enforced relations between entities, entities being locations, persons, things or other real world objects. Lets say we want to model a location with some rooms with some persons with different items or actions. Using the composite modelling we can have a location object containing room objects containing person objects containing item objects. We'll then have a relationship between the objects compositing the context being that a group of students is in room 3A04 at ITU all having phones in their pockets and all sitting down. This is a fairly complex, but a very extensible and flexible way to model situation (See fig \ref{fig:composite}). The downside to this method is that you can easily have an overflow of objects, and that it can be very complex and computation heavy to check against a predicate.
 
-Using a composite pattern enforced relations between entities, entities being locations, persons, things or other real world objects.
-\todo{too many paragrafs}
-
-Lets say we want to model a location with some rooms with some persons with different items or actions. Using the composite modelling we can have a location object containing room objects containing person objects containing item objects. We'll then have a relationship between the objects compositing the context being that a group of students is in room 3A04 at ITU all having phones in their pockets and all sitting down. This is a fairly complex, but a very extensible and flexible way to model situation (See fig \ref{fig:composite}). The downside to this method is that you can easily have an overflow of objects, and that it can be very complex and computation heavy to check against a predicate.
-
-The other method we are considering is more simple. Having a set of entities that we wish to track, eg persons. All context information relating to a person will be properties to the object. So to use the previous example, a person entity would then have a location property, being ITU room 3A04, a phone property begin true and a sitting property being true. This model is more easy to make, but it limits the developer to know very precisely what information is needed and should be tracked. The previous model had the advantage of being very flexible allowing more complex relations and situations. 
+The other method we are considering is more simple. Having a set of entities that we wish to track, entities again being locations, persons or things. All context information relating to a person will be properties to the object. So to use the previous example, a person entity would then have a location property, being ITU room 3A04, a phone property begin true and a sitting property being true. This model is more easy to make, but it limits the developer to know very precisely what information is needed and should be tracked. The previous model had the advantage of being very flexible allowing more complex relations and situations. 
 
 Both methods have pros and cons being how dynamic they are, how easily they can be implemented, and what performance they will have and that will be the parameters we'll look at when implementing OCon 
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=200px]{composite.png}
-\caption{Diagram illustrating composite modeling}
+\includegraphics[width=\linewidth]{composite.png}
+\caption{Diagram illustrating composite vs property modelling}
 \label{fig:composite}
 \end{figure}
 
@@ -56,25 +49,18 @@ The central is the central component and will facilitate clients adding predicat
 
 The definition of predicate is taken from the .NET platform. A predicate is a delegate returning a boolean. In this way .NET developers will be familiar with the meaning and definition of a predicate.
 
-An important feature will be the centrals ability to be discovered by client and widgets. The central will be able to broadcast itself so widget and client can discover and connect to the central. This feature will enforce a more dynamic usage and behaviour of OCon.
-
-\todo{Please QA} 
+An important feature will be the centrals ability to be discovered by client and widgets. The central will be able to broadcast itself so widget and client can discover and connect to the central. This feature will enforce a more dynamic usage and behaviour of OCon. Dynamic behaviour having a running central and clients and widgets being able to connect and disconnect without having to restart or make any actions to the central.
  
-
 \section{Widget}
 
 The OCon widgets will translate sensor input to entities along with facilitating communication to the central.
 
-This approach have been chosen to make the system easily distributed as a small, maybe embedded, component can run a widget translating the sensors input to entities before sending them to the central. This approach will also reduce network load as the widget will only send updates to the central when changes occur. This stands in contrast to sending all sensor input to the central and making it process the data itself which could be useful in some cases. Sending all data would also put more computational pressure on the central making it hard to scale to larger systems.
+This approach have been chosen to make the system easily distributed as a small, maybe embedded, component can run a widget translating the sensors input to entities before sending them to the central. This approach will also reduce network load as the widget will only send updates to the central when changes occur. This stands in contrast to sending all sensor input to the central and making it process the data itself which could be useful in some cases. Sending all data would also put more computational pressure on the central making it hard to scale to larger systems. Last but not least the widget will have an architecture making it convenient and easy to use for developers. This will be done to pursue the goal of OCon. (See project scope \ref{scope}) 
 
 
 \section{Client}
 
-The client will be the entry point into OCon facilitating developers to add situations to the central and receive updates whenever an update to those situations occurred.
-
-The client will be able to automaticly discover and use the central. 
-
-\todo{What do we do with this chapter?} 
+The client will be the entry point into OCon facilitating developers to add situations to the central and receive updates whenever an update to those situations occurred. The client objectives is that it will be able to automaticly discover and use the central and that it will, the same as the widget, have an architecture making it easy and convenient for developers to use. To make the client easy to use events will be used. Whenever predicate updates is received from the central an event will be fired. This event can be subscribed by the application. This facilitates quick and very easy usage.
 
 
 \section{Communication}
