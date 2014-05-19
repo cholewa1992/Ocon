@@ -5,6 +5,7 @@
 \usepackage{graphicx}
 \usepackage{placeins}
 \usepackage{wrapfig}
+\usepackage{todonotes}
 \usepackage{epigraph}
 \usepackage{float}
 \usepackage[T1]{fontenc}
@@ -23,7 +24,7 @@
 \makeatother
 
 
-\newcommand\todo[1]{\textcolor{red}{TODO: }#1\PackageWarning{TODO:}{TODO tag!!}}
+%\newcommand\todo[1]{\textcolor{red}{TODO: }#1\PackageWarning{TODO:}{TODO tag!!}}
 
 
 
@@ -56,6 +57,8 @@
 
 % Front page
 \input{./title.tex}
+
+\tableofcontents
 
 %Abstract
 \subfile{tex/abstract.tex}

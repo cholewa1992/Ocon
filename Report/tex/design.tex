@@ -13,20 +13,20 @@ This chapter describes the different design choices we have though about in deve
 \section{Architecture}
 When looking at the blackboard and widget based methods, we have decided that we want to include a little of both.
 
-We want to do a centralized system where clients can register a situation predicate. Our implementation, the OCon framework, will be event-based so when ever the state of a clients predicate changes, an event will be fired to notify the client. 
+We want to do a centralized system where clients can register a situation predicate. Our implementation, the OCon framework, will be event-based so when ever the state of a clients predicate changes, an event will be fired to notify the client. \todo{Clarification on the uses of client}
 
 This combines the blackboards centralization and abstraction with the widgets object-oriented modelling and time and space coupling. This will result in a solution where it's transparent for the developer which sensor is actually given the input, like the blackboard, but also having the space and time coupling from the widget based method.
 
 With this OCon will be an If-this-then-that solution where the client can use sensor input for control without the client developers having to put much though into using and managing sensors. This will be realized by three different components. A client, a central and a widget. 
 
-\begin{figure}
+\begin{figure}[H]
 \centering
-\includegraphics[width=200px]{grandarchitecture.png}
+\includegraphics[scale=0.2]{grandarchitecture.png}
 \caption{Grand architecture of OCon}
-\label{fig:composite}
+\label{fig:GrandArchitecture}
 \end{figure}
 
-\todo Please QA
+\todo{Please QA}
 
 \section{Encapsulation of Context-information}
 Object-oriented encapsulation of context can be done in a variety of ways.
@@ -34,6 +34,7 @@ Object-oriented encapsulation of context can be done in a variety of ways.
 We have been looking at two different methods. Using a composite pattern and modelling with properties.
 
 Using a composite pattern enforced relations between entities, entities being locations, persons, things or other real world objects.
+\todo{too many paragrafs}
 
 Lets say we want to model a location with some rooms with some persons with different items or actions. Using the composite modelling we can have a location object containing room objects containing person objects containing item objects. We'll then have a relationship between the objects compositing the context being that a group of students is in room 3A04 at ITU all having phones in their pockets and all sitting down. This is a fairly complex, but a very extensible and flexible way to model situation (See fig \ref{fig:composite}). The downside to this method is that you can easily have an overflow of objects, and that it can be very complex and computation heavy to check against a predicate.
 
@@ -41,7 +42,7 @@ The other method we are considering is more simple. Having a set of entities tha
 
 Both methods have pros and cons being how dynamic they are, how easily they can be implemented, and what performance they will have and that will be the parameters we'll look at when implementing OCon 
 
-\begin{figure}
+\begin{figure}[h]
 \centering
 \includegraphics[width=200px]{composite.png}
 \caption{Diagram illustrating composite modeling}
@@ -57,7 +58,7 @@ The definition of predicate is taken from the .NET platform. A predicate is a de
 
 An important feature will be the centrals ability to be discovered by client and widgets. The central will be able to broadcast itself so widget and client can discover and connect to the central. This feature will enforce a more dynamic usage and behaviour of OCon.
 
-\todo Please QA
+\todo{Please QA} 
  
 
 \section{Widget}
@@ -73,7 +74,7 @@ The client will be the entry point into OCon facilitating developers to add situ
 
 The client will be able to automaticly discover and use the central. 
 
-\todo What do we do with this chapter?
+\todo{What do we do with this chapter?} 
 
 
 \section{Communication}
