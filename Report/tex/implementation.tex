@@ -25,9 +25,10 @@
 
 
 \section{Encapsulation of Context}
-Implementation choices in encapsulating context
 
-Entities are generalized by the type IEntity, specifying general information for all entities.
+Entities are generalized by the interface IEntity, specifying general information for all entities. AbstractEntity extends on IEntity and overrides ToString() with a meaningful implementation. Both are public and it is up the an implementor which to extend.
+
+On figure \ref{fig:PersonImplementation} is extended a Person with property present motivated by the need for this context information.
 
 
 \begin{figure}[H]
@@ -39,7 +40,7 @@ Entities are generalized by the type IEntity, specifying general information for
 
 
 \section{Situation predicate evaluation}
-\todo{Here goes explanation to how we evaluate predicates}
+\todo{Short on how we evualate predicates}
 
 \section{Widget}
 
