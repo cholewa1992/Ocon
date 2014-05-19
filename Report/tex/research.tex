@@ -28,7 +28,7 @@ The above cited article stresses that insight to why an implicit action is carri
 % Frameworks have been developed to accommodate this
 To support application developers a number of context-frameworks have been developed. When looking at the frameworks mainly two approaches were used: Blackboard and Widget-based architecture.
 
-The blackboard approach is a centralized solution. Sensors and application are connected to the blackboard and when ever a new sensor state is available a post-it, an entry to the database, is put on the blackboard. The application can at will look through the blackboard and search for context it might find relevant. The blackboard abstracts away the sensor allowing the client to focus on only the context information. 
+The blackboard approach is a centralized solution. Sensors and application are connected to the blackboard and whenever a new sensor state is available a post-it, an entry to the database, is put on the blackboard. The application can at will look through the blackboard and search for context it might find relevant. The blackboard abstracts away the sensor implementation allowing the client to focus on only the context information. 
 
 \begin{figure}
 \centering
@@ -39,7 +39,7 @@ The blackboard approach is a centralized solution. Sensors and application are c
 
 The widget approach is an object-oriented distributed solution. Sensors encapsulated by widgets are available for application subscription. The solution is event based and applications are notified whenever a change to the sensor is occurring. This solution is object-oriented as the context is modelled with objects sent from sensor to application. This time and spare coupled solution stands in contrast to the blackboard approach which is a database and is therefore time- and space uncoupled.
 
-The solution differs a lot in the way the model context, but the main differers is in the way of delivering context from sensor to application. The solutions stands in great contrast when looking at space and time coupling. To briefly describe the theory, space coupling is weather or not the sender knows who the receiver of a message is. Time coupling is if the given message is only available in real-time. 
+The solutions differs a lot in the way the model context, but the main differers is in the way of delivering context from sensor to application. The solutions stands in great contrast when looking at space and time coupling. To briefly describe the theory, space coupling is weather or not the sender knows who the receiver of a message is. Time coupling is if the given message is only available in real-time. 
 
 Where the blackboard at any time offers applications to go though it's context database, it does not offer notifying the application, as the blackboard is space uncoupled, and does not know about the application. The widget solution offers live updated only when they happens and only to the applications subscribing for the update.
 

@@ -3,9 +3,14 @@
 \graphicspath{{img/}{../img/}}
 \section{Overview}
 
-\begin{center}
-\includegraphics[scale=0.2]{ComponentDiagram.png}
-\end{center}
+\todo{Add section intro}
+
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{ComponentDiagram.png}
+\caption{OCon component decomposition}
+\label{fig:componentdiagram}
+\end{figure}
 
 
 \paragraph{The Client} is an observer interested in sensor data. It subscribes to a situation on the ContextCentral.
@@ -27,6 +32,7 @@ Entities are generalized by the type IEntity, specifying general information for
 \end{center}
 
 \section{Situation predicate evaluation}
+\todo{Here goes explanation to how we evaluate predicates}
 
 \section{Widget}
 
@@ -43,6 +49,7 @@ When the widget is notified about an entity from the sensor first it's checked w
 
 
 \section{Central}
+\todo{Write about the central}
 
 \section{Client}
 
@@ -59,9 +66,17 @@ When the central is discovered the client will sent its situations to the centra
 
 \section{Communication}
 
+To supoort the design decision that the communication part should be injectable the communication have been interfaced.
 
+OCon will contain a default communication implementation build using the TCP/IP layer. For serialization we have chosen to use json. These decisions have been made so that developers are not bound to the .NET platform and can make clients and widgets in other languages like Java, or C directly on a micro controllers like Arduino.
 
-See figure \ref{fig:widgetComHelper} and \ref{fig:clientComHelper} for a detailed view of the communication between client and central and widget and central
+For peer discovery we have chosen to use IP multicast. The central will broadcast itself for peers to discover. The peer, clients and widgets, will be listening on the multicast endpoint and will invoke an event when a central is discovered.
+
+The communication subsystem is a vital part of OCon as all communication between peers will go though the subsystem. See figure \ref{fig:widgetComHelper} and \ref{fig:clientComHelper} for a detailed view of the communication between client and central and widget and central.
+
+Just like entities, peers are assigned a GUID. The GUID is an unique identifier for the peer and the communication class stores the IPEndPoints associated with the GUIDs. By doing this messages can be sent only by using the GUID and not the IPEndPoint which adds an abstraction layer to the subsystem.
+
+To support clients being able to sent predicates to the central we must be able to serialize Predicates, but this is unfortunately not supported in .NET. Frameworks for handling the serialization have been researched, but none of the investigated frameworks was able serialize the predicates in OCon as custom types are used. Therefore serializing the predicate was forced out of scope. Instead of sending the predicate, predicates is hard coded in the central. The client can then subscribe them by sending a predicate identifier. This limits the usage of OCon, but it was not possible to include this feature in this project. A framework for serializing the predicates as expression trees should be doable, but that project is left for a later iteration of OCon.
 
 \begin{figure}
 \centering
