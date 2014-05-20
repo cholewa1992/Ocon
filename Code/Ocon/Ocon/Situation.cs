@@ -11,13 +11,12 @@ namespace Ocon
     {
         private readonly Guid _id = Guid.NewGuid();
         private readonly HashSet<Peer> _peers = new HashSet<Peer>(new PeerEquallityCompare());
-        private string _description;
-        private Predicate<ICollection<IEntity>> _situationPredicate;
 
         public Situation(string name, Predicate<ICollection<IEntity>> situationPredicate)
         {
             Name = name;
             SituationPredicate = situationPredicate;
+            
         }
 
         public string Name { get; set; }
@@ -27,23 +26,12 @@ namespace Ocon
             get { return _id; }
         }
 
-        public string Description
-        {
-            get { return _description; }
-            set
-            {
-                _description = value;
-            }
-        }
+        public string Description { get; set; }
 
         public bool State { get; set; }
 
 
-        public Predicate<ICollection<IEntity>> SituationPredicate
-        {
-            get { return _situationPredicate; }
-            set { _situationPredicate = value; }
-        }
+        public Predicate<ICollection<IEntity>> SituationPredicate { get; set; }
 
 
         public void AddSubscriber(Peer peer)
