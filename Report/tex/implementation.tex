@@ -62,9 +62,6 @@ The OconClient is, as the OconWidget, very light. It contains only a constructor
 
 Per design the client was suppose to send a predicate and not a predicate identifier. To support clients being able to send predicates to the central, predicates must be serialized, but this is unfortunately not supported in .NET. Frameworks for handling the serialization have been researched, but none of the investigated frameworks were able serialize the predicates in Ocon as custom types are used. Therefore serializing predicates was forced out of scope. Instead of sending the predicates, they are hard coded in the central. The OconClient can then subscribe them by sending a predicate identifier. 
 
-\todo{Move to reflection (The text is out commented)}
-%This limits the usage of Ocon, but it was not possible to include this feature in this project. A framework for serializing the predicates as expression trees should be doable, but that project is left for a later iteration of Ocon. 
-
 The OconCentral will upon receiving the predicate identifiers send back the state of the subscribed predicates. When OconClient was constructed it also subscribed IncommingSituationChanged event in the communication module. When such an event is fired OconClient will fire its SituationStateChanged event notifying subscribing applications of the predicate change.
 
 
