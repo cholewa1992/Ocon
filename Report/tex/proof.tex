@@ -7,7 +7,6 @@
 
 \blockquote{
 \textit{``We can only evaluate the user experience afforded by the toolkit and its features by building applications that use it, and then evaluating them. While the toolkit itself can be evaluated on its technical criteria, the aspects of it that are designed to support a particular user experience can only be evaluated in the context of use and thus must be evaluated indirectly - through applications built with the toolkit.''} \cite{Infrastructure (2003)} \\}
-\todo{page to quote}
 
 %In previous chapters we discussed the technical criteria of Ocon. In this chapter we will answer to our \textit{Goal 2} by implementing Ocon
 In previous chapters we discussed the technical criteria of Ocon. As emphasized in the above quote we will in this chapter answer to our \textit{Goal 2}, concerning usability, by implementing Ocon.
@@ -23,7 +22,7 @@ Our proof of concept is a digital context-aware Scrumboard, and in this section 
 %Scrum is a popular agile process for developing software. In modern Scrum the task board is center of activity planning. It can be a whiteboard where tasks are coordinated, estimated and assigned. For more on Scrum see \textit{Scrum.org}.
 %Center of focus is the whiteboard where tasks are coordinated, estimated and assigned. For more on Scrum see \textit{scrum.org}.
 
-Scrum is a popular agile process for developing software. It focuses on rigid disciplines with timeboxing. Our motivation lies as part of the discipline of sprinting, and more precisely on the Scrumboard which has been adapted as a means to articulate the tasks in focus. This articulation is an important factor in teamwork which under the term articulation work describes the effort a team puts into communication.
+Scrum is a popular agile process for developing software. It focuses on rigid disciplines with timeboxing. Our motivation lies as part of the discipline of sprinting, and more precisely on the Scrumboard which has been adapted as a means to articulate the tasks in focus. This articulation is an important factor in teamwork which under the term articulation work describes the effort a team puts into communication\cite[IV]{Why Scrum works (2011)}.
 
 The classic physique of the Scrumboard is a whiteboard with post-its, but two reasons have been the driving force behind development of digital Scrumboards.
 
@@ -44,7 +43,7 @@ Expanding on this is the motivation for context awareness as described in sectio
 \item[\textbf{Motivation 2}] \textit{Context awareness can improve the interaction between technology and humans}
 \end{itemize}
 
-\todo{add sources}
+
 
 Going forward in this chapter we will look to implement an idea of how these motivations could be satisfied by means of a digital Scrumboard and Ocon.
 
@@ -74,7 +73,7 @@ Going forward in this chapter we will look to implement an idea of how these mot
 \section{Situations and their informations}
 \label{sec:proofSituations}
 
-The Scrumboard's purpose as a boundary object is to display information relevant to the team. Out of the information pool only some parts are interesting in a situation, and so we will use Context awareness to detect three situations in a Scrum environment and display relevant information on the Scrumboard accordingly.
+The Scrumboard's purpose as a boundary object is to display information relevant to the team\cite[V]{Why Scrum works (2011)}. Out of the information pool only some parts are interesting in a situation, and so we will use Context awareness to detect three situations in a Scrum environment and display relevant information on the Scrumboard accordingly.
 
 
 \begin{itemize}
@@ -85,8 +84,11 @@ The Scrumboard's purpose as a boundary object is to display information relevant
 \subitem \textit{Information: Task overview, burndown and calendar.}
 
 \item Standup. Envisioned for the Standup meeting, this situation is valid when 2 or more persons are detected. Items are medium sized and rather abstract.
-\subitem \textit{Information: Task overview, burndown and calendar.}
+\subitem \textit{Information: Task overview, burndown and calendar.}\\
 \end{itemize}
+
+
+Consult appendix \ref{sec:scrumboardScreenshots} for screenshots of the scrumboard implementation with these ideas.
 
 
 
@@ -112,7 +114,7 @@ The Context-aware Scrumboard consists of three parts: The KinectEntitySensor, Th
 \label{fig:ProofofConceptDeployment}
 \end{figure}
 
-\todo{clarify that this is just one way to use Ocon}
+
 
 \subsection{The KinectEntitySensor}
 The KinectEntitySensor's task is to gather Context Information and send it to the centralization. This part of the Context-aware Scrumboard implementation involves transferring information to the OconCentral, and it is for that purpose the OconWidget has been implemented. On figure \ref{code:OconWidget} is a snippet of the implementation.
@@ -201,13 +203,11 @@ oconClient.SituationStateChangedEvent += (sender, args) => UpdatePicture(args.Si
 \end{figure}
 
 
-\todo{This solution with the elements from blackboard makes development very uncoupled.}
 
 
 
-\section{Proof of concept}
 
-\todo{reflections on goal 2}
+
 
 
 \end{document}

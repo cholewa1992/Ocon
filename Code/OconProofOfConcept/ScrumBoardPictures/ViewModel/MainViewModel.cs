@@ -84,9 +84,9 @@ namespace ScrumBoardPictures.ViewModel
         public MainViewModel()
         {
 
-            _viewMap.Add(OverviewSituationString, "pack://application:,,,/ScrumBoardPictures;component/BoardOverview.jpg");
-            _viewMap.Add(StandupSituationString, "pack://application:,,,/ScrumBoardPictures;component/BoardStandup.jpg");
-            _viewMap.Add(CloseupSituationString, "pack://application:,,,/ScrumBoardPictures;component/BoardCloseup.jpg");
+            _viewMap.Add(OverviewSituationString, "pack://application:,,,/ScrumBoardPictures;component/BoardOverview.png");
+            _viewMap.Add(StandupSituationString, "pack://application:,,,/ScrumBoardPictures;component/BoardStandup.png");
+            _viewMap.Add(CloseupSituationString, "pack://application:,,,/ScrumBoardPictures;component/BoardCloseup.png");
 
             ImageUri = _viewMap["Overview"];
 
