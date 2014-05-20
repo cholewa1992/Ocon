@@ -21,12 +21,13 @@ namespace Ocon
             _contextFilter = contextFilter;
             _comHelper = oconCom;
             _log = log;
+            Initialize();
         }
 
         /// <summary>
         ///     Registers events and starts communication
         /// </summary>
-        public void Initialize()
+        private void Initialize()
         {
             // Set up
             _contextFilter.SituationStateChanged +=
