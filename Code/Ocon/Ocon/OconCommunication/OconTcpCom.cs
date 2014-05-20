@@ -78,7 +78,7 @@ namespace Ocon.OconCommunication
         ///     For broadcasting discovery pacakge so that peers can be auto-discovered. This metode runs on a separate thread and
         ///     can be stopped by calling StopBroadcast
         /// </summary>
-        public void Broadcast()
+        public void Broadcast(int frequency = 30)
         {
             //If the service is already running return
             if (IsBroadcasting) return;
@@ -124,7 +124,7 @@ namespace Ocon.OconCommunication
                                 //Sending out the package
                                 mSendSocket.SendTo(json.GetBytes(), new IPEndPoint(MulticastAddress, MulticastPort));
                             }
-                            Thread.Sleep(5000);
+                            Thread.Sleep(frequency * 1000);
                         }
                         if (_stopBroadcastTokenSource.Token.IsCancellationRequested)
                         {
