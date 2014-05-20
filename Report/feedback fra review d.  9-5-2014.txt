@@ -1,7 +1,0 @@
-Navn på systemet/frameworket, også på forsiden
-abstract: hele rapporten kogt ned til 150 ord ca.
-introduktion
-	- problemstatement
-	- forslået løsning
-	- scope
-background research bygges ind i introduktionh
