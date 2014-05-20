@@ -33,6 +33,7 @@ namespace Ocon
             _comHelper = comHelper;
             _group = new Group(_comHelper);
             _log = log;
+            StartDiscovery();
         }
 
         #endregion
@@ -40,7 +41,7 @@ namespace Ocon
         /// <summary>
         ///     This will start a discovery service that will find any avalible context filters on the local network
         /// </summary>
-        public void StartDiscovery()
+        private void StartDiscovery()
         {
             Logger.Write(_log, "Starting discovery (" + _comHelper.Me.Guid + ")");
             _comHelper.DiscoveryServiceEvent += (sender, args) => _group.AddPeer(args.Peer);
@@ -54,22 +55,13 @@ namespace Ocon
         /// <param name="entity">The entity that was updated</param>
         public void Notify(IEntity entity)
         {
-            RegisterEntity(entity);
-            _group.SendEntity(entity);
-        }
-
-        /// <summary>
-        ///     Registers the enetity and givs it an unique Id.
-        /// </summary>
-        /// <param name="entity"></param>
-        private void RegisterEntity(IEntity entity)
-        {
             if (!_trackedEntities.Contains(entity))
             {
                 entity.Id = Guid.NewGuid();
                 entity.WidgetId = _comHelper.Me.Guid;
                 _trackedEntities.Add(entity);
             }
+            _group.SendEntity(entity);
         }
     }
 }
