@@ -22,9 +22,20 @@ On figure \ref{fig:PersonImplementation} is extended a Person with property pres
 
 
 \section{Situation predicate evaluation}
-\todo{Short on how we evaluate predicates}
+%\todo{Short on how we evaluate predicates} %
+
+Situations are evaluated on their predicate property. When we say predicate we are talking about the .NET implementation, which is a delegate\footnote{http://msdn.microsoft.com/en-us/library/900fyy8e.aspx} returning a boolean value. The signature for our predicate is as below. This means that a method taking an ICollection of IEntity and returning a boolean can be assigned to the predicate property.
+
+\begin{center}
+\texttt{Predicate<ICollection <IEntity> >}
+\end{center}
+
+
+This way it is totally up to an implementor to design the code that evaluates whether a predicate is true or false.
+
 
 \section{Widget}
+\label{sec:OconWidget}
 
 The widget's purpose is to track entities and keep them updated in the central. The widget developer should translate sensor input to entities and then the OCon widget will facilitate tracking the entity and sending it to the central. (See figure \ref{seqwidget})
 
@@ -39,7 +50,10 @@ When the widget is invoked with an entity from the sensor it is checked weather 
 
 
 \section{Central}
-\todo{Write about the central}
+OconCentral is the core component of the framework. Utilization simply means instantiation and afterwards registration of situations.
+
+The OconCentral implementation is a simple binding from the ContextCentral to the ICommunication implementation, making it possible for a developer to use the OconContextFilter in isolation. The OconContextFilter handles all tracking of entities, situations and checking of predicates. Entities are stored in a HashSet<> with a custom EqualityCompare implementation so that the Guid acts as unique identifier. This is necessary for updating informations on entities, but a consequence is that a widget implementation needs to track it's entities as well, to be able to update them with the filter. Evaluation of situation predicates happens whenever an entity is requested tracked.
+
 
 \section{Client}
 
