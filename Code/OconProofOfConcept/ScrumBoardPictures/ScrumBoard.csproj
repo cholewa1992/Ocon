@@ -123,11 +123,11 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="BoardOverview.jpg" />
+    <Resource Include="BoardOverview.png" />
+    <Resource Include="BoardStandup.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="BoardCloseup.jpg" />
-    <Resource Include="BoardStandup.jpg" />
+    <Resource Include="BoardCloseup.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
