@@ -10,7 +10,7 @@ This chapter will describe important implementation details of Ocon. The system 
 
 Entities are generalized by the interface IEntity, specifying general information for all entities. AbstractEntity extends on IEntity and overrides ToString() with a meaningful implementation. Both are public and it is up the an implementer which to extend.
 
-On figure \ref{fig:PersonImplementation} is extended a Person with property present motivated by the need for this context information.
+On figure \ref{fig:PersonImplementation} is an example of Person extending AbstractEntity with a present property motivated by the need for this context information.
 
 
 \begin{figure}[H]
@@ -20,22 +20,9 @@ On figure \ref{fig:PersonImplementation} is extended a Person with property pres
 \end{figure}
 
 
-
-\section{Situation predicate evaluation}
-%\todo{Short on how we evaluate predicates} %
-
-Situations are evaluated on their predicate property. When we say predicate we are talking about the .NET implementation, which is a delegate\footnote{http://msdn.microsoft.com/en-us/library/900fyy8e.aspx} returning a boolean value. The signature for our predicate is as below. This means that a method taking an ICollection of IEntity and returning a boolean can be assigned to the predicate property.
-
-\begin{center}
-\texttt{Predicate<ICollection <IEntity> >}
-\end{center}
-
-
-This way it is totally up to an implementor to design the code that evaluates whether a predicate is true or false.
-
 \section{Communication}
 
-To support the design decision that the communication part should be injectable the communication have been interfaced in IOconCom.
+To support the design decision that the communication part should be injectable the communication have been interfaced in IOconCom. (The interface can be seen in figure \ref{fig:oconclassdiagram})
 
 Ocon contains a default communication implementation build using the TCP/IP layer. For serialization we have chosen to use JSON. These decisions have been made so that developers are not bound to the .NET platform and can make clients and widgets in other languages like Java, or C directly on a micro controllers like Arduino.
 
@@ -47,10 +34,10 @@ To listen and send for sending Entites, situation updates and situation subscrip
 
 The send methods take a peer. The peer is a helper class. Just like entities, peers are assigned a GUID. The GUID is a unique identifier for the peer and the communication class stores the IPEndPoints associated with the GUIDs. When a message from a peer is received or discovered the IpEndPoint is saved in a HashSet. By doing this messages can be sent only by using the peer and not the IPEndPoint which adds an abstraction layer to the module. 
 
-\section{Widget}
+\section{OconWidget}
 \label{sec:OconWidget}
 
-The widget's purpose is to track entities and keep them updated in the central. The widget developer should translate sensor input to entities and then the Ocon widget will facilitate tracking the entity and sending it to the central. (See figure \ref{fig:widgetComHelper})
+The OconWidget's purpose is to track entities and keep them updated in the central. The widget developer should translate sensor input to entities and then the Ocon widget will facilitate tracking the entity and sending it to the central. (See figure \ref{fig:widgetComHelper})
 
 \begin{figure}
 \hspace{-70px}
@@ -59,7 +46,7 @@ The widget's purpose is to track entities and keep them updated in the central. 
 \label{fig:widgetComHelper}
 \end{figure}
 
-The OconWidget is very light. When constructed the widget will listen for OconCentrals by starting discovery and subscribing to DiscoveryServiceEvents in the communication module. When a central is found an event will be fired and the central will be added as subscriber. OconWidget has only one methods. Notify(IEntity entity). When Notify is called from the sensor a check weather or not the entity is already tracked is performed. If not tracked it will be allocated a new GUID before it is sent to the central through the communication module. The GUID is a unique ID used for distributed systems and allows Ocon to distinguish between adding the entity as a new entity or updating an entity already know to the framework. The usage of the widget is very easy for application developers as they only have to use one method when sending new entities to the central.
+The OconWidget is very light. When constructed the widget will listen for OconCentrals by starting discovery and subscribing to DiscoveryServiceEvents on the IOconCom. When a central is found an event will be fired and the central will be added as subscriber. OconWidget has only one methods. Notify(IEntity entity). When Notify is called from the sensor a check weather or not the entity is already tracked is performed. If not tracked it will be allocated a new GUID before it is sent to the central through the communication module. The GUID is a unique ID used for distributed systems and allows Ocon to distinguish between adding the entity as a new entity or updating an entity already know to the framework. The usage of the widget is very easy for application developers as they only have to use one method when sending new entities to the central.
 
 \section{OconClient}
 The OconClient's purpose is to sent predicates to the central for tracking. When a situation update is send from the central the client must be able to notify the parent application about the situation update. (See figure \ref{fig:clientComHelper})
@@ -82,7 +69,24 @@ The OconCentral will upon receiving the predicate identifiers send back the stat
 
 
 \section{Central}
-OconCentral is the core component of the framework. Utilization simply means instantiation and afterwards registration of situations.
+OconCentral is the core component of Ocon. The central contains a OconContextFilter and a concrete implementation of IOconCom. The context filter is aggregated of entities and situations (see figure \ref{fig:oconclassdiagram}). The implementation of a situation contains a predicate that given a set of entities can evaluate to true or false. The context filter can therefore by its set of entities evaluate the state of its situations.
 
-The OconCentral implementation is a simple binding from the ContextCentral to the ICommunication implementation, making it possible for a developer to use the OconContextFilter in isolation. The OconContextFilter handles all tracking of entities, situations and checking of predicates. Entities are stored in a HashSet<> with a custom EqualityCompare implementation so that the Guid acts as unique identifier. This is necessary for updating informations on entities, but a consequence is that a widget implementation needs to track it's entities as well, to be able to update them with the filter. Evaluation of situation predicates happens whenever an entity is requested tracked.
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{sequencediagram-central.png}
+\caption{Central sequence diagram}
+\label{fig:seqcentral}
+\end{figure}
+
+OconCentral is subscribing IncommingSituationSubscribtion event and when invoked the central will add the requesting peer to the given situation. It also subscribes the IncommingEntity event on IOconCom. When invoked the entity is added to the context filter and the context filter will check its predicates. If a situation changes the SituationChanged event will be fired. The central subscribing this event will when invoked call SandSituationChanged on IOconCom to notify all subscribers on the situation of its new state. This is shown in figure \ref{fig:seqcentral}
+
+\begin{figure}
+\hspace{-70px}
+\includegraphics[width=500px]{oconclassdiagram.png}
+\caption{Class diagram showing the central and its usages}
+\label{fig:oconclassdiagram}
+\end{figure}
+
+
+
 \end{document}
