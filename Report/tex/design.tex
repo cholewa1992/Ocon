@@ -13,16 +13,16 @@ This chapter describes the different design choices considered while developing 
 \section{Architecture}
 When looking at the blackboard and widget based methods, we have decided that we want to include a little of both.
 
-We want to do a centralized system where clients can register a situation predicate. Our implementation, the OCon framework, will be event-based. Sensors encapsulated by widgets will provide sensor input. The central will evaluate the predicate based on the input and whenever the state changes, an event will be fired to notify the client. The client will be the applications entry point to OCon.
+We want to do a centralized system where clients can register a situation predicate. Our implementation, the Ocon framework, will be event-based. Sensors encapsulated by widgets will provide sensor input. The central will evaluate the predicate based on the input and whenever the state changes, an event will be fired to notify the client. The client will be the applications entry point to Ocon.
 
 This combines the blackboards centralization and abstraction with the widgets object-oriented modelling and time and space coupling. This will result in a solution where it's transparent for the developer which sensor is actually given the input, like the blackboard, but also having the space and time coupling from the widget based method.
 
-With this OCon will be an If-this-then-that solution where the client can use sensor input for control without the client developers having to put much though into using and managing sensors. This will be realized by three different components. A client, a central and a widget (See figure \ref{GrandArchitecture}).
+With this Ocon will be an If-this-then-that solution where the client can use sensor input for control without the client developers having to put much though into using and managing sensors. This will be realized by three different components. A client, a central and a widget (See figure \ref{GrandArchitecture}).
 
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.2]{grandarchitecture.png}
-\caption{Architecture of OCon}
+\caption{Architecture of Ocon}
 \label{fig:GrandArchitecture}
 \end{figure}
 
@@ -33,7 +33,7 @@ Using a composite pattern enforced relations between entities, entities being lo
 
 The other method we are considering is more simple. Having a set of entities that we wish to track, entities again being locations, persons or things. All context information relating to a person will be properties to the object. So to use the previous example, a person entity would then have a location property, being ITU room 3A04, a phone property begin true and a sitting property being true. This model is more easy to make, but it limits the developer to know very precisely what information is needed and should be tracked. The previous model had the advantage of being very flexible allowing more complex relations and situations. 
 
-Both methods have pros and cons being how dynamic they are, how easily they can be implemented, and what performance they will have and that will be the parameters we'll look at when implementing OCon 
+Both methods have pros and cons being how dynamic they are, how easily they can be implemented, and what performance they will have and that will be the parameters we'll look at when implementing Ocon 
 
 \begin{figure}[h]
 \centering
@@ -49,11 +49,11 @@ The central is the central component and will facilitate clients adding predicat
 
 The definition of predicate is taken from the .NET platform. A predicate is a delegate returning a boolean. In this way .NET developers will be familiar with the meaning and definition of a predicate.
 
-An important feature will be the centrals ability to be discovered by client and widgets. The central will be able to broadcast itself so widget and client can discover and connect to the central. This feature will enforce a more dynamic usage and behaviour of OCon. Dynamic behaviour having a running central and clients and widgets being able to connect and disconnect without having to restart or make any actions to the central.
+An important feature will be the centrals ability to be discovered by client and widgets. The central will be able to broadcast itself so widget and client can discover and connect to the central. This feature will enforce a more dynamic usage and behaviour of Ocon. Dynamic behaviour having a running central and clients and widgets being able to connect and disconnect without having to restart or make any actions to the central.
  
 \section{Widget}
 
-The OCon widgets will translate sensor input to entities along with facilitating communication to the central. This can be seen in figure \ref{seqwidget}
+The Ocon widgets will translate sensor input to entities along with facilitating communication to the central. This can be seen in figure \ref{seqwidget}
 
 \begin{figure}[h]
 \centering
@@ -62,12 +62,12 @@ The OCon widgets will translate sensor input to entities along with facilitating
 \label{seqwidget}
 \end{figure}
 
-This approach have been chosen to make the system easily distributed as a small, maybe embedded, component can run a widget translating the sensors input to entities before sending them to the central. This approach will also reduce network load as the widget will only send updates to the central when changes occur. This stands in contrast to sending all sensor input to the central and making it process the data itself which could be useful in some cases. Sending all data would also put more computational pressure on the central making it hard to scale to larger systems. Last but not least the widget will have an architecture making it convenient and easy to use for developers. This will be done to pursue the goal of OCon. (See project scope \ref{scope}) 
+This approach have been chosen to make the system easily distributed as a small, maybe embedded, component can run a widget translating the sensors input to entities before sending them to the central. This approach will also reduce network load as the widget will only send updates to the central when changes occur. This stands in contrast to sending all sensor input to the central and making it process the data itself which could be useful in some cases. Sending all data would also put more computational pressure on the central making it hard to scale to larger systems. Last but not least the widget will have an architecture making it convenient and easy to use for developers. This will be done to pursue the goal of Ocon. (See project scope \ref{scope}) 
 
 
 \section{Client}
 
-The client will be the entry point into OCon facilitating developers to add situations to the central and receive updates whenever an update to those situations occurred. The client objectives is that it will be able to automaticly discover and use the central and that it will, the same as the widget, have an architecture making it easy and convenient for developers to use. Figure \ref{seqclient} shows the bacis idea for the information flow from central to and client and application.
+The client will be the entry point into Ocon facilitating developers to add situations to the central and receive updates whenever an update to those situations occurred. The client objectives is that it will be able to automaticly discover and use the central and that it will, the same as the widget, have an architecture making it easy and convenient for developers to use. Figure \ref{seqclient} shows the bacis idea for the information flow from central to and client and application.
 
 
 \begin{figure}[h]
@@ -82,12 +82,12 @@ The client will be the entry point into OCon facilitating developers to add situ
 
 Clients and widgets will be distributed from the central. The reason for doing so is that our vision of having a centralized system distributing situation from sensors to clients is not very useful if not distributed.
 
-For the OCon two different communication protocols need to be implemented.\\
+For the Ocon two different communication protocols need to be implemented.\\
 
 \begin{itemize}
     \item A protocol for establishing link between peers
     \item A protocol for send text/json messages for subscriptions, subscription events and, sensor events \\
 \end{itemize}
 
-We do not wish to bind our users to any concrete communication protocols. Therefore the communication will be interfaces so a concrete implementation can be dependency injected into the OCon.
+We do not wish to bind our users to any concrete communication protocols. Therefore the communication will be interfaces so a concrete implementation can be dependency injected into the Ocon.
 \end{document}
