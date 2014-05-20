@@ -6,14 +6,15 @@
 
 
 \blockquote{
-We can only evaluate the user experience afforded by the toolkit and its features by building applications that use it, and then evaluating them. While the toolkit itself can be evaluated on its technical criteria, the aspects of it that are designed to support a particular user experience can only be evaluated in the context of use and thus must be evaluated indirectly - through applications built with the toolkit. \cite{Infrastructure (2003)} \\}
+\textit{``We can only evaluate the user experience afforded by the toolkit and its features by building applications that use it, and then evaluating them. While the toolkit itself can be evaluated on its technical criteria, the aspects of it that are designed to support a particular user experience can only be evaluated in the context of use and thus must be evaluated indirectly - through applications built with the toolkit.''} \cite{Infrastructure (2003)} \\}
 \todo{page to quote}
 
-In previous chapters we evaluated Ocon on it's technical criteria by the design and choices made. In this chapter we will answer to our \textit{Goal 2} by implementing Ocon.
+%In previous chapters we discussed the technical criteria of Ocon. In this chapter we will answer to our \textit{Goal 2} by implementing Ocon
+In previous chapters we discussed the technical criteria of Ocon. As emphasized in the above quote we will in this chapter answer to our \textit{Goal 2}, concerning usability, by implementing Ocon.
 
 \section{Motivation}
 
-Proof of concept will be a digital context-aware Scrumboard, and in this section we will briefly describe our motivation for this choice.
+Our proof of concept is a digital context-aware Scrumboard, and in this section we will briefly describe our motivation for this choice.
 
 %Scrum is a popular agile process of developing software. Originally thought as using a whiteboard for scheduling development tasks, it has been hard for to make use of Scrum in distributed teams, or 
 
@@ -77,7 +78,7 @@ The Scrumboard's purpose as a boundary object is to display information relevant
 
 
 \begin{itemize}
-\item Overview. This is a default situation valid when none of the others are.
+\item Overview. This situation is valid when no persons are in front of the board.
 \subitem \textit{Information: Task overview}
 
 \item Closeup. This situation is valid when one person is detected in front of the board. Items on screen can be smaller and more detailed in this view than the overview.
@@ -164,7 +165,7 @@ var oconFilter = new OconContextFilter(log);
 
 //Instantiate situations with names and predicates
 var closeupSituation = new Situation("Closeup", e => e.OfType<Person>().Count(p => p.Present) == 1);
-var standupSituation = new Situation("Standup", e => e.OfType<Person>().Count(p => p.Present) == 2);
+var standupSituation = new Situation("Standup", e => e.OfType<Person>().Count(p => p.Present) <= 2);
 
 //Add the situations to the filter
 oconFilter.AddSituation(closeupSituation, standupSituation);
