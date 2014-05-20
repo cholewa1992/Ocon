@@ -106,7 +106,7 @@ namespace Ocon
         /// <summary>
         ///     Tests situation predicates against entities
         /// </summary>
-        public void TestSituations()
+        private void TestSituations()
         {
             Console.Clear();
 
