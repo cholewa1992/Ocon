@@ -53,14 +53,29 @@ An important feature will be the centrals ability to be discovered by client and
  
 \section{Widget}
 
-The OCon widgets will translate sensor input to entities along with facilitating communication to the central.
+The OCon widgets will translate sensor input to entities along with facilitating communication to the central. This can be seen in figure \ref{seqwidget}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{sequencediagram-widget.png}
+\caption{Information flow from Widget to Central}
+\label{seqwidget}
+\end{figure}
 
 This approach have been chosen to make the system easily distributed as a small, maybe embedded, component can run a widget translating the sensors input to entities before sending them to the central. This approach will also reduce network load as the widget will only send updates to the central when changes occur. This stands in contrast to sending all sensor input to the central and making it process the data itself which could be useful in some cases. Sending all data would also put more computational pressure on the central making it hard to scale to larger systems. Last but not least the widget will have an architecture making it convenient and easy to use for developers. This will be done to pursue the goal of OCon. (See project scope \ref{scope}) 
 
 
 \section{Client}
 
-The client will be the entry point into OCon facilitating developers to add situations to the central and receive updates whenever an update to those situations occurred. The client objectives is that it will be able to automaticly discover and use the central and that it will, the same as the widget, have an architecture making it easy and convenient for developers to use. To make the client easy to use events will be used. Whenever predicate updates is received from the central an event will be fired. This event can be subscribed by the application. This facilitates quick and very easy usage.
+The client will be the entry point into OCon facilitating developers to add situations to the central and receive updates whenever an update to those situations occurred. The client objectives is that it will be able to automaticly discover and use the central and that it will, the same as the widget, have an architecture making it easy and convenient for developers to use. Figure \ref{seqclient} shows the bacis idéa for flow of information from central to and client and application.
+
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{clientsequencediagram.png}
+\caption{Information flow between client and central}
+\label{seqclient}
+\end{figure}
 
 
 \section{Communication}
