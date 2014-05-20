@@ -8,7 +8,7 @@ As mentioned in the implementation chapter we hit a major problem when having to
 
 performance
 
-The implementation of OconCommunication is very large part of the framework. The main design goal of this component was that developers should be able to make their own implementation. Therefore the interface IOconCom was made so developers could make their own implementation and dependency inject into Ocon. This goal is achieved, but the solution could have been better. As it is now developers have to change a very large part of the system. Reflection on the design it can be decomposed IOconCom and OconTcpCom into following three components.
+The implementation of OconCommunication is very large part of the framework. The main design goal of this component was that developers should be able to make their own implementation. Therefore the interface IOconCom was made so developers could make their own implementation and dependency inject into Ocon. This goal is achieved, but the solution could have been better. As it is now developers have to change a very large part of the system. Reflection on the design, a better design could have been achieved by decomposing IOconCom and OconTcpCom into following three components.
 
 \begin{enumerate}
 \item An interface for communication containing a send and listen method.
