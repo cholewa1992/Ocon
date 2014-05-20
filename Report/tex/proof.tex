@@ -128,9 +128,6 @@ var com = new OconTcpCom(log);
 //Instantiate widget
 var widget = new OconWidget(com, log);
 
-//Start searching for a central with the given IOconCom implementation
-widget.StartDiscovery();
-
 //Pass an entity to be added/updated at the central
 var entity = new Person() { Name = "Mat", Present = true };
 widget.Notify(entity);
@@ -172,9 +169,6 @@ oconFilter.AddSituation(closeupSituation, standupSituation);
 
 //Instantiate the central
 var central = new OconCentral(oconFilter, tcpCom, log);
-
-//Initialize the central
-central.Initialize();
 \end{lstlisting}
 \caption{Central usage from TestCentral.Program}
 \label{code:OconCentral}
