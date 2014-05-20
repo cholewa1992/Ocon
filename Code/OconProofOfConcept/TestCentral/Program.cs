@@ -22,7 +22,7 @@ namespace Centralization
 
             //Instantiate situations with names and predicates
             var closeupSituation = new Situation("Closeup", e => e.OfType<Person>().Count(p => p.Present) == 1);
-            var standupSituation = new Situation("Standup", e => e.OfType<Person>().Count(p => p.Present) == 2);
+            var standupSituation = new Situation("Standup", e => e.OfType<Person>().Count(p => p.Present) <= 2);
 
             //Add the situations to the filter
             oconFilter.AddSituation(closeupSituation, standupSituation);
