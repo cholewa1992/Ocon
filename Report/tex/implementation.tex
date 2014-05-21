@@ -34,10 +34,10 @@ For sending Entites, situation updates and situation subscription following meth
 
 The send methods take a peer which is a helper class. Just like entities, peers are assigned a GUID. The GUID is a unique identifier for the peer and the communication class stores the IPEndPoints associated with the GUIDs. When a message from a peer is received or discovered the IpEndPoint is saved in a HashSet. By doing this messages can be sent only by using the peer and not the IPEndPoint which adds an abstraction layer to the module. 
 
-\section{Central}
+\section{OconCentral}
 OconCentral is the core component of Ocon. The central contains a OconContextFilter and a concrete implementation of IOconCom. The context filter is aggregated of entities and situations (see figure \ref{fig:oconclassdiagram} on page \pageref{fig:oconclassdiagram}). The implementation of a situation contains a predicate that given a set of entities can evaluate to true or false. The context filter can therefore by its set of entities evaluate the state of its situations.
 
-OconCentral subscribes to IncommingSituationSubscribtion event and when invoked the central will add the requesting peer to the given situation. It also subscribes the IncommingEntity event on IOconCom. When invoked the entity is added to the context filter and the context filter will check its predicates. If a situation changes a SituationChanged event will be fired. The central subscribing this event will when invoked call SandSituationChanged on IOconCom to notify all subscribers on the situation of its new state. This is shown in figure \ref{fig:seqcentral}
+OconCentral subscribes to the IncommingSituationSubscribtion event and when invoked the central will add the requesting peer to the given situation. It also subscribes the IncommingEntity event on IOconCom. When invoked the entity is added to the context filter and the context filter will check its predicates. If a situation changes a SituationChanged event will be fired. The central subscribing this event will when invoked call SandSituationChanged on IOconCom to notify all subscribers on the situation of its new state. This is shown in figure \ref{fig:seqcentral}
 
 \begin{figure}
 \centering
