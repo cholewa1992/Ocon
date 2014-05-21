@@ -2,29 +2,32 @@
 \begin{document}
 \graphicspath{{img/}{../img/}}
 
-
 \paragraph{Predicate serialization}
-As mentioned in the implementation chapter we hit a major problem when having to serialize predicates. This problem limited the usage of Ocon, but it was not possible to include the feature in this project. A framework for serializing the predicates as expression trees should be doable, but that is left for a later iteration of Ocon. When reflecting on this to much time searching for an solution was spent instead of out-scoping the problem earlier. 
+As mentioned in the implementation chapter an obstacle, when having to serialize predicates, occurred. This problem limited the usage of Ocon, but it was not possible to include the feature in this project. A framework for serializing the predicates as expression trees should be doable, but that is left for a later iteration of Ocon. When reflecting on this to much time searching for an solution was spent instead of out-scoping the problem earlier. 
+
 
 \paragraph{Performance}
 While performance is not in scope it is still worth a few remarks, since it can have a big impact with our implementation approach. In worst case we have an $ O(situations\times entities) $ growth in the OconContextFilter when checking predicates, since for each situation every entity might be looped over. However, as the predicate delegate is assigned by an implementor of Ocon it is up to him what he does with the entity collection. Therefore in best case the growth is $ O(situations) $. The worst case could be improved upon by implementing an algorithm to only check relevant entity types for a situation.
 
-
 \paragraph{Communication}
-The implementation of OconCommunication is very large part of the framework. The main design goal of this component was that developers should be able to make their own implementation. Therefore the interface IOconCom was made so developers could make their own implementation and dependency inject into Ocon. This goal is achieved, but the solution could have been better. As it is now developers have to change a very large part of the system. Reflection on the design, a better design could have been achieved by decomposing IOconCom and OconTcpCom into following three components.
+The implementation of OconCommunication is a very large part of the framework. As per design goal 1 (see scope in section \ref{scope}) our framework should be adaptable. Therefore OconCommunication is designed in a way so that developers can make their own implementation and dependency inject it into Ocon. The goal is achieved, but the solution could have been better. As it is now developers have to change a very large part of the system. Reflection on the implementation, a better design could have been achieved by decomposing IOconCom and OconTcpCom into following three components.
+
+
 
 \begin{enumerate}
-\item An interface for communication containing a send and listen method.
+\item An interface for communication containing a send, listen, broadcast and discover method.
 \item An interface for serialization containing serialize and deserialize.
-\item A class dependency injected with implementations of the two interface above using them to achieve the functionality in the current IOconCom and OconTcpCom.
+\item A class using concrete implementations of the two interfaces above to achieve the functionality in the current OconTcpCom.
 \end{enumerate}
 
 This would have resulted in a much lower coupled design making it much easier for developers to implement their own serialization or communication strategy.
 
+Above reflections on communication, performance and serialization are obvious topics for future work to improve Ocon.
+
 \paragraph{Proof of concept}
 When implementing Ocon we experienced a framework that is easy to use and has the flexibility needed for our proof of concept. Especially the OconTcpCom implementation increased ease of use in our case, but imaging that another communication than tcp was needed, Ocon would function exactly the same given that this communication implementation was done correctly. Apart from that ease of use has been good in the simplicity of initializing the different Ocon components.
 
-With that said one implementation by the developers of the framework only gives a limited view on its real-world usefulness.
+With that said one implementation by the developers of the framework only gives a limited view on its real-world usefulness
 
 
 
