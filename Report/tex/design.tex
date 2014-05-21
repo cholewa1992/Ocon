@@ -28,7 +28,7 @@ With this Ocon will be an If-this-then-that solution where the client can use se
 
 \section{Encapsulation of Context-information}
 
-To best support the over overall architecture, doing an object-oriented encapsulation have been chosen. Object-oriented encapsulation of context can be done in a variety of ways. We have been looking at two different methods. Using a composite pattern and modelling with properties. In this chapter we will examine the two methods.
+To best support the overall architecture, doing an object-oriented encapsulation has been chosen. Object-oriented encapsulation of context can be done in a variety of ways. We have been looking at two different methods. Using a composite pattern and modelling with properties. In this chapter we will examine the two methods.
 
 Using a composite pattern enforces relations between entities, entities being locations, persons, things or other real world objects. Lets say we want to model a location with some rooms, with some persons, with different items. Using the composite modelling we can have a location object containing room objects containing person objects containing item objects. We will then have a relationship between the objects compositing the context being that a group of students is are room 3A04 at ITU all having phones in their pockets and all sitting down. This is a fairly complex, but a very extensible and flexible way to model situation (See fig \ref{fig:composite}). The downside to this method is that you can easily have an overflow of objects, and that it can be very complex and computation heavy to check against a predicate.
 
@@ -46,7 +46,7 @@ Both methods have pros and cons being how dynamic they are, how easily they can 
 
 \section{Central}
 
-The central is the central component and will facilitate clients adding predicates for the central to track. When an entity change relevant to the predicate is received, the predicate will be checked and if its state changes, the owning client will be notified.
+The central is the core component and will facilitate clients adding predicates for the central to track. When an entity change relevant to the predicate is received, the predicate will be checked and if its state changes, the owning client will be notified.
 
 The definition of predicate is taken from the .NET platform. A predicate is a delegate returning a boolean. In this way .NET developers will be familiar with the meaning and definition of a predicate.
 
@@ -68,7 +68,7 @@ This approach has been chosen to make the system easily distributed as a small, 
 
 \section{Client}
 
-The client will be the entry point into Ocon facilitating addition of situations to the central, and receive updates whenever an update to those situations occur. The Objectives for the client is that it will be able to automaticly discover and use the central and that it will, the same as the widget, have an architecture making it easy and convenient for developers to use. Figure \ref{seqclient} shows the bacis idea for the information flow from central to client and application.
+The client will be the entry point into Ocon facilitating addition of situations to the central, and receive updates whenever an update to those situations occur. The Objectives of the client is to automatically discover and use the central and as with the widget, have an architecture making it easy and convenient for developers to use. Figure \ref{seqclient} shows the basic idea for the information flow from central to client and application.
 
 
 \begin{figure}[h]
