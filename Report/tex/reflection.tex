@@ -7,7 +7,7 @@
 As mentioned in the implementation chapter we hit a major problem when having to serialize predicates. This problem limited the usage of Ocon, but it was not possible to include the feature in this project. A framework for serializing the predicates as expression trees should be doable, but that is left for a later iteration of Ocon. When reflecting on this to much time searching for an solution was spent instead of out-scoping the problem earlier. 
 
 \paragraph{Performance}
-Performance has not been in scope of this project. In worst case it is an exponential growth because for each situation every entity might be looped over. However as the predicate is for an implementor to set, this performance is very much up to him.
+While performance is not in scope it is still worth a few remarks, since it can have a big impact with our implementation approach. In worst case we have an $ O(situations\times entities) $ growth in the OconContextFilter when checking predicates, since for each situation every entity might be looped over. However, as the predicate delegate is assigned by an implementor of Ocon it is up to him what he does with the entity collection. Therefore in best case the growth is $ O(situations) $. The worst case could be improved upon by implementing an algorithm to only check relevant entity types for a situation.
 
 
 \paragraph{Communication}
