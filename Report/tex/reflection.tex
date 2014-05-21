@@ -7,7 +7,7 @@ As mentioned in the implementation chapter an obstacle, when having to serialize
 
 
 \paragraph{Performance}
-Performance has not been in scope of this project. In worst case it is an exponential growth because for each situation every entity might be looped over. However as the predicate is for an implementor to set, this performance is very much up to him.
+While performance is not in scope it is still worth a few remarks, since it can have a big impact with our implementation approach. In worst case we have an $ O(situations\times entities) $ growth in the OconContextFilter when checking predicates, since for each situation every entity might be looped over. However, as the predicate delegate is assigned by an implementor of Ocon it is up to him what he does with the entity collection. Therefore in best case the growth is $ O(situations) $. The worst case could be improved upon by implementing an algorithm to only check relevant entity types for a situation.
 
 \paragraph{Communication}
 The implementation of OconCommunication is a very large part of the framework. As per design goal 1 (see scope in section \ref{scope}) our framework should be adaptable. Therefore OconCommunication is designed in a way so that developers can make their own implementation and dependency inject it into Ocon. The goal is achieved, but the solution could have been better. As it is now developers have to change a very large part of the system. Reflection on the implementation, a better design could have been achieved by decomposing IOconCom and OconTcpCom into following three components.
