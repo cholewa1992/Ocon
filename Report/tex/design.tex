@@ -13,11 +13,11 @@ This chapter describes the different design choices considered while developing 
 \section{Architecture}
 When looking at the blackboard and widget based methods, we have decided that we want to include a little of both.
 
-We want to do a centralized system where clients can register a situation predicate. Our implementation, the Ocon framework, will be event-based. Sensors encapsulated by widgets will provide sensor input. The central will evaluate the predicate based on the input and whenever the state changes, an event will be fired to notify the client. The client will be the applications entry point to Ocon.
+We want to do a centralized system where clients can register a situation predicate and our implementation, the Ocon framework, will be event-based. Sensors encapsulated by widgets will provide sensor input. The central will evaluate the predicate and whenever the state changes, an event will be fired to notify the client. The client will be the application's entry point to Ocon.
 
 This combines the blackboards centralization and abstraction with the widgets object-oriented modelling and time and space coupling. This will result in a solution where it's transparent for the developer which sensor is actually given the input, like the blackboard, but also having the space and time coupling from the widget based method.
 
-With this Ocon will be an If-this-then-that solution where the client can use sensor input for control without the client developers having to put much though into using and managing sensors. This will be realized by three different components. A client, a central and a widget (See figure \ref{GrandArchitecture}).
+With this Ocon will be an If-this-then-that solution where the client can use sensor input for control without the client developers having to put much though into using and managing sensors. This will be realized by three different components. A client, a central and a widget (See figure \ref{fig:GrandArchitecture}).
 
 \begin{figure}[H]
 \centering
@@ -27,17 +27,18 @@ With this Ocon will be an If-this-then-that solution where the client can use se
 \end{figure}
 
 \section{Encapsulation of Context-information}
-Object-oriented encapsulation of context can be done in a variety of ways. We have been looking at two different methods. Using a composite pattern and modelling with properties. In this chapter we will examine the two methods.
 
-Using a composite pattern enforced relations between entities, entities being locations, persons, things or other real world objects. Lets say we want to model a location with some rooms with some persons with different items or actions. Using the composite modelling we can have a location object containing room objects containing person objects containing item objects. We'll then have a relationship between the objects compositing the context being that a group of students is in room 3A04 at ITU all having phones in their pockets and all sitting down. This is a fairly complex, but a very extensible and flexible way to model situation (See fig \ref{fig:composite}). The downside to this method is that you can easily have an overflow of objects, and that it can be very complex and computation heavy to check against a predicate.
+To best support the over overall architecture, doing an object-oriented encapsulation have been chosen. Object-oriented encapsulation of context can be done in a variety of ways. We have been looking at two different methods. Using a composite pattern and modelling with properties. In this chapter we will examine the two methods.
 
-The other method we are considering is more simple. Having a set of entities that we wish to track, entities again being locations, persons or things. All context information relating to a person will be properties to the object. So to use the previous example, a person entity would then have a location property, being ITU room 3A04, a phone property begin true and a sitting property being true. This model is more easy to make, but it limits the developer to know very precisely what information is needed and should be tracked. The previous model had the advantage of being very flexible allowing more complex relations and situations. 
+Using a composite pattern enforces relations between entities, entities being locations, persons, things or other real world objects. Lets say we want to model a location with some rooms, with some persons, with different items. Using the composite modelling we can have a location object containing room objects containing person objects containing item objects. We will then have a relationship between the objects compositing the context being that a group of students is are room 3A04 at ITU all having phones in their pockets and all sitting down. This is a fairly complex, but a very extensible and flexible way to model situation (See fig \ref{fig:composite}). The downside to this method is that you can easily have an overflow of objects, and that it can be very complex and computation heavy to check against a predicate.
+
+The other method we are considering is more simple. Having a set of entities that we wish to track, entities again being locations, persons or things. All context information relating to a person will be properties to the object. So to use the previous example, a person entity would then have a location property, being ITU room 3A04, a phone property begin true and a sitting property being true. This model is more easy to make, but it limits the developer to know very precisely what information is needed and should be tracked. The previous model has the advantage of being very flexible allowing more complex relations and situations. 
 
 Both methods have pros and cons being how dynamic they are, how easily they can be implemented, and what performance they will have and that will be the parameters we'll look at when implementing Ocon 
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=\linewidth]{composite.png}
+\includegraphics[scale=0.2]{composite.png}
 \caption{Diagram illustrating composite vs property modelling}
 \label{fig:composite}
 \end{figure}
@@ -45,34 +46,34 @@ Both methods have pros and cons being how dynamic they are, how easily they can 
 
 \section{Central}
 
-The central is the central component and will facilitate clients adding predicates for the central to track. When an entity change is received relevant to the predicate, the predicate will be checked and if its state changes, the owning client will be notified.
+The central is the central component and will facilitate clients adding predicates for the central to track. When an entity change relevant to the predicate is received, the predicate will be checked and if its state changes, the owning client will be notified.
 
 The definition of predicate is taken from the .NET platform. A predicate is a delegate returning a boolean. In this way .NET developers will be familiar with the meaning and definition of a predicate.
 
-An important feature will be the centrals ability to be discovered by client and widgets. The central will be able to broadcast itself so widget and client can discover and connect to the central. This feature will enforce a more dynamic usage and behaviour of Ocon. Dynamic behaviour having a running central and clients and widgets being able to connect and disconnect without having to restart or make any actions to the central.
+An important feature will be the central's ability to be discovered by client and widgets. The central will be able to broadcast itself so widgets and clients can discover and connect to the central. This feature will enforce a more dynamic usage and behaviour of Ocon. Dynamic behaviour being to have a running central where clients and widgets are able to connect and disconnect without having to restart or make any actions to the central.
  
 \section{Widget}
 
-The Ocon widgets will translate sensor input to entities along with facilitating communication to the central. This can be seen in figure \ref{seqwidget}
+The widgets will translate sensor input to entities along with facilitating communication to the central. This can be seen in figure \ref{fig:seqwidget}
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=\linewidth]{sequencediagram-widget.png}
+\includegraphics[scale=0.2]{sequencediagram-widget.png}
 \caption{Information flow from Widget to Central}
-\label{seqwidget}
+\label{fig:seqwidget}
 \end{figure}
 
-This approach have been chosen to make the system easily distributed as a small, maybe embedded, component can run a widget translating the sensors input to entities before sending them to the central. This approach will also reduce network load as the widget will only send updates to the central when changes occur. This stands in contrast to sending all sensor input to the central and making it process the data itself which could be useful in some cases. Sending all data would also put more computational pressure on the central making it hard to scale to larger systems. Last but not least the widget will have an architecture making it convenient and easy to use for developers. This will be done to pursue the goal of Ocon. (See project scope \ref{scope}) 
+This approach has been chosen to make the system easily distributed as a small, maybe embedded, component can run a widget translating the sensors input to entities before sending them to the central. This approach will also reduce network load as the widget will only send updates to the central when changes occur. This stands in contrast to sending all sensor input to the central and making it process the data itself which could be useful in some cases. Sending all data would also put more computational pressure on the central making it hard to scale to larger systems. Last but not least the widget will have an architecture making it convenient and easy to use for developers. This will be done to pursue \textit{goal 1}
 
 
 \section{Client}
 
-The client will be the entry point into Ocon facilitating developers to add situations to the central and receive updates whenever an update to those situations occurred. The client objectives is that it will be able to automaticly discover and use the central and that it will, the same as the widget, have an architecture making it easy and convenient for developers to use. Figure \ref{seqclient} shows the bacis idea for the information flow from central to and client and application.
+The client will be the entry point into Ocon facilitating addition of situations to the central, and receive updates whenever an update to those situations occur. The Objectives for the client is that it will be able to automaticly discover and use the central and that it will, the same as the widget, have an architecture making it easy and convenient for developers to use. Figure \ref{seqclient} shows the bacis idea for the information flow from central to client and application.
 
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=\linewidth]{clientsequencediagram.png}
+\includegraphics[scale=0.2]{clientsequencediagram.png}
 \caption{Information flow between client and central}
 \label{seqclient}
 \end{figure}
@@ -82,12 +83,12 @@ The client will be the entry point into Ocon facilitating developers to add situ
 
 Clients and widgets will be distributed from the central. The reason for doing so is that our vision of having a centralized system distributing situation from sensors to clients is not very useful if not distributed.
 
-For the Ocon two different communication protocols need to be implemented.\\
+For Ocon two different communication protocols need to be implemented.\\
 
 \begin{itemize}
     \item A protocol for establishing link between peers
     \item A protocol for send text/json messages for subscriptions, subscription events and, sensor events \\
 \end{itemize}
 
-We do not wish to bind our users to any concrete communication protocols. Therefore the communication will be interfaces so a concrete implementation can be dependency injected into the Ocon.
+We do not wish to bind our users to any concrete communication protocols. Therefore the communication will be interfaces so a concrete implementation can be dependency injected into Ocon.
 \end{document}

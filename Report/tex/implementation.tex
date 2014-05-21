@@ -3,7 +3,7 @@
 \graphicspath{{img/}{../img/}}
 
 \section{Overview}
-This chapter will describe important implementation details of Ocon. The system is realized by three main components. A central, a widget and a client. In addition a communication library have been created to facilitate distributed communication between the three components.
+This chapter will describe important implementation details of Ocon. The system is realized by three main components. A OconCentral, a OconWidget and a OconClient. In addition a communication library have been created to facilitate distributed communication between the three components.
 
 
 \section{Encapsulation of Context}
@@ -22,22 +22,22 @@ On figure \ref{fig:PersonImplementation} is an example of Person extending Abstr
 
 \section{Communication}
 
-To support the design decision that the communication part should be injectable the communication have been interfaced in IOconCom. (The interface can be seen in figure \ref{fig:oconclassdiagram})
+To support the design decision that the communication module should be injectable a communication interface, IOconCom, have been implemented. (The interface can be seen in figure \ref{fig:oconclassdiagram})
 
-Ocon contains a default communication implementation build using the TCP/IP layer. For serialization we have chosen to use JSON. These decisions have been made so that developers are not bound to the .NET platform and can make clients and widgets in other languages like Java, or C directly on a micro controllers like Arduino.
+With this design developers can make their own implementation for communication. Ocon contains a default IOconCom implementation build using the TCP/IP layer. For serialization we have chosen to use JSON. These decisions have been made so that developers are not bound to the .NET platform and can make clients and widgets in other languages like Java, or C directly on a micro controllers like Arduino.
 
-For peer discovery we have chosen to use IP multicast. The central broadcasts itself for peers to discover. The peer, clients and widgets, is listening on the multicast endpoint and will invoke an event when a central is discovered.
+For peer discovery we have chosen to use IP multicast. The central broadcasts itself for peers to discover. The peers, OconClients and OconWidgets, are listening on the multicast endpoint and will invoke an event when a central is discovered.
 
 To facilitate discovery OconTcpCom implements two methods: Broadcasting and DiscoveryService. Both methods are running on threads. This is done so that that peers are not blocked when broadcasting or discovering. When a peer is discovered an DiscoveryService event will be fired to notify subscribers.
 
-To listen and send for sending Entites, situation updates and situation subscription following methods have been implemented: Listen, SendEntity, SendSituationState, and SubscribeSituaion. When listen is called a new thread is started and whenever a message is received either IncommingSituationSubscribtionEvent, IncommingEntityEvent, or IncommingSituationChangedEvent is fired to notify subscribers. Then different send methods are also executed on a thread. This have been done to avoid blocking and to get faster execution time as multiple messages can be sent at the same time.
+For sending Entites, situation updates and situation subscription following methods have been implemented: Listen, SendEntity, SendSituationState, and SubscribeSituaion. When listen is called a new thread is started and whenever a message is received either IncommingSituationSubscribtionEvent, IncommingEntityEvent, or IncommingSituationChangedEvent is fired to notify subscribers. The different send methods are also executed on a thread. This has been done to avoid blocking and to get faster execution time as multiple messages can be sent in parallel
 
-The send methods take a peer. The peer is a helper class. Just like entities, peers are assigned a GUID. The GUID is a unique identifier for the peer and the communication class stores the IPEndPoints associated with the GUIDs. When a message from a peer is received or discovered the IpEndPoint is saved in a HashSet. By doing this messages can be sent only by using the peer and not the IPEndPoint which adds an abstraction layer to the module. 
+The send methods take a peer which is a helper class. Just like entities, peers are assigned a GUID. The GUID is a unique identifier for the peer and the communication class stores the IPEndPoints associated with the GUIDs. When a message from a peer is received or discovered the IpEndPoint is saved in a HashSet. By doing this messages can be sent only by using the peer and not the IPEndPoint which adds an abstraction layer to the module. 
 
 \section{OconWidget}
 \label{sec:OconWidget}
 
-The OconWidget's purpose is to track entities and keep them updated in the central. The widget developer should translate sensor input to entities and then the Ocon widget will facilitate tracking the entity and sending it to the central. (See figure \ref{fig:widgetComHelper})
+The OconWidget's purpose is to track entities and keep them updated in the central. The widget developer should translate sensor input to IEntity implementations and then pass them to the OconWidget which will facilitate sending them to the OconCentral (See figure \ref{fig:widgetComHelper})
 
 \begin{figure}
 \hspace{-70px}
@@ -46,10 +46,10 @@ The OconWidget's purpose is to track entities and keep them updated in the centr
 \label{fig:widgetComHelper}
 \end{figure}
 
-The OconWidget is very light. When constructed the widget will listen for OconCentrals by starting discovery and subscribing to DiscoveryServiceEvents on the IOconCom. When a central is found an event will be fired and the central will be added as subscriber. OconWidget has only one methods. Notify(IEntity entity). When Notify is called from the sensor a check weather or not the entity is already tracked is performed. If not tracked it will be allocated a new GUID before it is sent to the central through the communication module. The GUID is a unique ID used for distributed systems and allows Ocon to distinguish between adding the entity as a new entity or updating an entity already know to the framework. The usage of the widget is very easy for application developers as they only have to use one method when sending new entities to the central.
+The OconWidget is very light. When constructed the widget will listen for OconCentrals by starting discovery and subscribing to DiscoveryServiceEvents on the IOconCom. When a central is found an event will be fired and the central will be added as subscriber. OconWidget has only one method. Notify(IEntity entity). When Notify is called from the sensor a check weather or not the entity is already tracked is performed. If it is not tracked it will be allocated a new GUID before it is sent to the central through the communication module. The GUID is a unique ID used for distributed systems and allows Ocon to distinguish between adding the entity as a new entity or updating an entity already know to the framework.
 
 \section{OconClient}
-The OconClient's purpose is to sent predicates to the central for tracking. When a situation update is send from the central the client must be able to notify the parent application about the situation update. (See figure \ref{fig:clientComHelper})
+The OconClient's purpose is to send predicates to the central for tracking. When a situation update is send from the central the client must be able to notify the parent application about the situation update. (See figure \ref{fig:clientComHelper})
 
 \begin{figure}
 \hspace{-70px}
@@ -58,9 +58,9 @@ The OconClient's purpose is to sent predicates to the central for tracking. When
 \label{fig:clientComHelper}
 \end{figure}
 
-The OconClient is, as the OconWidget, very light. It contains only a constructor and a SituationStateChanged Event. The constructor takes a list of predicate identifiers as parameter, subscribes to DiscoveryServiceEvents, and starts the discovery service. When a DiscoveryServiceEvent is invoked the OconClient send its predicate identifiers to the OconCentral.
+The OconClient is, as the OconWidget, very light. It contains only a constructor and a SituationStateChanged Event. The constructor takes a list of predicate identifiers as parameter, subscribes to DiscoveryServiceEvents on IOconCOm, and starts the discovery service. When a DiscoveryServiceEvent is invoked the OconClient sends its predicate identifiers to the OconCentral.
 
-Per design the client was suppose to send a predicate and not a predicate identifier. To support clients being able to send predicates to the central, predicates must be serialized, but this is unfortunately not supported in .NET. Frameworks for handling the serialization have been researched, but none of the investigated frameworks were able serialize the predicates in Ocon as custom types are used. Therefore serializing predicates was forced out of scope. Instead of sending the predicates, they are hard coded in the central. The OconClient can then subscribe them by sending a predicate identifier. 
+Per design the client was supposed to send a predicate and not a predicate identifier. To support clients being able to send predicates to the central, predicates must be serialized, but this is unfortunately not supported in .NET. Frameworks for handling the serialization have been researched, but none of the investigated frameworks were able serialize the predicates in Ocon as custom types are used. Therefore serialization of predicates was forced out of scope. Instead of sending the predicates, they are coded in the central. The OconClient can then subscribe to them by sending a predicate identifier. 
 
 The OconCentral will upon receiving the predicate identifiers send back the state of the subscribed predicates. When OconClient was constructed it also subscribed IncommingSituationChanged event in the communication module. When such an event is fired OconClient will fire its SituationStateChanged event notifying subscribing applications of the predicate change.
 
@@ -75,7 +75,7 @@ OconCentral is the core component of Ocon. The central contains a OconContextFil
 \label{fig:seqcentral}
 \end{figure}
 
-OconCentral is subscribing IncommingSituationSubscribtion event and when invoked the central will add the requesting peer to the given situation. It also subscribes the IncommingEntity event on IOconCom. When invoked the entity is added to the context filter and the context filter will check its predicates. If a situation changes the SituationChanged event will be fired. The central subscribing this event will when invoked call SandSituationChanged on IOconCom to notify all subscribers on the situation of its new state. This is shown in figure \ref{fig:seqcentral}
+OconCentral subscribes to IncommingSituationSubscribtion event and when invoked the central will add the requesting peer to the given situation. It also subscribes the IncommingEntity event on IOconCom. When invoked the entity is added to the context filter and the context filter will check its predicates. If a situation changes a SituationChanged event will be fired. The central subscribing this event will when invoked call SandSituationChanged on IOconCom to notify all subscribers on the situation of its new state. This is shown in figure \ref{fig:seqcentral}
 
 \begin{figure}
 \hspace{-70px}
