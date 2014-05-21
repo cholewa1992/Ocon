@@ -6,6 +6,7 @@
 \usepackage{placeins}
 \usepackage{wrapfig}
 \usepackage{todonotes}
+\usepackage{geometry}
 \usepackage{epigraph}
 \usepackage{float}
 \usepackage[T1]{fontenc}
@@ -26,6 +27,8 @@
 
 %\newcommand\todo[1]{\textcolor{red}{TODO: }#1\PackageWarning{TODO:}{TODO tag!!}}
 
+\newcommand{\nocontentsline}[3]{}
+\newcommand{\tocless}[2]{\bgroup\let\addcontentsline=\nocontentsline#1{#2}\egroup}
 
 
 \usepackage{listings}
@@ -59,7 +62,10 @@
 \input{tex/title.tex}
 
 \setcounter{tocdepth}{1}
+
+\newgeometry{top=20px}
 \tableofcontents
+\restoregeometry
 
 %Abstract
 \subfile{tex/abstract.tex}
@@ -96,6 +102,7 @@
 
 \appendix
 % Appendixes
+
 \chapter{Scrumboard screenshots}
 \subfile{tex/screenshots.tex}
 
