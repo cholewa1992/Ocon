@@ -22,7 +22,7 @@ On figure \ref{fig:PersonImplementation} is an example of Person extending Abstr
 
 \section{Communication}
 
-To support the design decision that the communication module should be injectable a communication interface, IOconCom, have been implemented. (The interface can be seen in figure \ref{fig:oconclassdiagram})
+To support the design decision that the communication module should be injectable a communication interface, IOconCom, have been implemented. (The interface can be seen in figure \ref{fig:oconclassdiagram} on page \pageref{fig:oconclassdiagram})
 
 With this design developers can make their own implementation for communication. Ocon contains a default IOconCom implementation build using the TCP/IP layer. For serialization we have chosen to use JSON. These decisions have been made so that developers are not bound to the .NET platform and can make clients and widgets in other languages like Java, or C directly on a micro controllers like Arduino.
 
@@ -34,13 +34,25 @@ For sending Entites, situation updates and situation subscription following meth
 
 The send methods take a peer which is a helper class. Just like entities, peers are assigned a GUID. The GUID is a unique identifier for the peer and the communication class stores the IPEndPoints associated with the GUIDs. When a message from a peer is received or discovered the IpEndPoint is saved in a HashSet. By doing this messages can be sent only by using the peer and not the IPEndPoint which adds an abstraction layer to the module. 
 
+\section{Central}
+OconCentral is the core component of Ocon. The central contains a OconContextFilter and a concrete implementation of IOconCom. The context filter is aggregated of entities and situations (see figure \ref{fig:oconclassdiagram} on page \pageref{fig:oconclassdiagram}). The implementation of a situation contains a predicate that given a set of entities can evaluate to true or false. The context filter can therefore by its set of entities evaluate the state of its situations.
+
+OconCentral subscribes to IncommingSituationSubscribtion event and when invoked the central will add the requesting peer to the given situation. It also subscribes the IncommingEntity event on IOconCom. When invoked the entity is added to the context filter and the context filter will check its predicates. If a situation changes a SituationChanged event will be fired. The central subscribing this event will when invoked call SandSituationChanged on IOconCom to notify all subscribers on the situation of its new state. This is shown in figure \ref{fig:seqcentral}
+
+\begin{figure}
+\centering
+\includegraphics[scale=0.2]{sequencediagram-central.png}
+\caption{Central sequence diagram}
+\label{fig:seqcentral}
+\end{figure}
+
 \section{OconWidget}
 \label{sec:OconWidget}
 
 The OconWidget's purpose is to track entities and keep them updated in the central. The widget developer should translate sensor input to IEntity implementations and then pass them to the OconWidget which will facilitate sending them to the OconCentral (See figure \ref{fig:widgetComHelper})
 
-\begin{figure}
-\hspace{-70px}
+\begin{figure}[H]
+\hspace{-35px}
 \includegraphics[width=500px]{comHelperSequence-widget.png}
 \caption{Widget to Central sequence diagram}
 \label{fig:widgetComHelper}
@@ -51,8 +63,8 @@ The OconWidget is very light. When constructed the widget will listen for OconCe
 \section{OconClient}
 The OconClient's purpose is to send predicates to the central for tracking. When a situation update is send from the central the client must be able to notify the parent application about the situation update. (See figure \ref{fig:clientComHelper})
 
-\begin{figure}
-\hspace{-70px}
+\begin{figure}[H]
+\hspace{-35px}
 \includegraphics[width=500px]{comHelperSequence-client.png}
 \caption{Client to Central sequence diagram}
 \label{fig:clientComHelper}
@@ -65,21 +77,9 @@ Per design the client was supposed to send a predicate and not a predicate ident
 The OconCentral will upon receiving the predicate identifiers send back the state of the subscribed predicates. When OconClient was constructed it also subscribed IncommingSituationChanged event in the communication module. When such an event is fired OconClient will fire its SituationStateChanged event notifying subscribing applications of the predicate change.
 
 
-\section{Central}
-OconCentral is the core component of Ocon. The central contains a OconContextFilter and a concrete implementation of IOconCom. The context filter is aggregated of entities and situations (see figure \ref{fig:oconclassdiagram}). The implementation of a situation contains a predicate that given a set of entities can evaluate to true or false. The context filter can therefore by its set of entities evaluate the state of its situations.
-
-\begin{figure}
-\centering
-\includegraphics[width=\linewidth]{sequencediagram-central.png}
-\caption{Central sequence diagram}
-\label{fig:seqcentral}
-\end{figure}
-
-OconCentral subscribes to IncommingSituationSubscribtion event and when invoked the central will add the requesting peer to the given situation. It also subscribes the IncommingEntity event on IOconCom. When invoked the entity is added to the context filter and the context filter will check its predicates. If a situation changes a SituationChanged event will be fired. The central subscribing this event will when invoked call SandSituationChanged on IOconCom to notify all subscribers on the situation of its new state. This is shown in figure \ref{fig:seqcentral}
-
-\begin{figure}
-\hspace{-70px}
-\includegraphics[width=500px]{oconclassdiagram.png}
+\begin{figure}[H]
+\hspace{-20px}
+\includegraphics[width=470px]{oconclassdiagram.png}
 \caption{Class diagram showing the central and its usages}
 \label{fig:oconclassdiagram}
 \end{figure}

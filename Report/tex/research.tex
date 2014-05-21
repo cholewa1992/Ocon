@@ -39,13 +39,6 @@ To support application developers, a number of context-frameworks have been deve
 
 The blackboard approach is a centralized solution. Sensors and applications are connected to the blackboard and whenever a new sensor state is available a post-it, an entry to the database, is put on the blackboard. The application can at will look through the blackboard and search for context it might find relevant. The blackboard abstracts away the sensor implementation allowing the client to focus on only the context information. 
 
-\begin{figure}
-\centering
-\includegraphics[width=\linewidth]{blackboard-widget.png}
-\caption{Blackboard and widget-based approach}
-\label{fig:blackboard-widget}
-\end{figure}
-
 The widget approach is an object-oriented distributed architecture. Sensors encapsulated by widgets are available for application subscription. The approach is event based and applications are notified whenever a change to the sensor is occurring. This approach is object-oriented as the context is modelled with objects sent from sensor to application. This time and space coupled solution stands in contrast to the blackboard approach which has a database and is therefore time- and space uncoupled.
 
 The approaches differ a lot in the way of modelling context, but the main difference is in the way they deliver context from sensor to application. The stand in great contrast when looking at space and time coupling. 
@@ -56,6 +49,13 @@ For example a hospital system where you want to use the context framework to tra
 This example requires lookup and for all information to be gathered in one place, supported by the blackboards time uncoupling and centralization. The traditional blackboard solution does on the other hand not support to warn for example the closest employee if a patient is trying to escape the premises which would be very useful.
 
 For a home automation system using sensors, sensor input is only interesting the moment it happens, and only to actuator whom it concern. When a person enters the room the light should go on, only in the room where the person entered and only at the given time. This example needs the time and space coupling supported by the widget and would not be doable with the tradition blackboard architecture.
+
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{blackboard-widget.png}
+\caption{Blackboard and widget-based approach}
+\label{fig:blackboard-widget}
+\end{figure}
 
 
 \end{document}
