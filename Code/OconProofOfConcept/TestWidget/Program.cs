@@ -23,10 +23,7 @@ namespace KinectEntitySensor
 
             //Instantiate widget
             var widget = new OconWidget(com, log);
-
-            //Start searching for a central with the given IOconCom implementation
-            widget.StartDiscovery();
-
+            
             //Pass an entity to be added/updated at the central
             var entity = new Person() { Name = "Mat", Present = true };
             widget.Notify(entity);

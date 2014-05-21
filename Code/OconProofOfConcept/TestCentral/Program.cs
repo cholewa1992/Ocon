@@ -29,10 +29,7 @@ namespace Centralization
 
             //Instantiate the central
             var central = new OconCentral(oconFilter, tcpCom, log);
-
-            //Initialize the central
-            central.Initialize();
-
+            
             Console.Read();
         }
 
