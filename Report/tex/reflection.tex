@@ -3,15 +3,19 @@
 \graphicspath{{img/}{../img/}}
 
 
-\paragraph{Ocon implementation}
-As mentioned in the implementation chapter a problem major problem, when having to serialize predicates, occurred. This problem limited the usage of Ocon, but it was not possible to include the feature in this project. A framework for serializing the predicates as expression trees should be doable, but that is left for a later iteration of Ocon. When reflecting on this to much time searching for an solution was spent instead of out-scoping the problem earlier. 
 
-performance
+\paragraph{Predicate serialization}
+As mentioned in the implementation chapter an obstacle, when having to serialize predicates, occurred. This problem limited the usage of Ocon, but it was not possible to include the feature in this project. A framework for serializing the predicates as expression trees should be doable, but that is left for a later iteration of Ocon. When reflecting on this to much time searching for an solution was spent instead of out-scoping the problem earlier. 
 
-The implementation of OconCommunication is a very large part of the framework. As per design goal 1 (see scope  \ref{scope}) our framework should be adaptable. Therefore OconCommunication is designed in a way so that developers can make their own implementation and dependency inject it into Ocon. The goal is achieved, but the solution could have been better. As it is now developers have to change a very large part of the system. Reflection on the implementation, a better design could have been achieved by decomposing IOconCom and OconTcpCom into following three components.
+
+\paragraph{Performance}
+Performance has not been in scope of this project. In worst case it is an exponential growth because for each situation every entity might be looped over. However as the predicate is for an implementor to set, this performance is very much up to him.
+
+\paragraph{Communication}
+The implementation of OconCommunication is a very large part of the framework. As per design goal 1 (see scope in section \ref{scope}) our framework should be adaptable. Therefore OconCommunication is designed in a way so that developers can make their own implementation and dependency inject it into Ocon. The goal is achieved, but the solution could have been better. As it is now developers have to change a very large part of the system. Reflection on the implementation, a better design could have been achieved by decomposing IOconCom and OconTcpCom into following three components.
 
 \begin{enumerate}
-\item An interface for communication containing a send and listen method.
+\item An interface for communication containing a send, listen, broadcast and discover method.
 \item An interface for serialization containing serialize and deserialize.
 \item A class using concrete implementations of the two interfaces above to achieve the functionality in the current OconTcpCom.
 \end{enumerate}
