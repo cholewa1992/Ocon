@@ -57,18 +57,17 @@
 }
 \begin{document}
 \graphicspath{{img/}{../img/}}
-
+\pagenumbering{gobble}
 % Front page
 \input{tex/title.tex}
 
 \setcounter{tocdepth}{1}
 
-\newgeometry{top=20px}
 \tableofcontents
-\restoregeometry
 
 %Abstract
 \subfile{tex/abstract.tex}
+\pagenumbering{arabic}
 
 % Introduction
 \chapter{Introduction}
