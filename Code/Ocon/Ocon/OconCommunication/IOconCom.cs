@@ -11,7 +11,7 @@ namespace Ocon.OconCommunication
         ///     For broadcasting discovery pacakge so that peers can be auto-discovered. This metode runs on a separate thread and
         ///     can be stopped by calling StopBroadcast
         /// </summary>
-        void Broadcast();
+        void Broadcast(int frequency = 30);
 
         /// <summary>
         ///     Stops the broadcasting
