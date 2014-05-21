@@ -3,14 +3,22 @@
 \graphicspath{{img/}{../img/}}
 
 \paragraph{Predicate serialization}
-As mentioned in the implementation chapter an obstacle, when having to serialize predicates, occurred. This problem limited the usage of Ocon, but it was not possible to include the feature in this project. A framework for serializing the predicates as expression trees should be doable, but that is left for a later iteration of Ocon. When reflecting on this to much time searching for an solution was spent instead of out-scoping the problem earlier. 
+As mentioned in the implementation chapter, an obstacle occurred with serialization of predicates. This problem limited the usage of Ocon, but it was not possible to include the feature in this project. A framework for serializing the predicates as expression trees should be doable, but that is left for a later iteration of Ocon.
 
 
 \paragraph{Performance}
-While performance is not in scope it is still worth a few remarks, since it can have a big impact with our implementation approach. In worst case we have an $ O(situations\times entities) $ growth in the OconContextFilter when checking predicates, since for each situation every entity might be looped over. However, as the predicate delegate is assigned by an implementor of Ocon it is up to him what he does with the entity collection. Therefore in best case the growth is $ O(situations) $. The worst case could be improved upon by implementing an algorithm to only check relevant entity types for a situation.
+%While performance is not in scope it is still worth a few remarks, since it can have a big impact with our implementation approach. In worst case we have an $ O(situations\times entities) $ growth in the OconContextFilter when checking predicates, since for each situation every entity might be looped over. However, as the predicate delegate is assigned by an implementor of Ocon it is up to him what he does with the entity collection. Therefore in best case the growth is $ O(situations) $. Performance could be improved upon by implementing an algorithm to only check relevant entity types for a situation.
+
+While performance is not in scope it is still worth a few remarks, since it can have a big impact with our implementation approach. The predicate delegate is assigned by an implementor of Ocon and it is up to him what he does with the entity collection. Therefore in best case the growth is $ O(situations) $. However an implementor can also break the system with blocking or long execution times. \\
+Especially two points could improve performance when evaluating predicates:
+
+\begin{itemize}
+\item Parallel evaluation of predicates.
+\item Implementation of an algorithm to only check relevant entity types for a situation.
+\end{itemize}
 
 \paragraph{Communication}
-The implementation of OconCommunication is a very large part of the framework. As per design goal 1 (see scope in section \ref{scope}) our framework should be adaptable. Therefore OconCommunication is designed in a way so that developers can make their own implementation and dependency inject it into Ocon. The goal is achieved, but the solution could have been better. As it is now developers have to change a very large part of the system. Reflection on the implementation, a better design could have been achieved by decomposing IOconCom and OconTcpCom into following three components.
+The implementation of OconCommunication is a very large part of the framework. As per design goal 1 (see scope in section \ref{scope}) our framework should be adaptable. Therefore OconCommunication is designed in a way so that developers can make their own implementation and dependency inject it into Ocon. The goal is achieved, but the solution could have been better. As it is now, developers have to change a very large part of the system. Reflecting on the implementation, a better design could have been achieved by decomposing IOconCom and OconTcpCom into following three components.
 
 
 
