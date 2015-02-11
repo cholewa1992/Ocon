@@ -87,9 +87,13 @@
     <Compile Include="OconCommunication\EventArgs.cs" />
     <Compile Include="OconCommunication\Group.cs" />
     <Compile Include="OconCommunication\IOconCom.cs" />
+    <Compile Include="OconCommunication\IOconComNew.cs" />
+    <Compile Include="OconCommunication\IOconSerializer.cs" />
+    <Compile Include="OconCommunication\JsonNetAdapter.cs" />
     <Compile Include="OconCommunication\PackageType.cs" />
     <Compile Include="OconCommunication\Peer.cs" />
     <Compile Include="OconCommunication\OconTcpCom.cs" />
+    <Compile Include="OconCommunication\TcpCom.cs" />
     <Compile Include="SituationChangedEventArgs.cs" />
     <Compile Include="Situation.cs" />
     <Compile Include="OconContextFilter.cs" />
