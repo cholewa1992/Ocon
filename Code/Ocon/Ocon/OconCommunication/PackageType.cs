@@ -1,6 +1,6 @@
 namespace Ocon.OconCommunication
 {
-    internal enum PackageType
+    public enum PackageType
     {
         Entity = 1,
         SituationSubscription,

@@ -324,7 +324,7 @@ namespace Ocon.OconCommunication
         /// <param name="peer">The distination peer</param>
         public void SendEntity(IEntity entity, Peer peer)
         {
-            string json = JsonConvert.SerializeObject(entity, entity.GetType(),
+            string json = JsonConvert.SerializeObject(entity,
                 new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.Objects});
             SendString(json, PackageType.Entity, peer);
         }
