@@ -1,24 +1,88 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Threading;
-using Newtonsoft.Json;
-using Ocon.Helper;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Ocon.OconCommunication
 {
-    class TcpCom : IOconComNew
+    class TcpCom : IOconCom
     {
-        private const int CommunicationPort = 2026;
+        private readonly IOconSerializer _serializer;
+        public const int CommunicationPort = 2026;
 
         private readonly IPAddress _multicastAddress = IPAddress.Parse("224.5.6.7");
-        private const int MulticastPort = 2025;
+        public const int MulticastPort = 2025;
 
+        private readonly Dictionary<IPEndPoint, IOconPeer> _peers = new Dictionary<IPEndPoint, IOconPeer>();
 
-        public void Send(string msg, IOconPeer reciever)
+        public TcpCom(IOconSerializer serializer)
         {
-            Send(msg.GetBytes(), reciever);
+            _serializer = serializer;
+            Address = new TcpPeer {Id = Guid.NewGuid(), IpEndPoint = new IPEndPoint(Dns.GetHostAddresses(Dns.GetHostName()).Single(ip => ip.AddressFamily == AddressFamily.InterNetwork), CommunicationPort)};
+        }
+
+
+        public async void Listen()
+        {
+            var ipep = new IPEndPoint(IPAddress.Any, CommunicationPort);
+            var listener = new TcpListener(ipep);
+            listener.Start();
+
+            while (true)
+            {
+                var client = await listener.AcceptTcpClientAsync();
+                Task.Run(async () => 
+                {
+                    var recieved = await ReadStringFromStream(client.GetStream());
+                    var msg = _serializer.Deserialize<IOconMessage>(recieved);
+                    RecievedMessageEvent(msg, AddOrGetPeer((IPEndPoint) client.Client.RemoteEndPoint));
+                }).Start();
+            }
+        }
+
+        public async void Discover()
+        {
+            var client = new UdpClient(MulticastPort, AddressFamily.InterNetwork);
+
+            client.JoinMulticastGroup(_multicastAddress);
+            client.EnableBroadcast = true;
+ 
+            while (true)
+            {
+                var recieved = await client.ReceiveAsync();
+                var msg = _serializer.Deserialize<IOconMessage>(recieved.Buffer.GetString());
+                RecievedMessageEvent(msg, AddOrGetPeer(recieved.RemoteEndPoint));
+                 
+            }
+        }
+
+        public IOconPeer AddOrGetPeer(IPEndPoint ipep)
+        {
+            if (_peers.ContainsKey(ipep)) return _peers[ipep];
+            var peer = new TcpPeer {Id = Guid.NewGuid(), IpEndPoint = ipep};
+            PeerDiscoveredEvent(peer);
+            return peer;
+        }
+
+        private async Task<string> ReadStringFromStream(NetworkStream stream)
+        {
+            var sb = new StringBuilder();
+            do
+            {
+                var buffer = new byte[1024];
+                await stream.ReadAsync(buffer, 0, buffer.Length);
+                sb.Append(buffer);
+            } 
+            while (stream.DataAvailable);
+            return sb.ToString();
+        }
+
+        public void Send(IOconMessage msg, IOconPeer reciever)
+        {
+            Send(_serializer.Serialize(msg).GetBytes(), reciever);
         }
 
 
@@ -33,21 +97,13 @@ namespace Ocon.OconCommunication
 
                 using (var clientStream = client.GetStream())
                 {
-
-                    //Sending message
                     clientStream.Write(msg, 0, msg.Length);
-
                     clientStream.Flush();
                 }
             }
         }
 
-        public void Broadcast(string msg)
-        {
-            Broadcast(msg.GetBytes());
-        }
-
-        public void Broadcast(byte[] msg)
+        public void Broadcast(IOconMessage msg)
         {
             foreach (
                 var localIp in
@@ -70,13 +126,14 @@ namespace Ocon.OconCommunication
                     mSendSocket.Bind(new IPEndPoint(ipToUse, MulticastPort));
 
                     //Sending out the package
-                    mSendSocket.SendTo(msg, new IPEndPoint(_multicastAddress, MulticastPort));
+                    mSendSocket.SendTo(_serializer.Serialize(msg).GetBytes(), new IPEndPoint(_multicastAddress, MulticastPort));
                 }
             }
         }
 
         public event RecievedEventHandler RecievedMessageEvent;
         public event PeerDiscoveredHandler PeerDiscoveredEvent;
+        public IOconPeer Address { get; private set; }
     }
 
     public class TcpPeer : IOconPeer

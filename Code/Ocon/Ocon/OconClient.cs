@@ -7,7 +7,7 @@ namespace Ocon
 {
     public class OconClient
     {
-        private readonly IOconCom _comHelper;
+        private readonly OconComHelper _comHelper;
         private readonly TextWriter _log;
         private readonly string[] _situations;
 
@@ -18,7 +18,7 @@ namespace Ocon
         /// <param name="comHelper">The IOconCom implementation to use</param>
         /// <param name="log">Instance to write log messages to</param>
         /// <param name="situations">The situations to send to the context framework for tracking</param>
-        public OconClient(IOconCom comHelper, TextWriter log = null, params string[] situations)
+        public OconClient(OconComHelper comHelper, TextWriter log = null, params string[] situations)
         {
             //Setting the com helper
             _comHelper = comHelper;
@@ -35,7 +35,7 @@ namespace Ocon
         private void SetupCommunication()
         {
             //Forwarding Situation event changes to client
-            _comHelper.IncommingSituationChangedEvent += (sender, args) => SituationStateChangedEvent.Invoke(this, args);
+            _comHelper += (sender, args) => SituationStateChangedEvent.Invoke(this, args);
 
             _comHelper.DiscoveryServiceEvent += (sender, args) =>
             {
@@ -55,6 +55,8 @@ namespace Ocon
         /// <summary>
         ///     This event is fired when a subscribed situation's state has changed
         /// </summary>
-        public event EventHandler<IncommingSituationChangedEventArgs> SituationStateChangedEvent;
+        public event SituationChangedHandler SituationStateChangedEvent;
+
+        public delegate void SituationChangedHandler(Situation situation);
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Ocon.OconCommunication
 {
-    interface IOconSerializer
+    public interface IOconSerializer
     {
         string Serialize<T>(T obj);
         T Deserialize<T>(string json);

@@ -1,23 +1,13 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Ocon.OconCommunication
 {
-    public class Peer
+    class Peer : IOconPeer
     {
-        public Guid Guid { get; set; }
-    }
-
-    public class PeerEquallityCompare : IEqualityComparer<Peer>
-    {
-        public bool Equals(Peer x, Peer y)
-        {
-            return x.Guid.Equals(y.Guid);
-        }
-
-        public int GetHashCode(Peer obj)
-        {
-            return obj.Guid.GetHashCode();
-        }
+        public Guid Id { get; set; }
     }
 }
