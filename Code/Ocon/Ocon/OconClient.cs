@@ -1,6 +1,6 @@
-﻿using System;
-using System.IO;
-using Ocon.Helper;
+﻿using System.IO;
+using Ocon.Helpers;
+using Ocon.Messages;
 using Ocon.OconCommunication;
 
 namespace Ocon
@@ -35,21 +35,21 @@ namespace Ocon
         private void SetupCommunication()
         {
             //Forwarding Situation event changes to client
-            _comHelper += (sender, args) => SituationStateChangedEvent.Invoke(this, args);
+            _comHelper.SituationEvent += situation => SituationStateChangedEvent(situation);
 
-            _comHelper.DiscoveryServiceEvent += (sender, args) =>
+            _comHelper.DiscoveryEvent += (peer) =>
             {
                 foreach (string situation in _situations)
                 {
-                    _comHelper.SubscribeSituation(situation, args.Peer);
+                    _comHelper.Send(new SituationSubscriptionMessage(situation), peer);
                 }
             };
 
             //Start listening
-            _comHelper.StartListen();
+            //_comHelper.Listen();
 
-            Logger.Write(_log, "Starting discovery (" + _comHelper.Me.Guid + ")");
-            _comHelper.DiscoveryService();
+            Logger.Write(_log, "Starting discovery");
+            //_comHelper.DiscoveryService();
         }
 
         /// <summary>

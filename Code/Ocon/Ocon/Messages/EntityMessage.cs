@@ -1,6 +1,6 @@
 ﻿using Ocon.Entity;
 
-namespace Ocon.OconCommunication
+namespace Ocon.Messages
 {
     public class EntityMessage : IOconMessage
     {

@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ocon", "Ocon\Ocon.csproj", "{4CED25D0-FAAC-486F-8B94-63FE8F1DA9FC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OconExample", "OconExample\OconExample.csproj", "{47705FFD-7CBB-4DC4-86EB-1EC5DC32C2A1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,6 +15,10 @@ Global
 		{4CED25D0-FAAC-486F-8B94-63FE8F1DA9FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4CED25D0-FAAC-486F-8B94-63FE8F1DA9FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4CED25D0-FAAC-486F-8B94-63FE8F1DA9FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47705FFD-7CBB-4DC4-86EB-1EC5DC32C2A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47705FFD-7CBB-4DC4-86EB-1EC5DC32C2A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47705FFD-7CBB-4DC4-86EB-1EC5DC32C2A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47705FFD-7CBB-4DC4-86EB-1EC5DC32C2A1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

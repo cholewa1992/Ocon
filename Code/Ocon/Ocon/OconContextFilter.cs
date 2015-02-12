@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Ocon.Entity;
 using Ocon.OconCommunication;
+using Ocon.TcpCom;
 
 namespace Ocon
 {
@@ -88,7 +89,7 @@ namespace Ocon
         /// </summary>
         /// <param name="subscriber">Guid of interesant</param>
         /// <param name="situationName">Situation name</param>
-        public void Subscribe(Peer subscriber, string situationName)
+        public void Subscribe(IOconPeer subscriber, string situationName)
         {
             if (subscriber == null) throw new ArgumentNullException("Parsed guid can't be null");
             if (string.IsNullOrEmpty(situationName))
@@ -112,7 +113,7 @@ namespace Ocon
 
             foreach (var situation in _situations)
             {
-                bool currentState = situation.Value.SituationPredicate.Invoke(_entities);
+                var currentState = (bool) situation.Value.SituationPredicate.Compile().DynamicInvoke(_entities);
                 Console.WriteLine(currentState + " - " + _entities.Count);
 
                 //Notify subscribers if there's a change in state
@@ -136,13 +137,14 @@ namespace Ocon
         /// <summary>
         ///     This event will be fired when a situations state has changed
         /// </summary>
-        public event EventHandler<SituationChangedEventArgs> SituationStateChanged;
+        public event SituationChangedHandler SituationStateChanged;
 
-        public void FireSituationStateChanged(Situation situation, Peer subscriber)
+        public delegate void SituationChangedHandler(Situation situation, IOconPeer subsriber);
+
+        public void FireSituationStateChanged(Situation situation, IOconPeer subscriber)
         {
             if (SituationStateChanged != null)
-                SituationStateChanged.Invoke(this,
-                    new SituationChangedEventArgs {Situation = situation, Subscriber = subscriber});
+                SituationStateChanged(situation, subscriber);
         }
 
         #endregion

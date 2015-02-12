@@ -1,48 +1,64 @@
-﻿using System.IO;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Ocon.Entity;
+using Ocon.Messages;
 
-namespace Ocon
+namespace Ocon.OconCommunication
 {
     public class OconComHelper
     {
-        private readonly IOconCom _com;
+        private readonly IOconComClient _com;
 
+        public IOconPeer Address
+        {
+            get
+            {
+                return _com.Address;
+            }
+        }
 
-        public OconCom(IOconCom com)
+        public OconComHelper(IOconComClient com)
         {
             _com = com;
-
-            _com.PeerDiscoveredEvent += peer => DiscoveryEvent(peer);
-            _com.RecievedMessageEvent += (msg, sender) =>
+            _com.RecievedMessageEvent += (msg, peer) =>
             {
                 switch (msg.Type)
                 {
+                    case MessageType.Handshake:
+                        if (DiscoveryEvent != null)
+                            DiscoveryEvent(peer);
+                        break;
                     case MessageType.Entity:
+                        if(EntityEvent != null)
                         EntityEvent(((EntityMessage) msg).Entity);
                         break;
                     case MessageType.Situation:
+                        if(SituationEvent != null)
                         SituationEvent(((SituationMessage) msg).Situation);
                         break;
                     case MessageType.Subscription:
-                        SituationSubscribtionEvent();
+                        if(SituationSubscribtionEvent != null)
+                        SituationSubscribtionEvent(((SituationSubscriptionMessage) msg).SituationName, peer);
                         break;
 
                 }
             };
         }
 
+        private bool _broadcasting;
         /// <summary>
         ///     For broadcasting discovery pacakge so that peers can be auto-discovered. This metode runs on a separate thread
         /// </summary>
-        public void Broadcast(int frequency = 30)
+        public void Broadcast(DeviceType deviceType, int frequency = 30)
         {
+            if (_broadcasting) return;
+            _broadcasting = true;
+            
             Task.Run(() =>
             {
-                while (true)
+                while (_broadcasting)
                 {
-                    _com.Broadcast(new HandshakeMessage());
+                    _com.Broadcast(new HandshakeMessage(deviceType));
                     Thread.Sleep(frequency*1000);
                 }
             });
@@ -58,7 +74,7 @@ namespace Ocon
         /// </summary>
         public event SituationSubscribtionHandler SituationSubscribtionEvent;
 
-        public delegate void SituationSubscribtionHandler();
+        public delegate void SituationSubscribtionHandler(string identifier, IOconPeer peer);
 
         /// <summary>
         ///     This event will be fired whenever a new entity is avalible

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Ocon.Helper
+namespace Ocon.Helpers
 {
     internal static class Logger
     {

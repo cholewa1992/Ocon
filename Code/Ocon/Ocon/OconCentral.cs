@@ -1,12 +1,13 @@
 ﻿using System.IO;
-using Ocon.Helper;
+using Ocon.Helpers;
+using Ocon.Messages;
 using Ocon.OconCommunication;
 
 namespace Ocon
 {
     public class OconCentral
     {
-        private readonly IOconCom _comHelper;
+        private readonly OconComHelper _comHelper;
         private readonly OconContextFilter _contextFilter;
         private readonly TextWriter _log;
 
@@ -15,7 +16,7 @@ namespace Ocon
         /// </summary>
         /// <param name="contextFilter"></param>
         /// <param name="oconCom"></param>
-        public OconCentral(OconContextFilter contextFilter, IOconCom oconCom,
+        public OconCentral(OconContextFilter contextFilter, OconComHelper oconCom,
             TextWriter log = null)
         {
             _contextFilter = contextFilter;
@@ -31,28 +32,30 @@ namespace Ocon
         {
             // Set up
             _contextFilter.SituationStateChanged +=
-                (sender, args) => _comHelper.SendSituationState(args.Situation, args.Subscriber);
+                (situation, subscriber) => _comHelper.Send(new SituationMessage(situation), subscriber);
 
             // Set up events
-            _comHelper.IncommingEntityEvent += (sender, args) =>
+            _comHelper.EntityEvent += entity =>
             {
-                _contextFilter.TrackEntity(args.Entity);
-                Logger.Write(_log, "Incoming entity event: " + args.Entity.Name);
+                _contextFilter.TrackEntity(entity);
+                Logger.Write(_log, "Incoming entity event: " + entity.Name);
             };
 
-            _comHelper.IncommingSituationSubscribtionEvent += (sender, args) =>
+
+
+            _comHelper.SituationSubscribtionEvent += (identifier, peer) =>
             {
-                _contextFilter.Subscribe(args.Peer, args.SituationIdentifier);
+                _contextFilter.Subscribe(peer, identifier);
                 Logger.Write(_log,
-                    "Incoming situation subscribtion on: " + args.SituationIdentifier + " form:" + args.Peer.Guid);
+                    "Incoming situation subscribtion on: " + identifier + " form:" + peer.Id);
             };
 
 
             // Start listening for widgets and clients
-            _comHelper.StartListen();
+            //_comHelper.StartListen();
 
             // Multicast presence to widgets
-            _comHelper.Broadcast();
+            _comHelper.Broadcast(DeviceType.Central);
         }
     }
 }

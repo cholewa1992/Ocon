@@ -4,6 +4,6 @@ namespace Ocon.OconCommunication
 {
     public interface IOconPeer
     {
-        Guid Id { get; set; }
+        Guid Id { get; }
     }
 }

@@ -1,4 +1,4 @@
-namespace Ocon.OconCommunication
+namespace Ocon.Messages
 {
     public interface IOconMessage
     {

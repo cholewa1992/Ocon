@@ -2,16 +2,19 @@
 using System.Collections.Generic;
 using System.Net.Sockets;
 using Ocon.Entity;
+using Ocon.Messages;
+using Ocon.OconCommunication;
+using Ocon.TcpCom;
 
-namespace Ocon.OconCommunication
+namespace Ocon.Helpers
 {
     internal class Group
     {
         #region Fields
 
-        private readonly IOconCom _comHelper;
-        private readonly HashSet<Peer> _observers = new HashSet<Peer>(new PeerEquallityCompare());
-        private readonly Dictionary<Peer, int> _tries = new Dictionary<Peer, int>();
+        private readonly OconComHelper _comHelper;
+        private readonly HashSet<IOconPeer> _observers = new HashSet<IOconPeer>(new PeerEquallityCompare());
+        private readonly Dictionary<IOconPeer, int> _tries = new Dictionary<IOconPeer, int>();
 
         #endregion
 
@@ -19,7 +22,7 @@ namespace Ocon.OconCommunication
         ///     Constructs a new Communicationn Group
         /// </summary>
         /// <param name="comHelper">The ComHelper to use</param>
-        public Group(IOconCom comHelper)
+        public Group(OconComHelper comHelper)
         {
             _comHelper = comHelper;
         }
@@ -30,12 +33,12 @@ namespace Ocon.OconCommunication
         /// <param name="entity">The entity to sent</param>
         public void SendEntity(IEntity entity)
         {
-            var toRemove = new List<Peer>();
-            foreach (Peer observer in _observers)
+            var toRemove = new List<IOconPeer>();
+            foreach (IOconPeer observer in _observers)
             {
                 try
                 {
-                    _comHelper.SendEntity(entity, observer);
+                    _comHelper.Send(new EntityMessage(entity), observer);
                     _tries[observer] = 0;
                 }
                 catch (SocketException e)
@@ -56,13 +59,13 @@ namespace Ocon.OconCommunication
         ///     Adds a peer to the group
         /// </summary>
         /// <param name="peer">The peer to add</param>
-        public void AddPeer(Peer peer)
+        public void AddPeer(IOconPeer peer)
         {
             lock (_observers)
             {
                 if (!_observers.Contains(peer))
                 {
-                    Console.WriteLine("Adding peer to group: " + peer.Guid);
+                    Console.WriteLine("Adding peer to group: " + peer.Id);
                     _observers.Add(peer);
                     _tries.Add(peer, 0);
                 }
@@ -73,11 +76,11 @@ namespace Ocon.OconCommunication
         ///     Removes a peer from the group
         /// </summary>
         /// <param name="peer"></param>
-        public void RemovePeer(Peer peer)
+        public void RemovePeer(IOconPeer peer)
         {
             lock (_observers)
             {
-                Console.WriteLine("Removing peer from group: " + peer.Guid);
+                Console.WriteLine("Removing peer from group: " + peer.Id);
                 _observers.Remove(peer);
             }
         }

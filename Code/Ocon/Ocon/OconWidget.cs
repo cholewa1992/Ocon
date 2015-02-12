@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Ocon.Entity;
-using Ocon.Helper;
+using Ocon.Helpers;
 using Ocon.OconCommunication;
 
 namespace Ocon
@@ -11,7 +11,7 @@ namespace Ocon
     {
         #region Properties
 
-        private readonly IOconCom _comHelper;
+        private readonly OconComHelper _comHelper;
         private readonly Group _group;
         private readonly TextWriter _log;
         private readonly HashSet<IEntity> _trackedEntities = new HashSet<IEntity>();
@@ -28,7 +28,7 @@ namespace Ocon
         ///     the context filter
         /// </param>
         /// <param name="log">Instance to write log information to</param>
-        public OconWidget(IOconCom comHelper, TextWriter log = null)
+        public OconWidget(OconComHelper comHelper, TextWriter log = null)
         {
             _comHelper = comHelper;
             _group = new Group(_comHelper);
@@ -43,9 +43,8 @@ namespace Ocon
         /// </summary>
         private void StartDiscovery()
         {
-            Logger.Write(_log, "Starting discovery (" + _comHelper.Me.Guid + ")");
-            _comHelper.DiscoveryServiceEvent += (sender, args) => _group.AddPeer(args.Peer);
-            _comHelper.DiscoveryService();
+            Logger.Write(_log, "Starting discovery");
+            _comHelper.DiscoveryEvent += peer => _group.AddPeer(peer);
         }
 
         /// <summary>
@@ -58,7 +57,7 @@ namespace Ocon
             if (!_trackedEntities.Contains(entity))
             {
                 entity.Id = Guid.NewGuid();
-                entity.WidgetId = _comHelper.Me.Guid;
+                entity.WidgetId = _comHelper.Address.Id;
                 _trackedEntities.Add(entity);
             }
             _group.SendEntity(entity);

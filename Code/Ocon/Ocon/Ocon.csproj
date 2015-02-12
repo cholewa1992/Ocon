@@ -72,6 +72,9 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Aq.ExpressionJsonSerializer">
+      <HintPath>..\packages\Aq.ExpressionJsonSerializer.0.18\lib\net45\Aq.ExpressionJsonSerializer.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.6.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -80,27 +83,27 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="OconCommunication\DeviceType.cs" />
     <Compile Include="OconClient.cs" />
     <Compile Include="OconCentral.cs" />
     <Compile Include="Entity\AbstractEntity.cs" />
     <Compile Include="Helpers\Logger.cs" />
-    <Compile Include="OconCommunication\ByteExtentions.cs" />
-    <Compile Include="OconCommunication\EntityMessage.cs" />
-    <Compile Include="OconCommunication\Group.cs" />
-    <Compile Include="OconCommunication\HandshakeMessage.cs" />
-    <Compile Include="OconCommunication\IOconCom.cs" />
-    <Compile Include="OconCommunication\IOconMessage.cs" />
+    <Compile Include="Helpers\ByteExtentions.cs" />
+    <Compile Include="Messages\EntityMessage.cs" />
+    <Compile Include="Helpers\Group.cs" />
+    <Compile Include="Messages\HandshakeMessage.cs" />
+    <Compile Include="OconCommunication\IOconComClient.cs" />
+    <Compile Include="Messages\IOconMessage.cs" />
     <Compile Include="OconCommunication\IOconPeer.cs" />
-    <Compile Include="OconCommunication\IOconSerializer.cs" />
-    <Compile Include="OconCommunication\JsonNetAdapter.cs" />
-    <Compile Include="OconCommunication\MessageType.cs" />
-    <Compile Include="OconComHelper.cs" />
-    <Compile Include="OconCommunication\Peer.cs" />
+    <Compile Include="OconSerializer\IOconSerializer.cs" />
+    <Compile Include="OconSerializer\JsonNetAdapter.cs" />
+    <Compile Include="Messages\MessageType.cs" />
+    <Compile Include="OconCommunication\OconComHelper.cs" />
+    <Compile Include="TcpCom\Peer.cs" />
     <Compile Include="OconCommunication\PeerEquallityCompare.cs" />
-    <Compile Include="OconCommunication\SituationMessage.cs" />
-    <Compile Include="OconCommunication\SituationSubscriptionMessage.cs" />
-    <Compile Include="OconCommunication\TcpCom.cs" />
-    <Compile Include="SituationChangedEventArgs.cs" />
+    <Compile Include="Messages\SituationMessage.cs" />
+    <Compile Include="Messages\SituationSubscriptionMessage.cs" />
+    <Compile Include="TcpCom\TcpCom.cs" />
     <Compile Include="Situation.cs" />
     <Compile Include="OconContextFilter.cs" />
     <Compile Include="EntityEquallityCompare.cs" />
@@ -109,6 +112,7 @@
     <Compile Include="OconWidget.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

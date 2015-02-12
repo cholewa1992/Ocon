@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using Ocon.Entity;
 using Ocon.OconCommunication;
 
@@ -11,10 +12,10 @@ namespace Ocon
         private readonly Guid _id = Guid.NewGuid();
         private readonly HashSet<IOconPeer> _peers = new HashSet<IOconPeer>(new PeerEquallityCompare());
 
-        public Situation(string name, Predicate<ICollection<IEntity>> situationPredicate)
+        public Situation(string name, LambdaExpression expression)
         {
             Name = name;
-            SituationPredicate = situationPredicate;
+            SituationPredicate = expression;
             
         }
 
@@ -30,7 +31,7 @@ namespace Ocon
         public bool State { get; set; }
 
 
-        public Predicate<ICollection<IEntity>> SituationPredicate { get; set; }
+        public LambdaExpression SituationPredicate { get; set; }
 
 
         public void AddSubscriber(IOconPeer peer)
