@@ -43,11 +43,11 @@ namespace Ocon
 
 
 
-            _comHelper.SituationSubscribtionEvent += (identifier, peer) =>
+            _comHelper.SituationSubscribtionEvent += (situation, peer) =>
             {
-                _contextFilter.Subscribe(peer, identifier);
+                _contextFilter.Subscribe(peer, situation);
                 Logger.Write(_log,
-                    "Incoming situation subscribtion on: " + identifier + " form:" + peer.Id);
+                    "Incoming situation form:" + peer.Id);
             };
 
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -25,42 +26,36 @@ namespace OconExample
     {
         static void Main(string[] args)
         {
-            var serializer = new JsonNetAdapter();
-
-            Expression<Predicate<ICollection<IEntity>>> pre = (entities => entities.Any());
-            var post = serializer.Deserialize <LambdaExpression>(serializer.Serialize(pre));
-            Console.WriteLine(
-            post.Compile().DynamicInvoke(new Collection<IEntity>()));
-            Console.ReadLine();
-
-
-            return;
+            //Helpers
+            var serializer = new JsonNetAdapter();            
             var tcpCom = new TcpCom(serializer);
             var comHelper = new OconComHelper(tcpCom);
-            IOconPeer peer = null;
-            tcpCom.RecievedMessageEvent += (msg, sender) =>
-            {
-                if (msg.Type == MessageType.Handshake) peer = sender;
-                Console.WriteLine(msg.Type);
-            };
-
-
             
-            var client = new OconClient(comHelper, null, "test");
+            //Client
+            var client = new OconClient(comHelper, null, new Situation<bool>(c => c.OfType<Person>().Any(t => t.Description == "Jacob")));
+
+            //Central
             var filter = new OconContextFilter();
             var central = new OconCentral(filter, comHelper);
+
+            //Widget
             var widget = new OconWidget(comHelper);
-
-            Console.ReadLine();
-
-
+            
+            
             comHelper.Broadcast(DeviceType.Central);
             
-            //filter.AddSituation(new Situation("test", entities => entities.Any()));
-            
-            client.SituationStateChangedEvent += situation => Console.WriteLine(situation.Name);
-            
+            client.SituationStateChangedEvent += situation => Console.WriteLine(((Situation<bool>)situation).Value);
+
             Console.ReadLine();
+            widget.Notify(new Person
+            {
+                Description = "Trine",
+                Id = Guid.NewGuid(),
+                Name = "test"
+            });
+
+            Console.ReadLine();
+
             widget.Notify(new Person
             {
                 Description = "Jacob",

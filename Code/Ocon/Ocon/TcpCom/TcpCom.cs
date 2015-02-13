@@ -75,6 +75,7 @@ namespace Ocon.TcpCom
 
         private IOconPeer AddOrGetPeer(IPEndPoint ipep)
         {
+            ipep.Port = CommunicationPort;
             if (_peers.ContainsKey(ipep)) return _peers[ipep];
             var peer = new Peer(Guid.NewGuid());
             _peers.Add(ipep,peer);

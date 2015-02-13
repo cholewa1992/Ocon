@@ -1,6 +1,8 @@
-﻿using System.Reflection;
+﻿using System.Linq.Expressions;
+using System.Reflection;
 using Aq.ExpressionJsonSerializer;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Ocon.OconSerializer
 {
@@ -11,7 +13,7 @@ namespace Ocon.OconSerializer
         public JsonNetAdapter(JsonSerializerSettings settings = null)
         {
             var defaultSettings = new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.Objects};
-            defaultSettings.Converters.Add(new ExpressionJsonConverter(Assembly.GetAssembly(typeof(Situation))));
+            defaultSettings.Converters.Add(new ExpressionJsonConverter(Assembly.GetAssembly(typeof(Situation<bool>))));
             _settings = settings ?? defaultSettings;
         }
 

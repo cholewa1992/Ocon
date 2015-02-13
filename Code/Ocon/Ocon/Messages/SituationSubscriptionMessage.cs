@@ -1,14 +1,18 @@
-﻿namespace Ocon.Messages
+﻿using System;
+using System.Linq.Expressions;
+using System.Runtime.Remoting;
+
+namespace Ocon.Messages
 {
     public class SituationSubscriptionMessage : IOconMessage
     {
-        public SituationSubscriptionMessage(string situationName)
-        {
-            Type = MessageType.Subscription;
-            SituationName = situationName;
-        }
-
+        public IOconSituation Situation { get; private set; }
         public MessageType Type { get; private set; }
-        public string SituationName { get; private set; }
+
+        public SituationSubscriptionMessage(IOconSituation situation)
+        {
+            Situation = situation;
+            Type = MessageType.Subscription;
+        }
     }
 }

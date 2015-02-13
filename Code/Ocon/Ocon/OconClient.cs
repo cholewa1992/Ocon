@@ -9,7 +9,7 @@ namespace Ocon
     {
         private readonly OconComHelper _comHelper;
         private readonly TextWriter _log;
-        private readonly string[] _situations;
+        private readonly IOconSituation[] _situations;
 
 
         /// <summary>
@@ -18,7 +18,7 @@ namespace Ocon
         /// <param name="comHelper">The IOconCom implementation to use</param>
         /// <param name="log">Instance to write log messages to</param>
         /// <param name="situations">The situations to send to the context framework for tracking</param>
-        public OconClient(OconComHelper comHelper, TextWriter log = null, params string[] situations)
+        public OconClient(OconComHelper comHelper, TextWriter log = null, params IOconSituation[] situations)
         {
             //Setting the com helper
             _comHelper = comHelper;
@@ -39,7 +39,7 @@ namespace Ocon
 
             _comHelper.DiscoveryEvent += (peer) =>
             {
-                foreach (string situation in _situations)
+                foreach (IOconSituation situation in _situations)
                 {
                     _comHelper.Send(new SituationSubscriptionMessage(situation), peer);
                 }
@@ -57,6 +57,6 @@ namespace Ocon
         /// </summary>
         public event SituationChangedHandler SituationStateChangedEvent;
 
-        public delegate void SituationChangedHandler(Situation situation);
+        public delegate void SituationChangedHandler(IOconSituation situation);
     }
 }

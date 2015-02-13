@@ -12,7 +12,7 @@ namespace Ocon
         #region Fields
 
         private readonly ICollection<IEntity> _entities = new HashSet<IEntity>(new EntityEquallityCompare());
-        private readonly Dictionary<string, Situation> _situations = new Dictionary<string, Situation>();
+        private readonly Dictionary<Guid, IOconSituation> _situations = new Dictionary<Guid, IOconSituation>();
         private readonly TextWriter _log;
 
         #endregion
@@ -51,56 +51,29 @@ namespace Ocon
         /// <summary>
         ///     Removes an ISituation given name
         /// </summary>
-        /// <param name="situationName">Name of the situation to remove</param>
+        /// <param name="situationId">Id of the situation to remove</param>
         /// <returns>Whether removal succeeded</returns>
-        public bool RemoveSituation(string situationName)
+        public bool RemoveSituation(Guid situationId)
         {
-            if (string.IsNullOrEmpty(situationName)) throw new ArgumentNullException("Parsed situation can't be null");
+            if (situationId == null) throw new ArgumentNullException("Parsed situation can't be null");
 
-            return _situations.Remove(situationName);
+            return _situations.Remove(situationId);
         }
-
-
-        /// <summary>
-        ///     Adds one or more situations to the collection
-        /// </summary>
-        /// <param name="situation">An ISituation instance</param>
-        /// <param name="situations">zero or more ISituation instances</param>
-        public void AddSituation(Situation situation, params Situation[] situations)
-        {
-            if (situation == null) throw new ArgumentNullException("Parsed situation can't be null");
-
-
-            //Add the first situation
-            _situations.Add(situation.Name, situation);
-
-
-            //Add params if any
-            if (situations == null) return;
-            foreach (Situation s in situations)
-            {
-                _situations.Add(s.Name, s);
-            }
-        }
-
 
         /// <summary>
         ///     Subscribes an interesant to a situation given situation name
         /// </summary>
         /// <param name="subscriber">Guid of interesant</param>
-        /// <param name="situationName">Situation name</param>
-        public void Subscribe(IOconPeer subscriber, string situationName)
+        /// <param name="situation">Situation</param>
+        public void Subscribe(IOconPeer subscriber, IOconSituation situation)
         {
-            if (subscriber == null) throw new ArgumentNullException("Parsed guid can't be null");
-            if (string.IsNullOrEmpty(situationName))
-                throw new ArgumentNullException("Parsed situationIdentifier can't be null or empty");
+            if (subscriber == null) throw new ArgumentNullException("subscriber");
+            if (situation == null) throw new ArgumentNullException("situation");
 
 
-            if (_situations.ContainsKey(situationName))
-            {
-                _situations[situationName].AddSubscriber(subscriber);
-                FireSituationStateChanged(_situations[situationName], subscriber);
-            }
+            if (!_situations.ContainsKey(situation.Id)) _situations.Add(situation.Id, situation);
+            _situations[situation.Id].AddSubscriber(subscriber);
+            TestSituation(situation);
         }
 
 
@@ -111,21 +84,20 @@ namespace Ocon
         {
             Console.Clear();
 
-            foreach (var situation in _situations)
+            foreach (var situation in _situations.Values)
             {
-                var currentState = (bool) situation.Value.SituationPredicate.Compile().DynamicInvoke(_entities);
-                Console.WriteLine(currentState + " - " + _entities.Count);
+              TestSituation(situation); 
+            }
+        }
 
-                //Notify subscribers if there's a change in state
-                if (currentState != situation.Value.State)
+        private void TestSituation(IOconSituation situation)
+        {
+            //Notify subscribers if there's a change in state
+            if (situation.Evaluate(_entities))
+            {
+                foreach (var subscriber in situation.GetSubscribersList())
                 {
-                    situation.Value.State = currentState;
-
-                    foreach (Peer subscriber in situation.Value.GetSubscribersList())
-                    {
-                        Console.WriteLine("ok");
-                        FireSituationStateChanged(situation.Value, subscriber);
-                    }
+                    FireSituationStateChanged(situation, subscriber);
                 }
             }
         }
@@ -139,9 +111,9 @@ namespace Ocon
         /// </summary>
         public event SituationChangedHandler SituationStateChanged;
 
-        public delegate void SituationChangedHandler(Situation situation, IOconPeer subsriber);
+        public delegate void SituationChangedHandler(IOconSituation situation, IOconPeer subsriber);
 
-        public void FireSituationStateChanged(Situation situation, IOconPeer subscriber)
+        public void FireSituationStateChanged(IOconSituation situation, IOconPeer subscriber)
         {
             if (SituationStateChanged != null)
                 SituationStateChanged(situation, subscriber);

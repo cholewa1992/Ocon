@@ -37,8 +37,8 @@ namespace Ocon.OconCommunication
                         SituationEvent(((SituationMessage) msg).Situation);
                         break;
                     case MessageType.Subscription:
-                        if(SituationSubscribtionEvent != null)
-                        SituationSubscribtionEvent(((SituationSubscriptionMessage) msg).SituationName, peer);
+                        if (SituationSubscribtionEvent != null)
+                        SituationSubscribtionEvent(((SituationSubscriptionMessage) msg).Situation, peer);
                         break;
 
                 }
@@ -74,7 +74,7 @@ namespace Ocon.OconCommunication
         /// </summary>
         public event SituationSubscribtionHandler SituationSubscribtionEvent;
 
-        public delegate void SituationSubscribtionHandler(string identifier, IOconPeer peer);
+        public delegate void SituationSubscribtionHandler(IOconSituation situation, IOconPeer peer);
 
         /// <summary>
         ///     This event will be fired whenever a new entity is avalible
@@ -89,7 +89,7 @@ namespace Ocon.OconCommunication
         /// </summary>
         public event SituationHandler SituationEvent;
 
-        public delegate void SituationHandler(Situation s);
+        public delegate void SituationHandler(IOconSituation s);
 
         /// <summary>
         ///     This event will be fired everytime a new widget is discovered. NB: StartDiscoveryService must be called to start

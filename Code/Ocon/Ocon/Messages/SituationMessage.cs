@@ -1,14 +1,18 @@
-﻿namespace Ocon.Messages
+﻿using System.Runtime.InteropServices;
+
+namespace Ocon.Messages
 {
     public class SituationMessage : IOconMessage
     {
-        public SituationMessage(Situation situation)
+        public IOconSituation Situation { get; set; }
+        public MessageType Type { get; private set; }
+
+        public SituationMessage(IOconSituation situation)
         {
             Situation = situation;
-            Type = MessageType.Situation;;
+            Type = MessageType.Situation;
         }
 
-        public MessageType Type { get; private set; }
-        public Situation Situation { get; private set; }
+
     }
 }
