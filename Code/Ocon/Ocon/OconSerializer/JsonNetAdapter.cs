@@ -13,7 +13,7 @@ namespace Ocon.OconSerializer
         public JsonNetAdapter(JsonSerializerSettings settings = null)
         {
             var defaultSettings = new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.Objects};
-            defaultSettings.Converters.Add(new ExpressionJsonConverter(Assembly.GetAssembly(typeof(Situation<bool>))));
+            defaultSettings.Converters.Add(new ExpressionJsonConverter(Assembly.GetAssembly(typeof(IOconSituation))));
             _settings = settings ?? defaultSettings;
         }
 
