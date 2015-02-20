@@ -11,7 +11,7 @@ namespace Ocon
 
     public interface IOconSituation
     {
-        Guid Id { get; }
+        Guid Id { get; set; }
         bool Evaluate(ICollection<IEntity> collection);
         void AddSubscriber(IOconPeer peer);
         void RemoveSubscriber(IOconPeer peer);
@@ -21,7 +21,7 @@ namespace Ocon
 
     public class Situation<T> : IOconSituation where T : IComparable
     {
-        private readonly Guid _id = Guid.NewGuid();
+        private Guid _id = Guid.NewGuid();
         private readonly HashSet<IOconPeer> _peers = new HashSet<IOconPeer>(new PeerEquallityCompare());
 
         public LambdaExpression Expression { set; get; }
@@ -34,6 +34,7 @@ namespace Ocon
         public Guid Id
         {
             get { return _id; }
+            set { _id = value; }
         }
 
         public string Description { get; set; }

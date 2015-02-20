@@ -1,8 +1,4 @@
-﻿using System;
-using System.Linq.Expressions;
-using System.Runtime.Remoting;
-
-namespace Ocon.Messages
+﻿namespace Ocon.Messages
 {
     public class SituationSubscriptionMessage : IOconMessage
     {

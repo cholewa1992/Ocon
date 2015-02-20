@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Security.Policy;
 using System.Threading.Tasks;
 using Ocon.Helpers;
 using Ocon.Messages;
@@ -27,10 +28,7 @@ namespace Ocon.TcpCom
         public TcpCom(IOconSerializer serializer)
         {
             _serializer = serializer;
-            Address = AddOrGetPeer(
-                new IPEndPoint(
-                    Dns.GetHostAddresses(Dns.GetHostName()).Single(ip => ip.AddressFamily == AddressFamily.InterNetwork),
-                    CommunicationPort));
+            Address = new Peer(Guid.NewGuid());
             Listen();
             BroadcastListen();
         }
@@ -68,16 +66,15 @@ namespace Ocon.TcpCom
             {
                 var recieved = await client.ReceiveAsync();
                 var msg = _serializer.Deserialize<MulticastMsg>(recieved.Buffer.GetString());
-                RecievedMessageEvent(msg.Msg, AddOrGetPeer(new IPEndPoint(new IPAddress(msg.Ip), CommunicationPort )));
-
+                RecievedMessageEvent(msg.Msg, AddOrGetPeer(new IPEndPoint(new IPAddress(msg.Ip), CommunicationPort ), msg.Peer));
             }
         }
 
-        private IOconPeer AddOrGetPeer(IPEndPoint ipep)
+        private IOconPeer AddOrGetPeer(IPEndPoint ipep, IOconPeer peer = null)
         {
             ipep.Port = CommunicationPort;
             if (_peers.ContainsKey(ipep)) return _peers[ipep];
-            var peer = new Peer(Guid.NewGuid());
+            peer = peer ?? new Peer(Guid.NewGuid()); 
             _peers.Add(ipep,peer);
             return peer;
         }
@@ -129,7 +126,7 @@ namespace Ocon.TcpCom
                 {
                     client.MulticastLoopback = true;
                     client.JoinMulticastGroup(_multicastAddress);
-                    var bytes = _serializer.Serialize(new MulticastMsg(msg, ipToUse.GetAddressBytes())).GetBytes();
+                    var bytes = _serializer.Serialize(new MulticastMsg(msg, ipToUse.GetAddressBytes(), Address)).GetBytes();
                     client.Send(bytes, bytes.Length, new IPEndPoint(_multicastAddress, MulticastPort));
 }
             }
@@ -140,8 +137,11 @@ namespace Ocon.TcpCom
             public IOconMessage Msg { get; private set; }
             public byte[] Ip { get; private  set; }
 
-            public  MulticastMsg(IOconMessage msg, byte[] ip)
+            public IOconPeer Peer { get; private set; }
+
+            public  MulticastMsg(IOconMessage msg, byte[] ip, IOconPeer peer)
             {
+                Peer = peer;
                 Msg = msg;
                 Ip = ip;
             }

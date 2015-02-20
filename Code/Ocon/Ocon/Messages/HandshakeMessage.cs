@@ -1,4 +1,5 @@
-﻿using Ocon.OconCommunication;
+﻿using System;
+using Ocon.OconCommunication;
 
 namespace Ocon.Messages
 {

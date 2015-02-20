@@ -99,7 +99,7 @@
     <Compile Include="OconSerializer\JsonNetAdapter.cs" />
     <Compile Include="Messages\MessageType.cs" />
     <Compile Include="OconCommunication\OconComHelper.cs" />
-    <Compile Include="TcpCom\Peer.cs" />
+    <Compile Include="OconCommunication\Peer.cs" />
     <Compile Include="OconCommunication\PeerEquallityCompare.cs" />
     <Compile Include="Messages\SituationMessage.cs" />
     <Compile Include="Messages\SituationSubscriptionMessage.cs" />

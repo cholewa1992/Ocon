@@ -48,7 +48,7 @@ namespace Ocon.Helpers
                     if (_tries[observer] >= 3) toRemove.Add(observer);
                 }
             }
-            foreach (Peer peer in toRemove)
+            foreach (IOconPeer peer in toRemove)
             {
                 RemovePeer(peer);
             }
