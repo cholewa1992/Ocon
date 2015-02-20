@@ -46,9 +46,9 @@ namespace Ocon.TcpCom
                 await Task.Run(async () => 
                 {
                     string recieved = await ReadStringFromStream(client.GetStream());
-                    var msg = _serializer.Deserialize<IOconMessage>(recieved);
+                    var msg = _serializer.Deserialize<Message>(recieved);
                     var endpoint = (IPEndPoint) client.Client.RemoteEndPoint;
-                    RecievedMessageEvent(msg, AddOrGetPeer(endpoint));
+                    RecievedMessageEvent(msg.Msg, AddOrGetPeer(endpoint,msg.Peer));
                 });
             }
         }
@@ -94,7 +94,7 @@ namespace Ocon.TcpCom
 
         public void Send(IOconMessage msg, IOconPeer reciever)
         {
-            Send(_serializer.Serialize(msg).GetBytes(), reciever);
+            Send(_serializer.Serialize(new Message(msg, Address)).GetBytes(), reciever);
         }
 
 
@@ -132,19 +132,30 @@ namespace Ocon.TcpCom
             }
         }
 
-        private class MulticastMsg
+        #region Helper classes
+        private class Message
         {
             public IOconMessage Msg { get; private set; }
-            public byte[] Ip { get; private  set; }
 
             public IOconPeer Peer { get; private set; }
 
-            public  MulticastMsg(IOconMessage msg, byte[] ip, IOconPeer peer)
+            public  Message(IOconMessage msg, IOconPeer peer)
             {
                 Peer = peer;
                 Msg = msg;
+            }
+        }
+
+        private class MulticastMsg : Message
+        {
+            public byte[] Ip { get; private  set; }
+
+            public  MulticastMsg(IOconMessage msg, byte[] ip, IOconPeer peer) : base(msg,peer)
+            {
                 Ip = ip;
             }
         }
+        #endregion
+
     }
 }
