@@ -38,7 +38,7 @@ namespace Ocon
             _comHelper.EntityEvent += entity =>
             {
                 _contextFilter.TrackEntity(entity);
-                Logger.Write(_log, "Incoming entity event: " + entity.Name);
+                //Logger.Write(_log, "Incoming entity event: " + entity.Name);
             };
 
 

@@ -19,7 +19,7 @@ namespace Ocon
         LambdaExpression Expression { get; set; }
     }
 
-    public class Situation<T> : IOconSituation where T : IComparable
+    public class Situation<T> : IOconSituation where T : IComparable<T>
     {
         private Guid _id = Guid.NewGuid();
         private readonly HashSet<IOconPeer> _peers = new HashSet<IOconPeer>(new PeerEquallityCompare());
@@ -60,8 +60,8 @@ namespace Ocon
         {
             T oldValue = Value;
             Value = (T) Expression.Compile().DynamicInvoke(collection);
-            bool r = oldValue.CompareTo(Value) != 0;
-            return r;
+            if (!typeof(T).IsValueType && oldValue == null) return Value != null;
+            return oldValue.CompareTo(Value) != 0;
         }
 
     }
