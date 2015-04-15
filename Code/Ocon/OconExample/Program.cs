@@ -1,25 +1,29 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Linq.Expressions;
 using Ocon;
 using Ocon.Entity;
-using Ocon.Messages;
 using Ocon.OconCommunication;
 using Ocon.OconSerializer;
 using Ocon.TcpCom;
 
 namespace OconExample
 {
-    class Person : IEntity
+    class Person : IEntity, IComparable<Person>
     {
-        public string WidgetName { get; set; }
         public Guid Id { get; set; }
         public Guid WidgetId { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
+        public Beacon[] Beacons { get; set; }
+        public int CompareTo(Person other)
+        {
+            return Id.CompareTo(other.Id);
+        }
+    }
+
+    class Beacon
+    {
+        public Guid Uuid { get; set; }
+        public int Rssi { get; set; }
+        public double Distance { get; set; }
     }
 
     class Program
@@ -32,43 +36,32 @@ namespace OconExample
             var comHelper = new OconComHelper(tcpCom);
             
             //Client
-            var client = new OconClient(comHelper, null, new Situation<bool>(c => c.OfType<Person>().Any(t => t.Description == "Jacob")));
+
+            var client = new OconClient(comHelper, null, new Situation<ComparableCollection<Person>>(c => new ComparableCollection<Person>(c.OfType<Person>())));
 
             //Central
             var filter = new OconContextFilter();
             var central = new OconCentral(filter, comHelper);
-
-            //Widget
-            var widget = new OconWidget(comHelper);
-            
-            
+                       
             comHelper.Broadcast(DeviceType.Central);
-            
-            client.SituationStateChangedEvent += situation => Console.WriteLine(((Situation<bool>)situation).Value);
-
-            Console.ReadLine();
-            widget.Notify(new Person
+            client.SituationStateChangedEvent += situation =>
             {
-                Description = "Trine",
-                Id = Guid.NewGuid(),
-                Name = "test"
-            });
+                var list = situation as Situation<ComparableCollection<Person>>;
+                if (list != null)
+                {
+                    foreach (var person in list.Value)
+                    {
+                        Console.WriteLine(person.Id);
+                        foreach (var beacon in person.Beacons)
+                        {
+                            Console.WriteLine("\t" + beacon.Distance);
+                        }
+                    }
+                }
+            };
 
+            Console.WriteLine("Now starting and listening for widgets");
             Console.ReadLine();
-
-            widget.Notify(new Person
-            {
-                Description = "Jacob",
-                Id = Guid.NewGuid(),
-                Name = "test"
-            });
-
-            Console.ReadLine();
-
-
-
-
-
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Security.Policy;
+using System.Threading;
 using System.Threading.Tasks;
 using Ocon.Helpers;
 using Ocon.Messages;
@@ -33,7 +34,6 @@ namespace Ocon.TcpCom
             BroadcastListen();
         }
 
-
         public async void Listen()
         {
             var ipep = new IPEndPoint(IPAddress.Any, CommunicationPort);
@@ -43,12 +43,17 @@ namespace Ocon.TcpCom
             while (true)
             {
                 var client = await listener.AcceptTcpClientAsync();
-                await Task.Run(async () => 
+                client.ReceiveTimeout = 5000;
+                client.SendTimeout = 5000;
+                Task.Run(async () => 
                 {
-                    string recieved = await ReadStringFromStream(client.GetStream());
-                    var msg = _serializer.Deserialize<Message>(recieved);
-                    var endpoint = (IPEndPoint) client.Client.RemoteEndPoint;
-                    RecievedMessageEvent(msg.Msg, AddOrGetPeer(endpoint,msg.Peer));
+                    while (client.Connected)
+                    {
+                        string recieved = await ReadStringFromStream(client.GetStream());
+                        var msg = _serializer.Deserialize<Message>(recieved);
+                        var endpoint = (IPEndPoint) client.Client.RemoteEndPoint;
+                        RecievedMessageEvent(msg.Msg, AddOrGetPeer(endpoint, msg.Peer));
+                    }
                 });
             }
         }

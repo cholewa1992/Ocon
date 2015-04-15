@@ -61,7 +61,8 @@ namespace Ocon
             T oldValue = Value;
             Value = (T) Expression.Compile().DynamicInvoke(collection);
             if (!typeof(T).IsValueType && oldValue == null) return Value != null;
-            return oldValue.CompareTo(Value) != 0;
+            bool result = oldValue.CompareTo(Value) != 0;
+            return result;
         }
 
     }

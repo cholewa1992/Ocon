@@ -26,6 +26,11 @@ namespace Ocon
 
         #region Entity handling
 
+        public void AddAggregater(Action<ICollection<IEntity>> aggregator)
+        {
+            
+        }
+
         /// <summary>
         ///     Add an IEntity instance to the collection beeing checked for situations
         /// </summary>
@@ -82,8 +87,6 @@ namespace Ocon
         /// </summary>
         private void TestSituations()
         {
-            Console.Clear();
-
             foreach (var situation in _situations.Values)
             {
               TestSituation(situation); 
