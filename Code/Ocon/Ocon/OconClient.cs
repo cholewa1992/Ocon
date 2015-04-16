@@ -1,4 +1,8 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Security;
 using Ocon.Helpers;
 using Ocon.Messages;
 using Ocon.OconCommunication;
@@ -8,25 +12,39 @@ namespace Ocon
     public class OconClient
     {
         private readonly OconComHelper _comHelper;
-        private readonly TextWriter _log;
-        private readonly IOconSituation[] _situations;
+        private readonly List<IOconSituation> _situations;
+        private IOconPeer _peer;
 
+        public IReadOnlyCollection<IOconSituation> Situations
+        {
+            get
+            {
+                return _situations.AsReadOnly();
+            }
+        }
 
         /// <summary>
         ///     Constructs a new Client
         /// </summary>
         /// <param name="comHelper">The IOconCom implementation to use</param>
-        /// <param name="log">Instance to write log messages to</param>
-        /// <param name="situations">The situations to send to the context framework for tracking</param>
-        public OconClient(OconComHelper comHelper, TextWriter log = null, params IOconSituation[] situations)
+        /// <param name="server">The central to connect to</param>
+        public OconClient(OconComHelper comHelper, IOconPeer peer = null)
         {
             //Setting the com helper
             _comHelper = comHelper;
-            _situations = situations;
-            _log = log;
+            _situations = new List<IOconSituation>();
+
+            //Forwarding Situation event changes to client
+            _comHelper.SituationEvent += situation =>
+            {
+                if (_situations.Any(s => s.Id == situation.Id))
+                    SituationStateChangedEvent(situation);
+            };
+
+            _peer = peer;
 
             //Staring discovery
-            SetupCommunication();
+            if(peer == null) SetupCommunication();
         }
 
         /// <summary>
@@ -34,22 +52,37 @@ namespace Ocon
         /// </summary>
         private void SetupCommunication()
         {
-            //Forwarding Situation event changes to client
-            _comHelper.SituationEvent += situation => SituationStateChangedEvent(situation);
-
             _comHelper.DiscoveryEvent += (peer) =>
             {
-                foreach (IOconSituation situation in _situations)
-                {
-                    _comHelper.Send(new SituationSubscriptionMessage(situation), peer);
-                }
+                if(_peer != peer)
+                    foreach (IOconSituation situation in _situations)
+                    {
+                        _comHelper.Send(new SituationSubscriptionMessage(situation), peer);
+                    }
+                    _peer = peer;
             };
+        }
 
-            //Start listening
-            //_comHelper.Listen();
+        public void Subscribe(IOconSituation situation)
+        {
+            _situations.Add(situation);
+            if(_peer != null)
+                _comHelper.Send(new SituationSubscriptionMessage(situation), _peer);
+        }
 
-            Logger.Write(_log, "Starting discovery");
-            //_comHelper.DiscoveryService();
+        public void Unsubscribe(IOconSituation situation)
+        {   
+            if(_peer != null)
+                _comHelper.Send(new SituationUnsubscriptionMessage(situation.Id), _peer);
+            _situations.Remove(situation);
+        }
+
+        public void UnsubscribeAll()
+        {
+            foreach (var situation in _situations.ToList())
+            {
+                Unsubscribe(situation);
+            }
         }
 
         /// <summary>

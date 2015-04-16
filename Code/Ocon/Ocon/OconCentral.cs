@@ -50,6 +50,7 @@ namespace Ocon
                     "Incoming situation form:" + peer.Id);
             };
 
+            _comHelper.SituationUnsubscribtionEvent += (id, peer) => _contextFilter.Unsubscribe(peer, id);
 
             // Start listening for widgets and clients
             //_comHelper.StartListen();

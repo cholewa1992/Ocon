@@ -5,6 +5,7 @@ namespace Ocon.Messages
         Handshake,
         Situation,
         Entity,
-        Subscription
+        Subscription,
+        Unsubscription
     }
 }

@@ -81,6 +81,14 @@ namespace Ocon
             TestSituation(situation);
         }
 
+        public void Unsubscribe(IOconPeer subscriber, Guid id)
+        {
+            if(subscriber == null) throw new ArgumentException("subscriber");
+            if(id == null) throw new ArgumentException("id");
+
+            if (_situations.ContainsKey(id)) _situations.Remove(id);
+        }
+
 
         /// <summary>
         ///     Tests situation predicates against entities

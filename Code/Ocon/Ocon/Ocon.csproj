@@ -83,8 +83,12 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="ZeroconfService">
+      <HintPath>..\..\..\..\..\Desktop\ZeroconfService.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Messages\SituationUnsubscriptionMessage.cs" />
     <Compile Include="OconCommunication\DeviceType.cs" />
     <Compile Include="OconClient.cs" />
     <Compile Include="OconCentral.cs" />
@@ -118,6 +122,9 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

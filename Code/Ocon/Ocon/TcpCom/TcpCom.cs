@@ -18,10 +18,14 @@ namespace Ocon.TcpCom
         private readonly IOconSerializer _serializer;
         public const int CommunicationPort = 2026;
 
-        private readonly IPAddress _multicastAddress = IPAddress.Parse("224.5.6.7");
+        private readonly IPAddress _multicastAddress = IPAddress.Parse("239.5.6.7");
         public const int MulticastPort = 2025;
 
         private readonly Dictionary<IPEndPoint, IOconPeer> _peers = new Dictionary<IPEndPoint, IOconPeer>();
+
+        private UdpClient _udpClient;
+        private TcpListener _tcpClient;
+
 
         public event RecievedEventHandler RecievedMessageEvent;
         public IOconPeer Address { get; private set; }
@@ -37,12 +41,12 @@ namespace Ocon.TcpCom
         public async void Listen()
         {
             var ipep = new IPEndPoint(IPAddress.Any, CommunicationPort);
-            var listener = new TcpListener(ipep);
-            listener.Start();
+            _tcpClient = new TcpListener(ipep);
+            _tcpClient.Start();
 
             while (true)
             {
-                var client = await listener.AcceptTcpClientAsync();
+                var client = await _tcpClient.AcceptTcpClientAsync();
                 client.ReceiveTimeout = 5000;
                 client.SendTimeout = 5000;
                 Task.Run(async () => 
@@ -60,16 +64,16 @@ namespace Ocon.TcpCom
 
         public async void BroadcastListen()
         {
-            var client = new UdpClient();
+            _udpClient = new UdpClient();
 
-            client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-            client.ExclusiveAddressUse = false;
-            client.Client.Bind(new IPEndPoint(IPAddress.Any, MulticastPort));
-            client.JoinMulticastGroup(_multicastAddress);
+            _udpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+            _udpClient.ExclusiveAddressUse = false;
+            _udpClient.Client.Bind(new IPEndPoint(IPAddress.Any, MulticastPort));
+            _udpClient.JoinMulticastGroup(_multicastAddress);
  
             while (true)
             {
-                var recieved = await client.ReceiveAsync();
+                var recieved = await _udpClient.ReceiveAsync();
                 var msg = _serializer.Deserialize<MulticastMsg>(recieved.Buffer.GetString());
                 RecievedMessageEvent(msg.Msg, AddOrGetPeer(new IPEndPoint(new IPAddress(msg.Ip), CommunicationPort ), msg.Peer));
             }
@@ -162,5 +166,10 @@ namespace Ocon.TcpCom
         }
         #endregion
 
+        public void Dispose()
+        {
+            _tcpClient.Stop();
+            _udpClient.Close();
+        }
     }
 }

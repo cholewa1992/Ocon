@@ -1,9 +1,10 @@
-﻿using Ocon.Messages;
+﻿using System;
+using Ocon.Messages;
 
 namespace Ocon.OconCommunication
 {
     public delegate void RecievedEventHandler(IOconMessage msg, IOconPeer sender);
-    public interface IOconComClient
+    public interface IOconComClient : IDisposable
     {
         void Send(IOconMessage msg, IOconPeer reciever);
         void Broadcast(IOconMessage msg);

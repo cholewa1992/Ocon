@@ -1,11 +1,12 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Ocon.Entity;
 using Ocon.Messages;
 
 namespace Ocon.OconCommunication
 {
-    public class OconComHelper
+    public class OconComHelper : IDisposable
     {
         private readonly IOconComClient _com;
 
@@ -29,18 +30,21 @@ namespace Ocon.OconCommunication
                             DiscoveryEvent(peer);
                         break;
                     case MessageType.Entity:
-                        if(EntityEvent != null)
-                        EntityEvent(((EntityMessage) msg).Entity);
+                        if (EntityEvent != null)
+                            EntityEvent(((EntityMessage) msg).Entity);
                         break;
                     case MessageType.Situation:
-                        if(SituationEvent != null)
-                        SituationEvent(((SituationMessage) msg).Situation);
+                        if (SituationEvent != null)
+                            SituationEvent(((SituationMessage) msg).Situation);
                         break;
                     case MessageType.Subscription:
                         if (SituationSubscribtionEvent != null)
-                        SituationSubscribtionEvent(((SituationSubscriptionMessage) msg).Situation, peer);
+                            SituationSubscribtionEvent(((SituationSubscriptionMessage) msg).Situation, peer);
                         break;
-
+                    case MessageType.Unsubscription:
+                        if (SituationUnsubscribtionEvent != null)
+                            SituationUnsubscribtionEvent(((SituationUnsubscriptionMessage) msg).SituationId, peer);
+                        break;
                 }
             };
         }
@@ -64,6 +68,17 @@ namespace Ocon.OconCommunication
             });
 
         }
+
+        //public event EventHandler<IncommingClientEventArgs> IncommingClient;
+        /// <summary>
+        ///     This event will be fired whenever a new client is avalible
+        /// </summary>
+        /// <summary>
+        ///     This event will be fired whenever a new situation is avalible
+        /// </summary>
+        public event SituationUnsubscribtionHandler SituationUnsubscribtionEvent;
+
+        public delegate void SituationUnsubscribtionHandler(Guid situationId, IOconPeer peer);
 
         //public event EventHandler<IncommingClientEventArgs> IncommingClient;
         /// <summary>
@@ -104,5 +119,9 @@ namespace Ocon.OconCommunication
             _com.Send(msg, peer);
         }
 
+        public void Dispose()
+        {
+            _com.Dispose();
+        }
     }
 }

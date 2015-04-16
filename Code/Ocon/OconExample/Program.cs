@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using Ocon;
 using Ocon.Entity;
 using Ocon.OconCommunication;
 using Ocon.OconSerializer;
 using Ocon.TcpCom;
+using ZeroconfService;
 
 namespace OconExample
 {
@@ -30,20 +32,27 @@ namespace OconExample
     {
         static void Main(string[] args)
         {
+
+
             //Helpers
             var serializer = new JsonNetAdapter();            
             var tcpCom = new TcpCom(serializer);
             var comHelper = new OconComHelper(tcpCom);
-            
+
             //Client
 
-            var client = new OconClient(comHelper, null, new Situation<ComparableCollection<Person>>(c => new ComparableCollection<Person>(c.OfType<Person>())));
+            var client = new OconClient(comHelper);
+            var client2 = new OconClient(comHelper);
+            client.Subscribe(new Situation<ComparableCollection<Person>>(c => new ComparableCollection<Person>(c.OfType<Person>())));
+
+            client2.SituationStateChangedEvent += situation => Console.WriteLine("Client2!");
 
             //Central
             var filter = new OconContextFilter();
             var central = new OconCentral(filter, comHelper);
                        
-            comHelper.Broadcast(DeviceType.Central);
+            comHelper.Broadcast(DeviceType.Central,5);
+            comHelper.DiscoveryEvent += peer => Console.WriteLine("Found peer {0}", peer.Id);
             client.SituationStateChangedEvent += situation =>
             {
                 var list = situation as Situation<ComparableCollection<Person>>;
@@ -61,6 +70,9 @@ namespace OconExample
             };
 
             Console.WriteLine("Now starting and listening for widgets");
+            Console.ReadLine();
+            client.UnsubscribeAll();
+            Console.WriteLine("Unsubsribed all situations");
             Console.ReadLine();
         }
     }
