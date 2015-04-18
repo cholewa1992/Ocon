@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -49,12 +50,12 @@ namespace Ocon.TcpCom
                 client.SendTimeout = 5000;
                 Task.Run(async () => 
                 {
-                    while (client.Connected)
+                    using (client)
                     {
                         var recieved = await ReadStringFromStream(client.GetStream());
                         var msg = _serializer.Deserialize<Message>(recieved);
                         var endpoint = (IPEndPoint) client.Client.RemoteEndPoint;
-                        if(RecievedMessageEvent != null)
+                        if (RecievedMessageEvent != null)
                             RecievedMessageEvent(msg.Msg, AddOrGetPeer(endpoint, msg.Peer));
                     }
                 });

@@ -6,7 +6,6 @@ using Ocon.Entity;
 using Ocon.OconCommunication;
 using Ocon.OconSerializer;
 using Ocon.TcpCom;
-using ZeroconfService;
 
 namespace OconExample
 {
@@ -23,7 +22,7 @@ namespace OconExample
 
     class Beacon
     {
-        public Guid Uuid { get; set; }
+        public Guid Id { get; set; }
         public int Rssi { get; set; }
         public double Distance { get; set; }
     }
@@ -38,6 +37,8 @@ namespace OconExample
             var serializer = new JsonNetAdapter();            
             var tcpCom = new TcpCom(serializer);
             var comHelper = new OconComHelper(tcpCom);
+
+            comHelper.EntityEvent += entity => Console.WriteLine("Got data");
 
             //Client
 

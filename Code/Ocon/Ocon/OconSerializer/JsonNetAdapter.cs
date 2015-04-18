@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.IO;
+using System.Reflection;
 using Aq.ExpressionJsonSerializer;
 using Newtonsoft.Json;
 
@@ -23,6 +24,15 @@ namespace Ocon.OconSerializer
         public T Deserialize<T>(string json)
         {
             return JsonConvert.DeserializeObject<T>(json, _settings);
+        }
+
+        public T Deserialize<T>(Stream stream)
+        {
+            var sr = new StreamReader(stream);
+            var jsonReader = new JsonTextReader(sr);
+            var serializer = new JsonSerializer();
+
+            return serializer.Deserialize<T>(jsonReader);
         }
     }
 }

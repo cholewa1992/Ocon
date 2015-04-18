@@ -45,9 +45,6 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="ZeroconfService">
-      <HintPath>..\..\..\..\..\Desktop\ZeroconfService.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ComparableCollection.cs" />
