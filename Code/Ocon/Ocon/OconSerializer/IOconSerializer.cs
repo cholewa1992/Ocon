@@ -6,7 +6,5 @@ namespace Ocon.OconSerializer
     {
         string Serialize<T>(T obj);
         T Deserialize<T>(string json);
-
-        T Deserialize<T>(Stream stream);
     }
 }
