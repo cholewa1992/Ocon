@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Security.Policy;
-using System.Threading;
 using System.Threading.Tasks;
 using Ocon.Helpers;
 using Ocon.Messages;
@@ -53,10 +51,11 @@ namespace Ocon.TcpCom
                 {
                     while (client.Connected)
                     {
-                        string recieved = await ReadStringFromStream(client.GetStream());
+                        var recieved = await ReadStringFromStream(client.GetStream());
                         var msg = _serializer.Deserialize<Message>(recieved);
                         var endpoint = (IPEndPoint) client.Client.RemoteEndPoint;
-                        RecievedMessageEvent(msg.Msg, AddOrGetPeer(endpoint, msg.Peer));
+                        if(RecievedMessageEvent != null)
+                            RecievedMessageEvent(msg.Msg, AddOrGetPeer(endpoint, msg.Peer));
                     }
                 });
             }
@@ -75,7 +74,8 @@ namespace Ocon.TcpCom
             {
                 var recieved = await _udpClient.ReceiveAsync();
                 var msg = _serializer.Deserialize<MulticastMsg>(recieved.Buffer.GetString());
-                RecievedMessageEvent(msg.Msg, AddOrGetPeer(new IPEndPoint(new IPAddress(msg.Ip), CommunicationPort ), msg.Peer));
+                if(RecievedMessageEvent != null)
+                    RecievedMessageEvent(msg.Msg, AddOrGetPeer(new IPEndPoint(new IPAddress(msg.Ip), CommunicationPort ), msg.Peer));
             }
         }
 
@@ -93,7 +93,7 @@ namespace Ocon.TcpCom
             var bytes = new List<byte>();
             do
             {
-                var buffer = new byte[1024];
+                var buffer = new byte[4096];
                 await stream.ReadAsync(buffer, 0, buffer.Length);
                 bytes.AddRange(buffer);
             } 

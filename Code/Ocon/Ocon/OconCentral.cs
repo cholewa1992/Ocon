@@ -51,12 +51,6 @@ namespace Ocon
             };
 
             _comHelper.SituationUnsubscribtionEvent += (id, peer) => _contextFilter.Unsubscribe(peer, id);
-
-            // Start listening for widgets and clients
-            //_comHelper.StartListen();
-
-            // Multicast presence to widgets
-            _comHelper.Broadcast(DeviceType.Central);
         }
     }
 }
