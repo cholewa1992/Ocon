@@ -50,7 +50,7 @@ namespace Ocon.TcpCom
                 client.SendTimeout = 5000;
                 Task.Run(async () => 
                 {
-                    using (client)
+                    while (client.Connected)
                     {
                         var recieved = await ReadStringFromStream(client.GetStream());
                         var msg = _serializer.Deserialize<Message>(recieved);
