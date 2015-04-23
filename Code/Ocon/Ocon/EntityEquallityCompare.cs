@@ -12,7 +12,7 @@ namespace Ocon
 
         public int GetHashCode(IEntity obj)
         {
-            return obj.WidgetId.GetHashCode()*obj.Id.GetHashCode();
+            return obj.Id.GetHashCode();
         }
     }
 }

@@ -57,7 +57,6 @@ namespace Ocon
             if (!_trackedEntities.Contains(entity))
             {
                 entity.Id = Guid.NewGuid();
-                entity.WidgetId = _comHelper.Address.Id;
                 _trackedEntities.Add(entity);
             }
             _group.SendEntity(entity);
