@@ -12,6 +12,7 @@ namespace OconExample
     class Person : IEntity, IComparable<Person>
     {
         public Guid Id { get; set; }
+        public DateTime LastUpdate { get; set; }
         public Guid WidgetId { get; set; }
         public Beacon[] Beacons { get; set; }
         public int CompareTo(Person other)

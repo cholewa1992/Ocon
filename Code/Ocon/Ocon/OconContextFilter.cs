@@ -26,11 +26,6 @@ namespace Ocon
 
         #region Entity handling
 
-        public void AddAggregater(Action<ICollection<IEntity>> aggregator)
-        {
-            
-        }
-
         /// <summary>
         ///     Add an IEntity instance to the collection beeing checked for situations
         /// </summary>
@@ -38,6 +33,8 @@ namespace Ocon
         public void TrackEntity(IEntity entity)
         {
             if (entity == null) throw new ArgumentNullException("Parsed entity can't be null");
+
+            entity.LastUpdate = DateTime.UtcNow;
 
             if (_entities.Contains(entity))
             {
